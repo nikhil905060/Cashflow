@@ -631,7 +631,7 @@
       }
     }
 
-    // --- LIFECYCLE SYNC ---
+        // --- LIFECYCLE SYNC ---
     class LifecycleSync {
       constructor(engine, getStateFn, onExternalUpdateFn, onStatusChangeFn) {
         this.engine = engine;
@@ -660,7 +660,50 @@
               if (msg.type === 'STATE_COMMIT' && verifyEnvelope(msg.envelope)) {
                 if (msg.envelope.rev > this.engine.currentRev) {
                   this.engine.currentRev = msg.envelope.rev;
-                  this.engine.las                  tChecksum = latest.checksum;
+                  this.engine.lastChecksum = msg.envelope.checksum;
+                  this.engine.lastSyncTime = msg.envelope.updatedAt;
+                  this.engine.writeL1Envelope(msg.envelope);
+                  this.onExternalUpdate(normalizeState(msg.envelope.payload), msg.envelope.rev);
+                  this.onStatusChange();
+                }
+              }
+            };
+          }
+        } catch (e) {}
+
+        window.addEventListener('storage', (e) => {
+          if (e.key === L1_PRIMARY_KEY && e.newValue) {
+            try {
+              const env = JSON.parse(e.newValue);
+              if (verifyEnvelope(env) && env.rev > this.engine.currentRev) {
+                this.engine.currentRev = env.rev;
+                this.engine.lastChecksum = env.checksum;
+                this.engine.lastSyncTime = env.updatedAt;
+                this.onExternalUpdate(normalizeState(env.payload), env.rev);
+                this.onStatusChange();
+              }
+            } catch (err) {}
+          }
+        });
+      }
+
+      broadcastCommit(env) {
+        if (this.channel) {
+          try {
+            this.channel.postMessage({ type: 'STATE_COMMIT', sender: this.tabId, envelope: env });
+          } catch (e) {}
+        }
+      }
+
+      async reconcile(reason) {
+        this._log(`reconcile:${reason}`);
+        const l1 = this.engine.readL1Envelope();
+        const l2 = await this.engine.readL2Envelope();
+        const candidates = [l1, l2].filter(Boolean).sort((a, b) => b.rev - a.rev);
+        const latest = candidates[0];
+        if (latest && latest.rev > this.engine.currentRev) {
+          this.engine.currentRev = latest.rev;
+          this.engine.lastChecksum = latest.checksum;
           this.engine.lastSyncTime = latest.updatedAt;
           this.onExternalUpdate(normalizeState(latest.payload), latest.rev);
         } else {
@@ -683,6 +726,7 @@
         window.addEventListener('focus', () => this.reconcile('focus'));
       }
     }
+    
 
     const storageEngine = new StorageEngine();
     let state = createDefaultState();
