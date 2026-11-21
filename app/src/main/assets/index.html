@@ -3,324 +3,220 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CASHFLOW_OS // Multi-UPI &amp; Friend Ledger Terminal</title>
+  <title>Cash Flow OS</title>
   <style>
     :root {
+      --bg: #f6f8f7;
+      --surface: #ffffff;
+      --surface-2: #edf2ef;
+      --fg: #111b15;
+      --fg-dim: #52665a;
+      --border: #d5e0da;
+      --accent: #0f766e;
+      --accent-fg: #ffffff;
+      --credit: #0d9488;
+      --debit: #dc2626;
+      --warn: #d97706;
+      --split: #7c3aed;
+      --owe: #ea580c;
+      --info: #0284c7;
+      --font-main: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      --radius: 14px;
+    }
+
+    body[data-ui="minimal-dark"] {
+      --bg: #0f1412;
+      --surface: #18201d;
+      --surface-2: #212c28;
+      --fg: #e8f0ec;
+      --fg-dim: #94a89e;
+      --border: #2a3832;
+      --accent: #2dd4bf;
+      --accent-fg: #082420;
+      --credit: #34d399;
+      --debit: #f87171;
+      --warn: #fbbf24;
+      --split: #c084fc;
+      --owe: #fb923c;
+      --info: #38bdf8;
+    }
+
+    body[data-ui="terminal"] {
       --bg: #040705;
+      --surface: #08100b;
+      --surface-2: #0d1a12;
       --fg: #00ff66;
-      --fg-dim: #00993d;
-      --fg-faint: rgba(0, 255, 102, 0.14);
-      --glow: rgba(0, 255, 102, 0.35);
+      --fg-dim: #00b347;
+      --border: #193823;
+      --accent: #00ff66;
+      --accent-fg: #040705;
       --credit: #00ffcc;
       --debit: #ff5c5c;
       --warn: #ffcc00;
       --split: #c792ea;
       --owe: #ff9e64;
       --info: #56b6c2;
-      --key-bg: #0b140e;
-      --key-border: #193823;
-      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --font-main: 'JetBrains Mono', 'Courier New', monospace;
+      --radius: 4px;
     }
 
-    body[data-theme="amber"] {
-      --bg: #080502;
-      --fg: #ffb000;
-      --fg-dim: #9c6b00;
-      --fg-faint: rgba(255, 176, 0, 0.14);
-      --glow: rgba(255, 176, 0, 0.35);
-      --credit: #7dff8a;
-      --debit: #ff5555;
-      --warn: #ffe66d;
-      --split: #e0aaff;
-      --owe: #ff9e64;
-      --info: #64dfdf;
-      --key-bg: #140e06;
-      --key-border: #3d2a0d;
-    }
-
-    body[data-theme="cyan"] {
-      --bg: #03070a;
-      --fg: #00e5ff;
-      --fg-dim: #008294;
-      --fg-faint: rgba(0, 229, 255, 0.14);
-      --glow: rgba(0, 229, 255, 0.35);
-      --credit: #39ff14;
-      --debit: #ff4d6d;
-      --warn: #ffd166;
-      --split: #d8b4fe;
-      --owe: #fb923c;
-      --info: #90e0ef;
-      --key-bg: #07131a;
-      --key-border: #123647;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body {
-      width: 100%;
-      height: 100%;
-      height: 100dvh;
-      background-color: var(--bg);
-      color: var(--fg);
-      font-family: var(--font-mono);
-      font-size: 14px;
-      line-height: 1.5;
-      overflow: hidden;
-      text-shadow: 0 0 5px var(--glow);
+      width: 100%; height: 100dvh; background: var(--bg); color: var(--fg);
+      font-family: var(--font-main); font-size: 14px; line-height: 1.45; overflow: hidden;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
+    body[data-ui="terminal"]::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+      background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.28) 50%);
       background-size: 100% 3px;
-      z-index: 9998;
-      pointer-events: none;
     }
 
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle, rgba(0,0,0,0) 62%, rgba(0,0,0,0.68) 100%);
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    #terminal {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      height: 100dvh;
-      width: 100%;
-      padding: 10px 14px 8px 14px;
-      max-width: 1060px;
-      margin: 0 auto;
+    #app {
+      display: flex; flex-direction: column; height: 100dvh; max-width: 960px;
+      margin: 0 auto; padding: 10px 12px 8px;
     }
 
     #top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding-bottom: 4px;
-      margin-bottom: 2em;
-      font-size: 11px;
-      color: var(--fg-dim);
-      flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 6px; margin-bottom: 10px; flex-shrink: 0;
     }
-
-    .badge {
-      border: 1px solid var(--fg-dim);
-      padding: 2px 6px;
-      border-radius: 3px;
-      cursor: pointer;
-      user-select: none;
+    .brand { font-weight: 700; font-size: 14px; letter-spacing: 0.3px; }
+    .top-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .pill-btn {
+      background: var(--surface); color: var(--fg); border: 1px solid var(--border);
+      padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
     }
+    .pill-btn.accent { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+    .pill-btn:active { transform: scale(0.96); }
 
-    .badge:active {
-      background: var(--fg);
-      color: var(--bg);
-    }
-
-    #output {
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 4px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--fg-dim) transparent;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    #output::-webkit-scrollbar { width: 5px; }
-    #output::-webkit-scrollbar-thumb { background: var(--fg-dim); }
-
-    .line {
-      margin-bottom: 3px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .section-gap {
-      margin-top: 2em;
-    }
-
-    .cmd-echo { color: var(--fg); font-weight: bold; }
-    .dim { color: var(--fg-dim); }
-    .credit { color: var(--credit); text-shadow: 0 0 6px rgba(0, 255, 204, 0.35); }
-    .debit { color: var(--debit); text-shadow: 0 0 6px rgba(255, 92, 92, 0.35); }
-    .warn { color: var(--warn); }
-    .split { color: var(--split); }
-    .owe { color: var(--owe); }
-    .info { color: var(--info); }
-
-    .box-block {
-      padding: 4px 0;
-      margin: 2em 0;
-      white-space: pre;
-      overflow-x: auto;
-      font-size: 12.5px;
-      line-height: 1.45;
-    }
-
-    #input-row {
-      display: flex;
-      align-items: center;
-      margin-top: 2em;
-      padding-top: 4px;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .prompt-label {
-      color: var(--fg);
-      font-weight: bold;
-      white-space: nowrap;
-      user-select: none;
-      font-size: 13px;
-    }
-
-    #cmd-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--fg);
-      font-family: var(--font-mono);
-      font-size: 15px;
-      caret-color: var(--fg);
-      text-shadow: 0 0 5px var(--glow);
-      min-width: 50px;
-    }
-
-    #cmd-input::placeholder {
-      color: var(--fg-dim);
-      opacity: 0.65;
-    }
-
-    #mobile-toolbar {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 2em;
-      padding-top: 4px;
-      flex-shrink: 0;
-      user-select: none;
-    }
-
-    .key-row {
-      display: flex;
-      gap: 5px;
-      overflow-x: auto;
+    #wallet-strip {
+      display: flex; gap: 8px; overflow-x: auto; margin-bottom: 10px; flex-shrink: 0;
       scrollbar-width: none;
     }
-    .key-row::-webkit-scrollbar { display: none; }
+    #wallet-strip::-webkit-scrollbar { display: none; }
+    body[data-ui="terminal"] #wallet-strip { display: none; }
 
-    .t-key {
-      background: var(--key-bg);
-      color: var(--fg);
-      border: 1px solid var(--key-border);
-      border-radius: 4px;
-      padding: 7px 10px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-      text-align: center;
-      transition: background 0.08s, transform 0.05s;
+    .w-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 8px 12px; min-width: 115px; flex-shrink: 0;
     }
+    .w-label { font-size: 11px; color: var(--fg-dim); font-weight: 600; }
+    .w-val { font-size: 15px; font-weight: 700; margin-top: 2px; }
 
-    .t-key:active {
-      background: var(--fg);
-      color: var(--bg);
-      transform: scale(0.96);
+    #nav-tabs {
+      display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0;
     }
+    body[data-ui="terminal"] #nav-tabs { display: none; }
+    .tab-btn {
+      flex: 1; background: var(--surface-2); color: var(--fg-dim); border: none;
+      padding: 7px 6px; border-radius: 10px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+    .tab-btn.active { background: var(--accent); color: var(--accent-fg); }
 
-    .t-key.primary {
-      border-color: var(--fg-dim);
-      background: var(--fg-faint);
+    #output {
+      flex: 1; overflow-y: auto; padding-right: 2px;
+      -webkit-overflow-scrolling: touch;
     }
+    .line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-word; }
+    .section-gap { margin-top: 1.6em; }
+    .cmd-echo { font-weight: 700; color: var(--accent); }
+    .dim { color: var(--fg-dim); }
+    .credit { color: var(--credit); font-weight: 600; }
+    .debit { color: var(--debit); font-weight: 600; }
+    .warn { color: var(--warn); font-weight: 600; }
+    .split { color: var(--split); font-weight: 600; }
+    .owe { color: var(--owe); font-weight: 600; }
+    .info { color: var(--info); font-weight: 600; }
 
-    .t-key.split-key {
-      border-color: var(--split);
-      color: var(--split);
+    .box-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px; margin: 1.4em 0;
+      white-space: pre; overflow-x: auto; font-family: var(--font-mono); font-size: 12px;
     }
+    body[data-ui="terminal"] .box-block {
+      background: transparent; border: none; padding: 4px 0; margin: 2em 0;
+    }
+        #chips-row {
+      display: flex; gap: 6px; overflow-x: auto; margin-top: 8px; flex-shrink: 0;
+      scrollbar-width: none;
+    }
+    #chips-row::-webkit-scrollbar { display: none; }
+    .chip {
+      background: var(--surface); color: var(--fg); border: 1px solid var(--border);
+      border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 600;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: inherit;
+    }
+    body[data-ui="terminal"] .chip { border-radius: 4px; background: var(--surface-2); }
+    .chip:active { background: var(--accent); color: var(--accent-fg); }
 
-    .t-key.owe-key {
-      border-color: var(--owe);
-      color: var(--owe);
+    #input-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-shrink: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 6px 10px;
     }
+    body[data-ui="terminal"] #input-row {
+      background: transparent; border: none; padding: 6px 0; margin-top: 1.4em;
+    }
+    .prompt-label { font-weight: 700; font-size: 12px; color: var(--accent); white-space: nowrap; }
+    body:not([data-ui="terminal"]) .prompt-label { display: none; }
 
-    .t-key.exec {
-      background: var(--fg);
-      color: var(--bg);
-      text-shadow: none;
-      margin-left: auto;
-      padding: 7px 14px;
+    #cmd-input {
+      flex: 1; background: transparent; border: none; outline: none; color: var(--fg);
+      font-family: inherit; font-size: 15px; min-width: 40px;
     }
+    #cmd-input::placeholder { color: var(--fg-dim); opacity: 0.7; }
 
-    @media (max-width: 600px) {
-      #terminal { padding: 8px 10px 6px 10px; }
-      .box-block { font-size: 11px; }
-      .prompt-label { font-size: 12px; }
+    #btn-enter {
+      background: var(--accent); color: var(--accent-fg); border: none;
+      border-radius: 10px; padding: 8px 14px; font-weight: 700; font-size: 12px;
+      cursor: pointer; font-family: inherit;
     }
+    body[data-ui="terminal"] #btn-enter { border-radius: 4px; }
   </style>
 </head>
-<body data-theme="green">
-  <div id="terminal">
+<body data-ui="minimal-light">
+  <div id="app">
     <div id="top-bar">
-      <span>CASHFLOW_OS // MULTI-UPI TERMINAL</span>
-      <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-        <span class="badge" id="sync-badge" title="Tap for Persistence & Sync Telemetry">SYNC: INIT</span>
-        <span class="badge" id="bal-badge">BAL: ₹0</span>
-        <span class="badge" id="audio-toggle">[SFX: ON]</span>
-        <span class="badge" id="theme-toggle">[GREEN]</span>
+      <span class="brand" id="brand-title">Cash Flow OS</span>
+      <div class="top-actions">
+        <button type="button" class="pill-btn accent" id="ui-toggle">UI: Minimal</button>
+        <button type="button" class="pill-btn" id="sync-badge">Sync #1</button>
+        <button type="button" class="pill-btn" id="bal-badge">₹0</button>
       </div>
+    </div>
+
+    <div id="wallet-strip"></div>
+
+    <div id="nav-tabs">
+      <button type="button" class="tab-btn active" data-tab="feed">Feed</button>
+      <button type="button" class="tab-btn" data-tab="ls">History</button>
+      <button type="button" class="tab-btn" data-tab="dues">Udhar</button>
+      <button type="button" class="tab-btn" data-tab="stats">Stats</button>
     </div>
 
     <div id="output" aria-live="polite"></div>
 
-    <div id="input-row">
-      <span class="prompt-label" id="prompt-text">user@cashflow:~$</span>
-      <input
-        type="text"
-        id="cmd-input"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        placeholder="e.g. 50 chai upi | 200 pizza with sachin | bal"
-      />
+    <div id="chips-row">
+      <button type="button" class="chip" data-cmd="bal">Balance</button>
+      <button type="button" class="chip" data-cmd="dues">Udhar</button>
+      <button type="button" class="chip" data-cmd="ls">History</button>
+      <button type="button" class="chip" data-insert=" with ">+with</button>
+      <button type="button" class="chip" data-insert=" paid by ">+paid by</button>
+      <button type="button" class="chip" data-insert=" upi">+upi</button>
+      <button type="button" class="chip" data-insert=" cash">+cash</button>
+      <button type="button" class="chip" data-cmd="setup">Setup</button>
+      <button type="button" class="chip" data-cmd="clear">Clear</button>
     </div>
 
-    <div id="mobile-toolbar">
-      <div class="key-row">
-        <button type="button" class="t-key primary" id="btn-up">▲ UP</button>
-        <button type="button" class="t-key primary" id="btn-down">▼ DOWN</button>
-        <button type="button" class="t-key" id="btn-tab">TAB ⇥</button>
-        <button type="button" class="t-key" id="btn-clear">CLEAR</button>
-        <button type="button" class="t-key exec" id="btn-enter">EXEC ↵</button>
-      </div>
-      <div class="key-row">
-        <button type="button" class="t-key" data-cmd="bal">bal</button>
-        <button type="button" class="t-key" data-cmd="dues">dues</button>
-        <button type="button" class="t-key" data-cmd="ls">ls</button>
-        <button type="button" class="t-key" data-cmd="stats">stats</button>
-        <button type="button" class="t-key split-key" data-insert=" with ">+with</button>
-        <button type="button" class="t-key owe-key" data-insert=" paid by ">+paid by</button>
-        <button type="button" class="t-key" data-insert=" upi">+upi</button>
-        <button type="button" class="t-key" data-insert=" cash">+cash</button>
-        <button type="button" class="t-key" data-cmd="help">help</button>
-      </div>
+    <div id="input-row">
+      <span class="prompt-label" id="prompt-text">user@cashflow:~$</span>
+      <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        placeholder="e.g. 50 chai upi | 200 pizza with sachin" />
+      <button type="button" id="btn-enter">SEND</button>
     </div>
   </div>
 
@@ -328,61 +224,46 @@
     const outputEl = document.getElementById('output');
     const inputEl = document.getElementById('cmd-input');
     const promptEl = document.getElementById('prompt-text');
-    const audioToggle = document.getElementById('audio-toggle');
-    const themeToggle = document.getElementById('theme-toggle');
+    const uiToggle = document.getElementById('ui-toggle');
     const balBadge = document.getElementById('bal-badge');
     const syncBadge = document.getElementById('sync-badge');
+    const walletStrip = document.getElementById('wallet-strip');
+    const btnEnter = document.getElementById('btn-enter');
 
     const L1_PRIMARY_KEY = 'cashflow_os_v5_primary';
     const L1_BACKUP_KEY  = 'cashflow_os_v5_backup';
     const IDB_DB_NAME    = 'CASHFLOW_OS_IDB_V5';
     const IDB_STORE_NAME = 'ledger_snapshots';
-    const SYNC_CHANNEL   = 'cashflow_os_v5_bus';
+    const UI_PREF_KEY    = 'cashflow_os_ui_mode';
 
-    // --- SOUND FX ---
-    let soundEnabled = true;
-    let audioCtx = null;
+    const uiModes = [
+      { id: 'minimal-light', label: 'UI: Minimal', title: 'Cash Flow OS', enter: 'SEND' },
+      { id: 'minimal-dark',  label: 'UI: Dark',    title: 'Cash Flow OS', enter: 'SEND' },
+      { id: 'terminal',      label: 'UI: Terminal',title: 'CASHFLOW_OS // TERMINAL', enter: 'EXEC ↵' }
+    ];
+    let uiIdx = 0;
 
-    function playTone(freq = 620, duration = 0.025, type = 'square', vol = 0.025) {
-      if (!soundEnabled) return;
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
+    function applyUiMode(modeId) {
+      const found = uiModes.findIndex(m => m.id === modeId);
+      if (found !== -1) uiIdx = found;
+      const cur = uiModes[uiIdx];
+      document.body.setAttribute('data-ui', cur.id);
+      uiToggle.textContent = cur.label;
+      document.getElementById('brand-title').textContent = cur.title;
+      btnEnter.textContent = cur.enter;
+      try { localStorage.setItem(UI_PREF_KEY, cur.id); } catch (e) {}
     }
 
-    audioToggle.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      audioToggle.textContent = soundEnabled ? '[SFX: ON]' : '[SFX: OFF]';
-      if (soundEnabled) playTone(880, 0.05);
+    uiToggle.addEventListener('click', () => {
+      uiIdx = (uiIdx + 1) % uiModes.length;
+      applyUiMode(uiModes[uiIdx].id);
     });
 
-    const themes = ['green', 'amber', 'cyan'];
-    let themeIdx = 0;
-    function setTheme(name) {
-      const idx = themes.indexOf(name);
-      if (idx !== -1) themeIdx = idx;
-      document.body.setAttribute('data-theme', themes[themeIdx]);
-      themeToggle.textContent = `[${themes[themeIdx].toUpperCase()}]`;
-    }
-    themeToggle.addEventListener('click', () => {
-      themeIdx = (themeIdx + 1) % themes.length;
-      setTheme(themes[themeIdx]);
-      playTone(720, 0.04);
-    });
-
-    // --- CHECKSUM & STATE ---
-    function fnv1aHash(str) {
+    try {
+      const savedUi = localStorage.getItem(UI_PREF_KEY);
+      if (savedUi) applyUiMode(savedUi);
+    } catch (e) {}
+        function fnv1aHash(str) {
       let h = 0x811c9dc5;
       for (let i = 0; i < str.length; i++) {
         h ^= str.charCodeAt(i);
@@ -394,7 +275,7 @@
     function createDefaultState() {
       return {
         setupComplete: false,
-        upiAccounts: [], // [{ id: 'upi_1', name: 'SBI', balance: 2135 }]
+        upiAccounts: [],
         cashBalance: 0,
         transactions: [],
         friends: {},
@@ -403,8 +284,7 @@
     }
 
     function normalizeState(raw) {
-      const def = createDefaultState();
-      if (!raw || typeof raw !== 'object') return def;
+      if (!raw || typeof raw !== 'object') return createDefaultState();
       const upiAccounts = Array.isArray(raw.upiAccounts)
         ? raw.upiAccounts.map((a, idx) => ({
             id: a.id || `upi_${idx + 1}`,
@@ -423,24 +303,20 @@
     }
 
     function computeStateChecksum(st) {
-      const canonical = JSON.stringify({
+      return fnv1aHash(JSON.stringify({
         setupComplete: st.setupComplete,
         upiAccounts: st.upiAccounts,
         cashBalance: Number(st.cashBalance.toFixed(2)),
         transactions: st.transactions,
         friends: st.friends,
         nextId: st.nextId
-      });
-      return fnv1aHash(canonical);
+      }));
     }
 
     function wrapEnvelope(stateObj, rev, source = 'local') {
       const normalized = normalizeState(stateObj);
       return {
-        schema: 5,
-        rev,
-        updatedAt: Date.now(),
-        source,
+        schema: 5, rev, updatedAt: Date.now(), source,
         checksum: computeStateChecksum(normalized),
         payload: normalized
       };
@@ -448,12 +324,9 @@
 
     function verifyEnvelope(env) {
       if (!env || typeof env !== 'object' || !env.payload) return false;
-      if (typeof env.rev !== 'number' || typeof env.checksum !== 'string') return false;
-      const expected = computeStateChecksum(normalizeState(env.payload));
-      return expected === env.checksum;
+      return computeStateChecksum(normalizeState(env.payload)) === env.checksum;
     }
 
-    // --- DUAL-LAYER PERSISTENCE ENGINE (L1 localStorage + L2 IndexedDB) ---
     class StorageEngine {
       constructor() {
         this.db = null;
@@ -462,16 +335,11 @@
         this.l1Healthy = false;
         this.l2Healthy = false;
         this.lastSyncTime = null;
-        this.recoveryLog = [];
         this.idbReadyPromise = this._openIDB();
       }
-
       _openIDB() {
         return new Promise((resolve) => {
-          if (!('indexedDB' in window)) {
-            this.l2Healthy = false;
-            return resolve(null);
-          }
+          if (!('indexedDB' in window)) return resolve(null);
           try {
             const req = indexedDB.open(IDB_DB_NAME, 1);
             req.onupgradeneeded = (e) => {
@@ -480,1367 +348,407 @@
                 db.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' });
               }
             };
-            req.onsuccess = (e) => {
-              this.db = e.target.result;
-              this.l2Healthy = true;
-              resolve(this.db);
-            };
-            req.onerror = () => {
-              this.l2Healthy = false;
-              resolve(null);
-            };
-          } catch (err) {
-            this.l2Healthy = false;
-            resolve(null);
-          }
+            req.onsuccess = (e) => { this.db = e.target.result; this.l2Healthy = true; resolve(this.db); };
+            req.onerror = () => resolve(null);
+          } catch (e) { resolve(null); }
         });
       }
-
       readL1Envelope() {
-        const candidates = [];
-        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach((k) => {
+        const list = [];
+        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => {
           try {
             const raw = localStorage.getItem(k);
             if (raw) {
-              const parsed = JSON.parse(raw);
-              if (verifyEnvelope(parsed)) {
-                candidates.push(parsed);
-                this.l1Healthy = true;
-              }
+              const p = JSON.parse(raw);
+              if (verifyEnvelope(p)) { list.push(p); this.l1Healthy = true; }
             }
           } catch (e) {}
         });
-        candidates.sort((a, b) => b.rev - a.rev);
-        return candidates[0] || null;
+        return list.sort((a, b) => b.rev - a.rev)[0] || null;
       }
-
       writeL1Envelope(env) {
-        const serialized = JSON.stringify(env);
         try {
           const prev = localStorage.getItem(L1_PRIMARY_KEY);
           if (prev) localStorage.setItem(L1_BACKUP_KEY, prev);
-          localStorage.setItem(L1_PRIMARY_KEY, serialized);
+          localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env));
           this.l1Healthy = true;
-          return true;
-        } catch (e) {
-          this.l1Healthy = false;
-          return false;
-        }
+        } catch (e) {}
       }
-
       async readL2Envelope() {
         await this.idbReadyPromise;
         if (!this.db) return null;
         return new Promise((resolve) => {
           try {
             const tx = this.db.transaction(IDB_STORE_NAME, 'readonly');
-            const store = tx.objectStore(IDB_STORE_NAME);
-            const req = store.getAll();
+            const req = tx.objectStore(IDB_STORE_NAME).getAll();
             req.onsuccess = () => {
-              const rows = Array.isArray(req.result) ? req.result : [];
-              const valid = rows.map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev);
-              this.l2Healthy = true;
+              const valid = (req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev);
               resolve(valid[0] || null);
             };
             req.onerror = () => resolve(null);
-          } catch (e) {
-            resolve(null);
-          }
+          } catch (e) { resolve(null); }
         });
       }
-
       async writeL2Envelope(env) {
         await this.idbReadyPromise;
-        if (!this.db) return false;
+        if (!this.db) return;
         return new Promise((resolve) => {
           try {
             const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite');
-            const store = tx.objectStore(IDB_STORE_NAME);
-            const getLatest = store.get('mirror_latest');
-            getLatest.onsuccess = () => {
-              const existing = getLatest.result;
-              if (existing && existing.envelope) {
-                store.put({ slot: 'mirror_prev', envelope: existing.envelope });
-              }
-              store.put({ slot: 'mirror_latest', envelope: env });
-            };
-            tx.oncomplete = () => {
-              this.l2Healthy = true;
-              resolve(true);
-            };
-            tx.onerror = () => resolve(false);
-          } catch (e) {
-            resolve(false);
-          }
+            tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env });
+            tx.oncomplete = () => { this.l2Healthy = true; resolve(); };
+            tx.onerror = () => resolve();
+          } catch (e) { resolve(); }
         });
       }
-
       async loadAndHeal() {
         const l1 = this.readL1Envelope();
         const l2 = await this.readL2Envelope();
-        let chosen = null;
-
-        if (l1 && l2) {
-          if (l1.rev >= l2.rev) {
-            chosen = l1;
-            if (l1.rev > l2.rev) {
-              await this.writeL2Envelope(l1);
-              this.recoveryLog.push(`L2 synced forward to rev #${l1.rev}`);
-            }
-          } else {
-            chosen = l2;
-            this.writeL1Envelope(l2);
-            this.recoveryLog.push(`L1 healed from L2 rev #${l2.rev}`);
-          }
-        } else if (l1) {
-          chosen = l1;
-          await this.writeL2Envelope(l1);
-        } else if (l2) {
-          chosen = l2;
-          this.writeL1Envelope(l2);
-          this.recoveryLog.push(`L1 restored from IndexedDB rev #${l2.rev}`);
-        } else {
+        let chosen = (l1 && l2) ? (l1.rev >= l2.rev ? l1 : l2) : (l1 || l2);
+        if (!chosen) {
           chosen = wrapEnvelope(createDefaultState(), 1, 'genesis');
-          this.writeL1Envelope(chosen);
-          await this.writeL2Envelope(chosen);
         }
-
+        this.writeL1Envelope(chosen);
+        await this.writeL2Envelope(chosen);
         this.currentRev = chosen.rev;
         this.lastChecksum = chosen.checksum;
         this.lastSyncTime = chosen.updatedAt;
         return normalizeState(chosen.payload);
       }
-
       async commit(stateObj, source = 'mutator') {
-        const nextRev = this.currentRev + 1;
-        const env = wrapEnvelope(stateObj, nextRev, source);
-        this.currentRev = nextRev;
+        const env = wrapEnvelope(stateObj, this.currentRev + 1, source);
+        this.currentRev = env.rev;
         this.lastChecksum = env.checksum;
         this.lastSyncTime = env.updatedAt;
         this.writeL1Envelope(env);
         await this.writeL2Envelope(env);
         return env;
       }
-
-      async flushCurrent(stateObj, reason = 'lifecycle') {
-        const env = wrapEnvelope(stateObj, Math.max(1, this.currentRev), reason);
-        this.lastSyncTime = env.updatedAt;
-        this.writeL1Envelope(env);
-        await this.writeL2Envelope(env);
-        return env;
-      }
     }
-
-        // --- LIFECYCLE SYNC ---
-    class LifecycleSync {
-      constructor(engine, getStateFn, onExternalUpdateFn, onStatusChangeFn) {
-        this.engine = engine;
-        this.getState = getStateFn;
-        this.onExternalUpdate = onExternalUpdateFn;
-        this.onStatusChange = onStatusChangeFn;
-        this.tabId = Math.random().toString(36).slice(2, 8);
-        this.channel = null;
-        this.events = [];
-        this._bindChannel();
-        this._bindHooks();
-      }
-
-      _log(evt) {
-        this.events.unshift({ ts: Date.now(), evt });
-        if (this.events.length > 10) this.events.pop();
-      }
-
-      _bindChannel() {
-        try {
-          if ('BroadcastChannel' in window) {
-            this.channel = new BroadcastChannel(SYNC_CHANNEL);
-            this.channel.onmessage = (e) => {
-              const msg = e.data;
-              if (!msg || msg.sender === this.tabId) return;
-              if (msg.type === 'STATE_COMMIT' && verifyEnvelope(msg.envelope)) {
-                if (msg.envelope.rev > this.engine.currentRev) {
-                  this.engine.currentRev = msg.envelope.rev;
-                  this.engine.lastChecksum = msg.envelope.checksum;
-                  this.engine.lastSyncTime = msg.envelope.updatedAt;
-                  this.engine.writeL1Envelope(msg.envelope);
-                  this.onExternalUpdate(normalizeState(msg.envelope.payload), msg.envelope.rev);
-                  this.onStatusChange();
-                }
-              }
-            };
-          }
-        } catch (e) {}
-
-        window.addEventListener('storage', (e) => {
-          if (e.key === L1_PRIMARY_KEY && e.newValue) {
-            try {
-              const env = JSON.parse(e.newValue);
-              if (verifyEnvelope(env) && env.rev > this.engine.currentRev) {
-                this.engine.currentRev = env.rev;
-                this.engine.lastChecksum = env.checksum;
-                this.engine.lastSyncTime = env.updatedAt;
-                this.onExternalUpdate(normalizeState(env.payload), env.rev);
-                this.onStatusChange();
-              }
-            } catch (err) {}
-          }
-        });
-      }
-
-      broadcastCommit(env) {
-        if (this.channel) {
-          try {
-            this.channel.postMessage({ type: 'STATE_COMMIT', sender: this.tabId, envelope: env });
-          } catch (e) {}
-        }
-      }
-
-      async reconcile(reason) {
-        this._log(`reconcile:${reason}`);
-        const l1 = this.engine.readL1Envelope();
-        const l2 = await this.engine.readL2Envelope();
-        const candidates = [l1, l2].filter(Boolean).sort((a, b) => b.rev - a.rev);
-        const latest = candidates[0];
-        if (latest && latest.rev > this.engine.currentRev) {
-          this.engine.currentRev = latest.rev;
-          this.engine.lastChecksum = latest.checksum;
-          this.engine.lastSyncTime = latest.updatedAt;
-          this.onExternalUpdate(normalizeState(latest.payload), latest.rev);
-        } else {
-          await this.engine.flushCurrent(this.getState(), reason);
-        }
-        this.onStatusChange();
-      }
-
-      _bindHooks() {
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'hidden') {
-            this.engine.flushCurrent(this.getState(), 'hidden');
-          } else if (document.visibilityState === 'visible') {
-            this.reconcile('visible');
-          }
-        });
-        window.addEventListener('pagehide', () => this.engine.flushCurrent(this.getState(), 'pagehide'));
-        window.addEventListener('beforeunload', () => this.engine.flushCurrent(this.getState(), 'beforeunload'));
-        window.addEventListener('online', () => this.reconcile('online'));
-        window.addEventListener('focus', () => this.reconcile('focus'));
-      }
-    }
-    
 
     const storageEngine = new StorageEngine();
     let state = createDefaultState();
-    let lifecycleSync = null;
-
-    // --- FIRST-BOOT SETUP WIZARD STATE ---
-    // steps: 'COUNT' -> 'ACC_NAME' -> 'ACC_BAL' -> 'CASH' -> null
-    let wizard = {
-      active: false,
-      step: null,
-      totalAccounts: 1,
-      currentIdx: 0,
-      tempName: '',
-      collectedAccounts: []
-    };
+    let wizard = { active: false, step: null, totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
 
     function getTotalUpiBalance() {
-      return state.upiAccounts.reduce((sum, a) => sum + (Number(a.balance) || 0), 0);
+      return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0);
     }
 
-    function updateBadges() {
+    function renderWalletCards() {
       const totalNet = getTotalUpiBalance() + state.cashBalance;
-      balBadge.textContent = `BAL: ₹${totalNet.toLocaleString('en-IN')}`;
-      const l1 = storageEngine.l1Healthy ? 'L1' : '!L1';
-      const l2 = storageEngine.l2Healthy ? 'L2' : '!L2';
-      syncBadge.textContent = `SYNC: ${l1}+${l2} | #${storageEngine.currentRev}`;
-    }
+      balBadge.textContent = `₹${totalNet.toLocaleString('en-IN')}`;
+      syncBadge.textContent = `Sync #${storageEngine.currentRev}`;
 
-    async function persistState(reason = 'command') {
-      const env = await storageEngine.commit(state, reason);
-      if (lifecycleSync) lifecycleSync.broadcastCommit(env);
-      updateBadges();
-    }
-
-    window.forceAppSync = async function(reason) {
-      if (lifecycleSync) await lifecycleSync.reconcile(reason || 'native_hook');
-    };
-
-    syncBadge.addEventListener('click', () => {
-      playTone(760, 0.04);
-      runCommand('sync');
-    });
-
-    function startSetupWizard(isReconfigure = false) {
-      wizard = {
-        active: true,
-        step: 'COUNT',
-        totalAccounts: 1,
-        currentIdx: 0,
-        tempName: '',
-        collectedAccounts: []
-      };
-      promptEl.textContent = 'setup@cashflow:~$';
-      inputEl.placeholder = 'Enter number of UPI accounts (e.g. 1, 2, 3)...';
-
-      printLine('', '', true);
-      printLine(isReconfigure ? '=== RE-CONFIGURING WALLETS ===' : '=== FIRST-BOOT WALLET SETUP ===', 'warn');
-      printLine('Apke pass abhi kitne UPI / Bank accounts hain? (e.g., 1, 2, ya 3)', 'info');
-      printLine('Number type karke EXEC ↵ dabayein:', 'dim');
-    }
-
-    async function handleWizardInput(raw) {
-      const text = raw.trim();
-      if (!text) return;
-
-      if (wizard.step === 'COUNT') {
-        const count = parseInt(text.replace(/[^\d]/g, ''), 10);
-        if (!count || count < 1 || count > 10) {
-          printLine('[ERR] Kripya 1 se 10 ke beech sahi sankhya likhein (jaise: 1 ya 2).', 'debit');
-          playTone(220, 0.12, 'sawtooth');
-          return;
-        }
-        wizard.totalAccounts = count;
-        wizard.currentIdx = 0;
-        wizard.collectedAccounts = [];
-
-        if (count === 1) {
-          wizard.step = 'ACC_BAL';
-          wizard.tempName = 'Primary UPI';
-          printLine('', '', true);
-          printLine('1 UPI account selected (Primary UPI).', 'credit');
-          printLine('Abhi is UPI account mein kitna balance pada hai? (INR mein number likhein, jaise 2135):', 'info');
-          inputEl.placeholder = 'Enter current UPI balance (e.g. 2135)...';
-        } else {
-          wizard.step = 'ACC_NAME';
-          printLine('', '', true);
-          printLine(`${count} UPI accounts set karne hain.`, 'credit');
-          printLine(`Account #1 ka naam kya hai? (jaise SBI, HDFC, Paytm, GPay):`, 'info');
-          inputEl.placeholder = 'Enter Account #1 name (e.g. SBI)...';
-        }
-        playTone(680, 0.05);
+      if (!state.setupComplete) {
+        walletStrip.innerHTML = `<div class="w-card"><div class="w-label">STATUS</div><div class="w-val">Setup Pending</div></div>`;
         return;
       }
-
-      if (wizard.step === 'ACC_NAME') {
-        const cleanName = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
-        if (!cleanName) {
-          printLine('[ERR] Account ka sahi naam likhein (jaise SBI ya HDFC).', 'debit');
-          playTone(220, 0.12, 'sawtooth');
-          return;
-        }
-        wizard.tempName = cleanName;
-        wizard.step = 'ACC_BAL';
-        printLine('', '', true);
-        printLine(`[${cleanName}] mein abhi kitna balance pada hai? (e.g. 2135 ya 0):`, 'info');
-        inputEl.placeholder = `Balance in ${cleanName} (INR)...`;
-        playTone(680, 0.05);
-        return;
-      }
-
-      if (wizard.step === 'ACC_BAL') {
-        const num = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(num) || num < 0) {
-          printLine('[ERR] Sahi amount likhein (jaise 2135 ya 0).', 'debit');
-          playTone(220, 0.12, 'sawtooth');
-          return;
-        }
-        wizard.collectedAccounts.push({
-          id: `upi_${wizard.currentIdx + 1}`,
-          name: wizard.tempName,
-          balance: Math.round(num * 100) / 100
-        });
-        wizard.currentIdx++;
-
-        if (wizard.currentIdx < wizard.totalAccounts) {
-          wizard.step = 'ACC_NAME';
-          printLine('', '', true);
-          printLine(`✓ ${wizard.tempName}: ₹${num.toLocaleString('en-IN')} saved.`, 'credit');
-          printLine(`Account #${wizard.currentIdx + 1} ka naam kya hai? (jaise HDFC, Kotak, Paytm):`, 'info');
-          inputEl.placeholder = `Enter Account #${wizard.currentIdx + 1} name...`;
-          playTone(680, 0.05);
-        } else {
-          wizard.step = 'CASH';
-          printLine('', '', true);
-          printLine(`✓ ${wizard.tempName}: ₹${num.toLocaleString('en-IN')} saved.`, 'credit');
-          printLine('Aakhiri sawaal: Abhi aapke pass haath mein kitna CASH (नकद) pada hai? (e.g. 500 ya 0):', 'info');
-          inputEl.placeholder = 'Enter Cash in hand (e.g. 0 or 500)...';
-          playTone(720, 0.05);
-        }
-        return;
-      }
-
-      if (wizard.step === 'CASH') {
-        const cashNum = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(cashNum) || cashNum < 0) {
-          printLine('[ERR] Sahi Cash amount likhein (jaise 0 ya 500).', 'debit');
-          playTone(220, 0.12, 'sawtooth');
-          return;
-        }
-
-        state.upiAccounts = wizard.collectedAccounts;
-        state.cashBalance = Math.round(cashNum * 100) / 100;
-        state.setupComplete = true;
-        wizard.active = false;
-        wizard.step = null;
-
-        promptEl.textContent = 'user@cashflow:~$';
-        inputEl.placeholder = state.upiAccounts.length === 1
-          ? 'e.g. 50 chai upi | 200 pizza with sachin | bal'
-          : `e.g. 50 chai ${state.upiAccounts[0].name.toLowerCase()} | bal`;
-
-        await persistState('initial_setup');
-
-        printLine('', '', true);
-        printLine('=============================================', 'credit');
-        printLine('[OK] WALLET SETUP COMPLETE!', 'credit');
-        state.upiAccounts.forEach((acc, i) => {
-          const tag = state.upiAccounts.length > 1 && i === 0 ? ' [Primary]' : '';
-          printLine(`  • ${acc.name}${tag} : ₹${acc.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'credit');
-        });
-        printLine(`  • Cash in Hand   : ₹${state.cashBalance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'credit');
-        printLine(`  • Total Net Worth: ₹${(getTotalUpiBalance() + state.cashBalance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, 'warn');
-
-        if (state.upiAccounts.length === 1) {
-          printLine('\nNote: Aapka 1 hi UPI account hai, isliye har baar account ka naam likhne ki zarurat nahi — bas "50 chai upi" likhein.', 'dim');
-        } else {
-          printLine(`\nNote: Account ka naam likh kar pay karein (e.g. "50 chai ${state.upiAccounts[0].name.toLowerCase()}"), ya sirf "upi" likhne par Primary (${state.upiAccounts[0].name}) se katega.`, 'dim');
-        }
-        playTone(980, 0.12, 'sine', 0.04);
-      }
+      let html = '';
+      state.upiAccounts.forEach(acc => {
+        html += `<div class="w-card"><div class="w-label">${acc.name}</div><div class="w-val">₹${acc.balance.toLocaleString('en-IN')}</div></div>`;
+      });
+      html += `<div class="w-card"><div class="w-label">CASH</div><div class="w-val">₹${state.cashBalance.toLocaleString('en-IN')}</div></div>`;
+      html += `<div class="w-card"><div class="w-label">NET WORTH</div><div class="w-val" style="color:var(--accent)">₹${totalNet.toLocaleString('en-IN')}</div></div>`;
+      walletStrip.innerHTML = html;
     }
 
-    // --- TERMINAL OUTPUT HELPERS ---
-    function scrollToBottom() {
+    async function persistState(reason = 'cmd') {
+      await storageEngine.commit(state, reason);
+      renderWalletCards();
+    }
+
+    function printLine(text, cls = '', gap = false) {
+      const div = document.createElement('div');
+      div.className = `line ${cls}${gap ? ' section-gap' : ''}`;
+      div.textContent = text;
+      outputEl.appendChild(div);
       outputEl.scrollTop = outputEl.scrollHeight;
     }
 
-    function printLine(text, className = '', extraGap = false) {
+    function printBlock(text, cls = '') {
       const div = document.createElement('div');
-      div.className = `line ${className}${extraGap ? ' section-gap' : ''}`;
+      div.className = `box-block ${cls}`;
       div.textContent = text;
       outputEl.appendChild(div);
-      scrollToBottom();
-    }
-
-    function printBlock(text, className = '') {
-      const div = document.createElement('div');
-      div.className = `box-block ${className}`;
-      div.textContent = text;
-      outputEl.appendChild(div);
-      scrollToBottom();
+      outputEl.scrollTop = outputEl.scrollHeight;
     }
 
     function formatMoney(n) {
       return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    }
-
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); }
     function getTimestamp() {
       const now = new Date();
-      const d = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-      const t = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
-      return `${d} ${t}`;
+      return now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' ' +
+             now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+        function startSetupWizard(isReconfig = false) {
+      wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
+      promptEl.textContent = 'setup@cashflow:~$';
+      inputEl.placeholder = 'Kitne UPI accounts hain? (e.g. 1, 2, 3)...';
+      printLine(isReconfig ? 'WALLET RE-SETUP' : 'WELCOME TO CASH FLOW OS', 'warn', true);
+      printLine('Apke pass abhi kitne UPI / Bank accounts hain? (1, 2, ya 3 likhein)', 'info');
     }
 
-    function printBanner(recoveredNotice = '') {
-      const totalUpi = getTotalUpiBalance();
-      const totalNet = totalUpi + state.cashBalance;
-      const banner =
-`   ______           __    ________                 ____  _____
-  / ____/___ ______/ /_  / ____/ /___ _      __   / __ \\/ ___/
- / /   / __ \`/ ___/ __ \\/ /_  / / __ \\ | /| / /  / / / /\\__ \\ 
-/ /___/ /_/ (__  ) / / / __/ / / /_/ / |/ |/ /  / /_/ /___/ / 
-\\____/\\__,_/____/_/ /_/_/   /_/\\____/|__/|__/   \\____//____/  
-                                                              
-Multi-UPI & Bidirectional Friend Ledger // Rev #${storageEngine.currentRev} [L1+L2]`;
-      printBlock(banner, 'dim');
-      if (recoveredNotice) {
-        printLine(`[SELF-HEAL] ${recoveredNotice}`, 'warn');
-      }
-
-      if (!state.setupComplete) {
-        startSetupWizard(false);
-      } else {
-        const accSummary = state.upiAccounts.map(a => `${a.name}: ${formatMoney(a.balance)}`).join(' | ');
-        printLine(`Wallets -> ${accSummary} | Cash: ${formatMoney(state.cashBalance)} | Net: ${formatMoney(totalNet)}`, 'dim');
-        printLine(`Type natural English/Hinglish or 'help' for commands.`, 'dim');
-      }
-    }
-
-    // --- ACCOUNT MATCHING HELPER ---
-    function resolveUpiAccount(lowerText) {
-      if (!state.upiAccounts || state.upiAccounts.length === 0) {
-        return { id: 'upi_1', name: 'UPI', balance: 0 };
-      }
-      if (state.upiAccounts.length === 1) {
-        return state.upiAccounts[0];
-      }
-      for (const acc of state.upiAccounts) {
-        const escaped = acc.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`\\b${escaped}\\b`, 'i');
-        if (regex.test(lowerText)) {
-          return acc;
+    async function handleWizardInput(raw) {
+      const text = raw.trim();
+      if (wizard.step === 'COUNT') {
+        const count = parseInt(text.replace(/[^\d]/g, ''), 10);
+        if (!count || count < 1 || count > 10) return printLine('1 se 10 ke beech sankhya likhein.', 'debit');
+        wizard.totalAccounts = count;
+        wizard.currentIdx = 0;
+        wizard.collectedAccounts = [];
+        if (count === 1) {
+          wizard.step = 'ACC_BAL';
+          wizard.tempName = 'UPI';
+          printLine('1 UPI Account selected. Isme abhi kitna balance hai? (e.g. 2135)', 'info', true);
+          inputEl.placeholder = 'Enter UPI balance...';
+        } else {
+          wizard.step = 'ACC_NAME';
+          printLine(`Account #1 ka naam likhein (jaise SBI, HDFC, Paytm):`, 'info', true);
+          inputEl.placeholder = 'Account #1 name...';
         }
+        return;
+      }
+      if (wizard.step === 'ACC_NAME') {
+        const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
+        if (!name) return printLine('Sahi naam likhein.', 'debit');
+        wizard.tempName = name;
+        wizard.step = 'ACC_BAL';
+        printLine(`${name} mein abhi kitna balance hai?`, 'info', true);
+        inputEl.placeholder = `Balance in ${name}...`;
+        return;
+      }
+      if (wizard.step === 'ACC_BAL') {
+        const num = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
+        if (isNaN(num) || num < 0) return printLine('Sahi amount likhein.', 'debit');
+        wizard.collectedAccounts.push({ id: `upi_${wizard.currentIdx + 1}`, name: wizard.tempName, balance: num });
+        wizard.currentIdx++;
+        if (wizard.currentIdx < wizard.totalAccounts) {
+          wizard.step = 'ACC_NAME';
+          printLine(`Account #${wizard.currentIdx + 1} ka naam likhein:`, 'info', true);
+          inputEl.placeholder = `Account #${wizard.currentIdx + 1} name...`;
+        } else {
+          wizard.step = 'CASH';
+          printLine('Abhi haath mein kitna CASH (नकद) pada hai? (e.g. 0 ya 500)', 'info', true);
+          inputEl.placeholder = 'Cash in hand...';
+        }
+        return;
+      }
+      if (wizard.step === 'CASH') {
+        const cash = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
+        if (isNaN(cash) || cash < 0) return printLine('Sahi Cash amount likhein.', 'debit');
+        state.upiAccounts = wizard.collectedAccounts;
+        state.cashBalance = cash;
+        state.setupComplete = true;
+        wizard.active = false;
+        promptEl.textContent = 'user@cashflow:~$';
+        inputEl.placeholder = 'e.g. 50 chai upi | 200 pizza with sachin';
+        await persistState('setup');
+        printLine('Setup Complete! Ab aap apna daily hisab likh sakte hain.', 'credit', true);
+      }
+    }
+
+    const NON_FRIEND = new Set(['me','my','mere','mera','both','dono','hum','upi','cash','chai','food','khana','pizza','burger','auto','bus','petrol','bill','recharge','friend','dost','paid','for','by','with','and']);
+
+    function resolveUpiAccount(lower) {
+      if (!state.upiAccounts.length) return { id: 'upi_1', name: 'UPI', balance: 0 };
+      if (state.upiAccounts.length === 1) return state.upiAccounts[0];
+      for (const acc of state.upiAccounts) {
+        if (new RegExp(`\\b${acc.name.toLowerCase()}\\b`, 'i').test(lower)) return acc;
       }
       return state.upiAccounts[0];
     }
 
-    // --- NATURAL LANGUAGE PARSER ---
-    const CATEGORIES = {
-      Food: ['chai', 'tea', 'coffee', 'lunch', 'dinner', 'breakfast', 'pizza', 'burger', 'biryani', 'momos', 'samosa', 'maggi', 'food', 'eat', 'ate', 'khana', 'nashta', 'swiggy', 'zomato', 'restaurant', 'cafe', 'snacks', 'juice', 'milk', 'grocery', 'kirana', 'sabzi', 'fruits', 'sweet', 'mithai', 'cold drink', 'coke', 'pepsi', 'water', 'paani', 'thali', 'roti', 'paratha', 'paneer', 'dosa', 'idli', 'chowmein', 'roll'],
-      Transport: ['uber', 'ola', 'rapido', 'auto', 'rickshaw', 'bus', 'train', 'metro', 'cab', 'taxi', 'petrol', 'diesel', 'fuel', 'parking', 'toll', 'ticket', 'fare', 'kiraya', 'travel', 'commute', 'bike', 'car', 'service', 'puncture'],
-      Shopping: ['amazon', 'flipkart', 'myntra', 'meesho', 'shirt', 'pant', 'jeans', 'shoes', 'clothes', 'kapde', 'watch', 'bag', 'wallet', 'gift', 'electronics', 'phone', 'charger', 'earphones', 'iem', 'buy', 'bought', 'khareeda', 'shopping', 'order'],
-      Bills: ['electricity', 'bijli', 'water bill', 'gas', 'cylinder', 'wifi', 'broadband', 'internet', 'recharge', 'jio', 'airtel', 'vi', 'bsnl', 'mobile', 'dth', 'rent', 'room', 'emi', 'insurance', 'fee', 'fees', 'subscription', 'netflix', 'spotify'],
-      Health: ['medicine', 'dawai', 'doctor', 'hospital', 'clinic', 'pharmacy', 'chemist', 'test', 'checkup', 'gym', 'protein', 'supplement', 'salon', 'haircut', 'barber'],
-      Entertainment: ['movie', 'cinema', 'pvr', 'inox', 'game', 'pubg', 'bgmi', 'freefire', 'steam', 'outing', 'party', 'club', 'picnic', 'tour'],
-      Income: ['salary', 'stipend', 'dhbvn', 'bonus', 'freelance', 'client', 'profit', 'dividend', 'interest', 'cashback', 'refund', 'pocket money', 'allowance', 'gift received']
-    };
+    function extractAmount(text) {
+      const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+      return m ? parseFloat(m[1]) : null;
+    }
 
-    const NON_FRIEND_WORDS = new Set([
-      'me', 'myself', 'i', 'my', 'mine', 'mere', 'mera', 'meri', 'mujhko', 'mujhe',
-      'both', 'dono', 'hum', 'us', 'we', 'all', 'sab', 'everyone', 'each',
-      'upi', 'cash', 'gpay', 'phonepe', 'paytm', 'bhim', 'card', 'bank', 'atm',
-      'chai', 'tea', 'coffee', 'food', 'khana', 'lunch', 'dinner', 'breakfast', 'pizza', 'burger', 'momos', 'samosa', 'snacks', 'nashta',
-      'auto', 'bus', 'cab', 'petrol', 'ticket', 'rent', 'bill', 'recharge', 'medicine', 'dawai', 'movie', 'shopping', 'grocery',
-      'friend', 'friends', 'dost', 'bhai', 'bro', 'sir', 'shop', 'store', 'online', 'today', 'yesterday', 'aaj', 'kal', 'abhi',
-      'only', 'sirf', 'total', 'half', 'aadha', 'split', 'share', 'equal', 'barabar', 'money', 'paise', 'rupees', 'rs', 'inr'
-    ]);
-
-    function inferCategory(text, type) {
-      const lower = text.toLowerCase();
-      if (type === 'CREDIT') {
-        for (const kw of CATEGORIES.Income) {
-          if (lower.includes(kw)) return 'Income';
-        }
-        return 'Transfer/In';
-      }
-      for (const [cat, keywords] of Object.entries(CATEGORIES)) {
-        if (cat === 'Income') continue;
-        for (const kw of keywords) {
-          const regex = new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-          if (regex.test(lower)) return cat;
-        }
-      }
+    function inferCategory(lower, isCredit) {
+      if (isCredit) return 'Income';
+      if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|grocery|sabzi)\b/.test(lower)) return 'Food';
+      if (/\b(auto|bus|train|petrol|diesel|cab|ticket|kiraya|bike)\b/.test(lower)) return 'Transport';
+      if (/\b(recharge|jio|vi|airtel|bill|bijli|rent|room)\b/.test(lower)) return 'Bills';
+      if (/\b(shirt|pant|shoes|amazon|flipkart|shopping)\b/.test(lower)) return 'Shopping';
       return 'General';
     }
 
-    function extractAmount(text) {
-      const cleaned = text.replace(/,/g, '');
-      const kMatch = cleaned.match(/(?:₹|rs\.?|inr|\+|-)?\s*(\d+(?:\.\d+)?)\s*k\b/i);
-      if (kMatch) return parseFloat(kMatch[1]) * 1000;
-
-      const numMatch = cleaned.match(/(?:₹|rs\.?|inr|\+|-)?\s*(\d+(?:\.\d+)?)/i);
-      if (numMatch) return parseFloat(numMatch[1]);
-      return null;
-    }
-
-    function extractModeAndAccount(text) {
-      const lower = text.toLowerCase();
-      for (const acc of state.upiAccounts) {
-        const escaped = acc.name.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        if (new RegExp(`\\b${escaped}\\b`, 'i').test(lower)) {
-          return { mode: 'UPI', account: acc };
-        }
-      }
-      if (/\b(cash|nagad|nakad|pocket|wallet|hand|notes|coin|coins)\b/i.test(lower)) {
-        return { mode: 'CASH', account: null };
-      }
-      if (/\b(upi|gpay|google pay|phonepe|paytm|bhim|online|scan|qr|bank|transfer|neft|imps)\b/i.test(lower)) {
-        return { mode: 'UPI', account: resolveUpiAccount(lower) };
-      }
-      return { mode: 'UPI', account: resolveUpiAccount(lower) };
-    }
-
-    function parseFriendNames(segment) {
-      const tokens = segment
-        .replace(/[^a-zA-Z\s,]/g, ' ')
-        .split(/[\s,]+|\band\b|\baur\b|\bwith\b/i)
-        .map(w => w.trim())
-        .filter(Boolean);
-
-      const names = [];
-      const accNames = new Set(state.upiAccounts.map(a => a.name.toLowerCase()));
-      for (const tok of tokens) {
-        const low = tok.toLowerCase();
-        if (tok.length >= 2 && !NON_FRIEND_WORDS.has(low) && !accNames.has(low)) {
-          const cap = capitalize(tok);
-          if (!names.includes(cap)) names.push(cap);
-        }
-      }
-      return names;
-    }
-
-    function detectFriendPaidForUser(text) {
-      const lower = text.toLowerCase();
-      let payer = null;
-
-      let m = lower.match(/\b(?:paid|given|spent|covered)\s+by\s+([a-zA-Z]+)/i);
-      if (m && !NON_FRIEND_WORDS.has(m[1].toLowerCase())) payer = capitalize(m[1]);
-
-      if (!payer) {
-        m = lower.match(/\b([a-zA-Z]+)\s+(?:ne|paid|spent|gave|covered)\b/i);
-        if (m && !NON_FRIEND_WORDS.has(m[1].toLowerCase())) {
-          if (/\b(for me|mere liye|mere|my|both|dono|hum dono|shared|split|khana|lunch|dinner|chai|pizza|burger|bill|auto|ticket)\b/i.test(lower)) {
-            payer = capitalize(m[1]);
-          }
-        }
-      }
-
-      if (!payer) return null;
-      const isBoth = /\b(for both|both|dono|hum dono|split|shared|half|aadha)\b/i.test(lower);
-      return { payer, isBoth };
-    }
-
-    function parseNaturalInput(raw) {
+    async function runCommand(raw) {
       const text = raw.trim();
+      if (!text) return;
+      printLine(`> ${text}`, 'cmd-echo', true);
+
+      if (wizard.active) return handleWizardInput(text);
       const lower = text.toLowerCase();
 
-      const isBalanceQuery =
-        /\b(bal|balance|kitna|kitne|bacha|bache|remaining|left|status|worth|mauke|moke|abhi ka|is mauke|is moke|total paisa|total paise)\b/i.test(lower) ||
-        /(बैलेंस|बाकी|बचा|कितना|मौके|अभी)/i.test(text);
-
-      if (isBalanceQuery && !extractAmount(text)) {
-        return { intent: 'BALANCE' };
+      if (lower === 'setup') return startSetupWizard(true);
+      if (lower === 'clear') { outputEl.innerHTML = ''; return; }
+      if (lower === 'sync') {
+        return printBlock(`SYNC STATUS\nRev: #${storageEngine.currentRev} | Checksum: ${storageEngine.lastChecksum}\nL1 Storage: ${storageEngine.l1Healthy ? 'OK' : 'ERR'} | L2 IDB: ${storageEngine.l2Healthy ? 'OK' : 'ERR'}`, 'info');
       }
-
-      const accTransferMatch = lower.match(/\b(?:transfer|transferred|moved|sent|shifted)\b.*?\bfrom\s+([a-zA-Z0-9_-]+)\s+to\s+([a-zA-Z0-9_-]+)/i);
-      if (accTransferMatch && state.upiAccounts.length > 1) {
-        const amt = extractAmount(text);
-        const fromAcc = state.upiAccounts.find(a => a.name.toLowerCase() === accTransferMatch[1].toLowerCase());
-        const toAcc = state.upiAccounts.find(a => a.name.toLowerCase() === accTransferMatch[2].toLowerCase());
-        if (amt && fromAcc && toAcc && fromAcc.id !== toAcc.id) {
-          return { intent: 'ACC_TRANSFER', amount: amt, fromAcc, toAcc, note: text };
+      if (lower === 'bal' || lower === 'balance' || /\b(kitna|bacha|balance|mauke|moke)\b/.test(lower) && !extractAmount(text)) {
+        let rec = 0, pay = 0;
+        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
+        let out = `BALANCE SHEET\n\n`;
+        state.upiAccounts.forEach(a => out += `  ${a.name.padEnd(12)} : ${formatMoney(a.balance)}\n`);
+        out += `  Cash         : ${formatMoney(state.cashBalance)}\n`;
+        out += `  Lena Hai (+) : ${formatMoney(rec)}\n`;
+        out += `  Dena Hai (-) : ${formatMoney(pay)}\n`;
+        out += `  Net Worth    : ${formatMoney(getTotalUpiBalance() + state.cashBalance + rec - pay)}`;
+        return printBlock(out);
+      }
+      if (lower === 'dues' || lower === 'udhar') {
+        const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
+        if (!list.length) return printLine('Kisi dost ke saath udhar baaki nahi hai.', 'dim');
+        let out = `FRIEND UDHAR LEDGER\n\n`;
+        list.forEach(([n, v]) => out += `  ${n.padEnd(12)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v) : 'DENA HAI -' + formatMoney(Math.abs(v))}\n`);
+        return printBlock(out, 'split');
+      }
+      if (lower === 'ls' || lower === 'history') {
+        if (!state.transactions.length) return printLine('Abhi koi transaction nahi hai.', 'dim');
+        let out = `HISTORY (${state.transactions.length})\n\n`;
+        state.transactions.slice(0, 25).forEach(t => {
+          const s = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
+          out += `#${t.id} ${t.ts} | ${t.accountName} | ${s}${formatMoney(t.amount)} | ${t.note}\n`;
+        });
+        return printBlock(out);
+      }
+      if (lower === 'stats') {
+        const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
+        if (!deb.length) return printLine('Abhi koi personal kharch nahi hai.', 'dim');
+        const tot = deb.reduce((s, t) => s + t.myShare, 0);
+        const map = {};
+        deb.forEach(t => map[t.category] = (map[t.category] || 0) + t.myShare);
+        let out = `YOUR EXPENSES (${formatMoney(tot)})\n\n`;
+        Object.entries(map).sort((a, b) => b[1] - a[1]).forEach(([c, v]) => {
+          out += `  ${c.padEnd(12)} : ${formatMoney(v)} (${Math.round((v / tot) * 100)}%)\n`;
+        });
+        return printBlock(out);
+      }
+      if (lower.startsWith('settle ')) {
+        const parts = text.split(/\s+/);
+        const name = capitalize(parts[1] || '');
+        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === name.toLowerCase());
+        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return printLine(`${name} ka koi udhar baaki nahi hai.`, 'dim');
+        const val = state.friends[fKey];
+        const abs = Math.abs(val);
+        const isCash = /\bcash\b/.test(lower);
+        const acc = isCash ? null : resolveUpiAccount(lower);
+        if (val > 0) {
+          if (isCash) state.cashBalance += abs; else acc.balance += abs;
+          state.friends[fKey] = 0;
+          state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'SETTLE_IN', amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name, category: 'Settlement', note: `Settled from ${fKey}` });
+          await persistState('settle');
+          return printLine(`[SETTLED] ${fKey} se ${formatMoney(abs)} mile.`, 'credit');
+        } else {
+          if (isCash) state.cashBalance -= abs; else acc.balance -= abs;
+          state.friends[fKey] = 0;
+          state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'SETTLE_OUT', amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name, category: 'Settlement', note: `Paid to ${fKey}` });
+          await persistState('settle');
+          return printLine(`[SETTLED] ${fKey} ko ${formatMoney(abs)} diye.`, 'warn');
         }
       }
-
-      if (/\b(atm|withdraw|withdrew|nikala|nikale|cash out|deposit|deposited|jama)\b/i.test(lower)) {
-        const amt = extractAmount(text);
-        if (amt && amt > 0) {
-          const isDeposit = /\b(deposit|deposited|jama|cash to upi)\b/i.test(lower);
-          const acc = resolveUpiAccount(lower);
-          return {
-            intent: 'TRANSFER',
-            direction: isDeposit ? 'CASH_TO_UPI' : 'UPI_TO_CASH',
-            amount: amt,
-            account: acc,
-            note: text
-          };
+      if (lower.startsWith('rm ')) {
+        const id = parseInt(lower.split(/\s+/)[1], 10);
+        const idx = state.transactions.findIndex(t => t.id === id);
+        if (idx === -1) return printLine(`ID #${id} nahi mila.`, 'debit');
+        const tx = state.transactions[idx];
+        const acc = state.upiAccounts.find(a => a.name === tx.accountName) || state.upiAccounts[0];
+        if (tx.type === 'DEBIT') {
+          if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
+          (tx.splitFriends || []).forEach(f => state.friends[f] = (state.friends[f] || 0) - tx.perFriendShare);
+        } else if (tx.type === 'FRIEND_PAID') {
+          state.friends[tx.payer] = (state.friends[tx.payer] || 0) + tx.myShare;
+        } else if (tx.type === 'CREDIT') {
+          if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
         }
+        state.transactions.splice(idx, 1);
+        await persistState('rm');
+        return printLine(`[DELETED] #${id} hata diya aur balance wapas adjust kar diya.`, 'warn');
       }
 
-      const settleBackMatch = lower.match(/\b(?:paid back|returned|settled|gave back|wapas diye|wapas kiya|paid to|sent to)\b/i);
-      if (settleBackMatch) {
-        const amt = extractAmount(text);
-        const { mode, account } = extractModeAndAccount(text);
-        const toMatch = lower.match(/\b(?:to|ko)\s+([a-zA-Z]+)/i);
-        if (amt && amt > 0 && toMatch && !NON_FRIEND_WORDS.has(toMatch[1].toLowerCase())) {
-          return {
-            intent: 'SETTLE_PAYABLE',
-            friend: capitalize(toMatch[1]),
-            amount: amt,
-            mode,
-            account,
-            note: text
-          };
-        }
+      const amt = extractAmount(text);
+      if (!amt || amt <= 0) return printLine('Amount samajh nahi aaya. Example: "50 chai upi" ya "200 pizza with sachin"', 'warn');
+
+      const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+)/) || lower.match(/^([a-zA-Z]+)\s+(?:ne|paid)\b/);
+      if (paidByM && !NON_FRIEND.has(paidByM[1].toLowerCase())) {
+        const payer = capitalize(paidByM[1]);
+        const isBoth = /\b(both|dono|split)\b/.test(lower);
+        const myShare = isBoth ? Math.round((amt / 2) * 100) / 100 : amt;
+        state.friends[payer] = Math.round(((state.friends[payer] || 0) - myShare) * 100) / 100;
+        state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text });
+        await persistState('friend_paid');
+        return printLine(`[FRIEND PAID] ${payer} ne pay kiya | Apka kharch: ${formatMoney(myShare)} | Dena Hai: ${formatMoney(Math.abs(state.friends[payer]))}`, 'owe');
       }
 
-      const recvFromMatch = lower.match(/\b(?:received|got|took|mila|mile|wapas mile|paid back by)\b/i);
-      if (recvFromMatch) {
-        const amt = extractAmount(text);
-        const { mode, account } = extractModeAndAccount(text);
-        const fromMatch = lower.match(/\b(?:from|se|by)\s+([a-zA-Z]+)/i);
-        if (amt && amt > 0 && fromMatch && !NON_FRIEND_WORDS.has(fromMatch[1].toLowerCase())) {
-          return {
-            intent: 'SETTLE_RECEIVABLE',
-            friend: capitalize(fromMatch[1]),
-            amount: amt,
-            mode,
-            account,
-            note: text
-          };
-        }
-      }
-
-            const amount = extractAmount(text);
-      if (!amount || amount <= 0) {
-        return { intent: 'UNKNOWN' };
-      }
-
-      const friendPaid = detectFriendPaidForUser(text);
-      if (friendPaid) {
-        const myShare = friendPaid.isBoth ? Math.round((amount / 2) * 100) / 100 : amount;
-        return {
-          intent: 'FRIEND_PAID_FOR_ME',
-          totalAmount: amount,
-          myShare,
-          payer: friendPaid.payer,
-          isBoth: friendPaid.isBoth,
-          category: inferCategory(text, 'DEBIT'),
-          note: text
-        };
-      }
-
-      let type = 'DEBIT';
-      if (text.startsWith('+')) {
-        type = 'CREDIT';
-      } else if (text.startsWith('-')) {
-        type = 'DEBIT';
-      } else if (/\b(credit|credited|received|got|earned|salary|stipend|income|added|deposit|refund|cashback|mila|mile|aaye|aaya|prapt|jama)\b/i.test(lower)) {
-        type = 'CREDIT';
-      }
-
-      const { mode, account } = extractModeAndAccount(text);
+      const isCredit = text.startsWith('+') || /\b(credit|credited|received|salary|stipend|income|added|refund|cashback|mila|mile|aaye)\b/.test(lower);
+      const isCash = /\bcash\b/.test(lower);
+      const acc = isCash ? null : resolveUpiAccount(lower);
+      const chan = isCash ? 'CASH' : acc.name;
 
       let splitFriends = [];
-      let exclusiveForFriend = false;
-
-      if (type === 'DEBIT') {
-        const lentMatch = lower.match(/\b(?:lent|loaned|gave|paid for|for)\s+([a-zA-Z\s,]+?)(?:\s+(?:only|sirf|ke liye|via|on|in|upi|cash|for|$))/i);
-        if (/\b(lent|loaned|udhar diya|ke liye diya|for .* only|sirf .* ke liye)\b/i.test(lower) && lentMatch) {
-          splitFriends = parseFriendNames(lentMatch[1]);
-          if (splitFriends.length > 0) exclusiveForFriend = true;
-        }
-
-        if (splitFriends.length === 0) {
-          const withMatch = text.match(/\b(?:with|split with|and|ke sath|ke saath)\s+([a-zA-Z\s,]+?)(?:\s+(?:via|by|through|on|in|for|upi|cash|$)|$)/i);
-          if (withMatch) {
-            splitFriends = parseFriendNames(withMatch[1]);
-          }
-        }
+      const withM = lower.match(/\b(?:with|and|ke sath)\s+([a-zA-Z\s,]+)/);
+      if (!isCredit && withM) {
+        splitFriends = withM[1].split(/[\s,]+/).filter(w => w.length >= 2 && !NON_FRIEND.has(w)).map(capitalize);
       }
 
-      let myShare = amount;
-      let perFriendShare = 0;
-
-      if (type === 'DEBIT' && splitFriends.length > 0) {
-        if (exclusiveForFriend) {
-          myShare = 0;
-          perFriendShare = Math.round((amount / splitFriends.length) * 100) / 100;
-        } else {
-          const totalPeople = splitFriends.length + 1;
-          perFriendShare = Math.round((amount / totalPeople) * 100) / 100;
-          myShare = Math.round((amount - perFriendShare * splitFriends.length) * 100) / 100;
-        }
+      let myShare = amt, perFriendShare = 0;
+      if (!isCredit && splitFriends.length > 0) {
+        perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100;
+        myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100;
+        splitFriends.forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) + perFriendShare) * 100) / 100);
       }
 
-      return {
-        intent: 'TRANSACTION',
-        type,
-        amount,
-        myShare,
-        perFriendShare,
-        splitFriends,
-        exclusiveForFriend,
-        mode,
-        account,
-        category: inferCategory(text, type),
-        note: text
-      };
-    }
-
-    // --- COMMAND EXECUTION ---
-    async function runCommand(rawInput) {
-      const trimmed = rawInput.trim();
-      if (!trimmed) return;
-
-      printLine(`${promptEl.textContent} ${trimmed}`, 'cmd-echo', true);
-
-      if (wizard.active) {
-        await handleWizardInput(trimmed);
-        return;
-      }
-
-      const lower = trimmed.toLowerCase();
-
-      if (lower === 'setup' || lower === 'reconfig') {
-        startSetupWizard(true);
-        return;
-      }
-
-      if (lower === 'clear' || lower === 'cls') {
-        outputEl.innerHTML = '';
-        playTone(480, 0.03);
-        return;
-      }
-
-      if (lower === 'help' || lower === '?') {
-        const helpBox =
-`NATURAL LANGUAGE EXAMPLES:
-  1. Own Expense    : "50 chai upi" | "120 petrol cash"
-  2. Split Expense  : "200 pizza upi with sachin" (₹100 yours + ₹100 Sachin)
-  3. Lent to Friend : "lent 500 upi to rahul" (₹0 yours + ₹500 Rahul)
-  4. Friend Paid    : "sachin paid 150 for me" (₹0 wallet, ₹150 Dena Hai)
-  5. Friend Both    : "sachin ne 300 hum dono ke liye diye" (₹150 yours, ₹150 Dena)
-  6. Settle Udhar   : "settle sachin upi" | "paid 150 to sachin upi"
-  7. Account Move   : "transferred 500 from sbi to hdfc" | "withdrew 500 cash"
-  8. Income         : "stipend credit 10500 upi"
-
-SYSTEM COMMANDS:
-  bal               : Show all UPI accounts, Cash, Net Worth & Dues
-  dues / udhar      : View friend-by-friend Receivable & Payable ledger
-  settle <name>     : Auto-settle full balance with a friend
-  ls [upi|cash|all] : List transaction history
-  stats             : Category breakdown (based on YOUR personal share)
-  setup             : Re-configure UPI accounts & Cash balances
-  sync              : Dual-Layer Persistence & Lifecycle Sync diagnostics
-  rm <id>           : Delete transaction by ID and auto-revert balances
-  export            : Export JSON backup
-  clear             : Clear screen`;
-        printBlock(helpBox);
-        playTone(650, 0.04);
-        return;
-      }
-
-      if (lower === 'sync' || lower === 'sync status' || lower === 'sync force') {
-        if (lower === 'sync force') {
-          await lifecycleSync.reconcile('manual_force');
-          printLine(`[OK] Forced L1 <-> L2 reconciliation completed at rev #${storageEngine.currentRev}.`, 'credit', true);
-        }
-        const lastSyncStr = storageEngine.lastSyncTime
-          ? new Date(storageEngine.lastSyncTime).toLocaleTimeString('en-IN')
-          : 'N/A';
-        const syncReport =
-`DUAL-LAYER PERSISTENCE & LIFECYCLE SYNC TELEMETRY
-  Monotonic Revision : #${storageEngine.currentRev}
-  FNV-1a Checksum    : ${storageEngine.lastChecksum}
-  Layer 1 (Storage)  : ${storageEngine.l1Healthy ? 'ACTIVE' : 'DEGRADED'}
-  Layer 2 (IDB)      : ${storageEngine.l2Healthy ? 'ACTIVE (2 Rolling Mirrors)' : 'UNAVAILABLE'}
-  Last Synced At     : ${lastSyncStr}
-  Multi-Tab Channel  : ${lifecycleSync && lifecycleSync.channel ? 'CONNECTED' : 'LOCAL'}`;
-        printBlock(syncReport, 'info');
-        playTone(740, 0.05);
-        return;
-      }
-
-      if (lower === 'bal' || lower === 'balance' || lower === 'status') {
-        printBalanceSheet();
-        playTone(700, 0.04);
-        return;
-      }
-
-      if (lower === 'dues' || lower === 'udhar' || lower === 'friends' || lower === 'split') {
-        printDuesLedger();
-        playTone(700, 0.04);
-        return;
-      }
-
-      if (lower.startsWith('settle ')) {
-        const parts = trimmed.split(/\s+/);
-        const targetName = capitalize(parts[1] || '');
-        const modeHint = (parts[2] || '').toUpperCase();
-        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === targetName.toLowerCase());
-
-        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) {
-          printLine(`[INFO] No pending balance with ${targetName || 'that friend'}.`, 'dim');
-          return;
-        }
-
-        const netBal = state.friends[fKey];
-        const absAmt = Math.abs(netBal);
-        const mode = modeHint === 'CASH' ? 'CASH' : 'UPI';
-        const acc = mode === 'UPI' ? resolveUpiAccount(lower) : null;
-
-        if (netBal > 0) {
-          if (mode === 'UPI') acc.balance += absAmt;
-          else state.cashBalance += absAmt;
-          state.friends[fKey] = 0;
-
-          state.transactions.unshift({
-            id: state.nextId++,
-            ts: getTimestamp(),
-            type: 'SETTLE_IN',
-            amount: absAmt,
-            myShare: 0,
-            mode,
-            accountName: acc ? acc.name : 'CASH',
-            category: 'Settlement',
-            note: `Settled receivable from ${fKey}`
-          });
-
-          await persistState('settle_in');
-          printLine(`[SETTLED] ${fKey} paid ${formatMoney(absAmt)} -> ${mode === 'UPI' ? acc.name : 'CASH'}. Due is now ₹0.00.`, 'credit');
-          playTone(880, 0.08, 'sine');
-        } else {
-          if (mode === 'UPI') acc.balance -= absAmt;
-          else state.cashBalance -= absAmt;
-          state.friends[fKey] = 0;
-
-          state.transactions.unshift({
-            id: state.nextId++,
-            ts: getTimestamp(),
-            type: 'SETTLE_OUT',
-            amount: absAmt,
-            myShare: 0,
-            mode,
-            accountName: acc ? acc.name : 'CASH',
-            category: 'Settlement',
-            note: `Paid payable to ${fKey}`
-          });
-
-          await persistState('settle_out');
-          printLine(`[SETTLED] Paid ${formatMoney(absAmt)} to ${fKey} via ${mode === 'UPI' ? acc.name : 'CASH'}. Due is now ₹0.00.`, 'warn');
-          playTone(520, 0.08, 'sine');
-        }
-        return;
-      }
-
-      if (lower === 'ls' || lower.startsWith('ls ') || lower === 'list' || lower === 'history') {
-        const arg = lower.split(/\s+/)[1] || 'all';
-        printTransactions(arg);
-        playTone(620, 0.04);
-        return;
-      }
-
-      if (lower === 'stats' || lower === 'summary') {
-        printStats();
-        playTone(680, 0.05);
-        return;
-      }
-
-      if (lower.startsWith('rm ') || lower.startsWith('del ')) {
-        const idNum = parseInt(lower.split(/\s+/)[1], 10);
-        const idx = state.transactions.findIndex(t => t.id === idNum);
-        if (idx === -1) {
-          printLine(`[ERR] Transaction ID #${idNum} not found.`, 'debit');
-          playTone(220, 0.1, 'sawtooth');
-          return;
-        }
-        const tx = state.transactions[idx];
-        const targetAcc = state.upiAccounts.find(a => a.name === tx.accountName) || state.upiAccounts[0];
-
-        if (tx.type === 'DEBIT') {
-          if (tx.mode === 'UPI' && targetAcc) targetAcc.balance += tx.amount;
-          else if (tx.mode === 'CASH') state.cashBalance += tx.amount;
-          if (tx.splitFriends && tx.perFriendShare) {
-            tx.splitFriends.forEach(fn => {
-              state.friends[fn] = Math.round(((state.friends[fn] || 0) - tx.perFriendShare) * 100) / 100;
-            });
-          }
-        } else if (tx.type === 'FRIEND_PAID') {
-          if (tx.payer && tx.myShare) {
-            state.friends[tx.payer] = Math.round(((state.friends[tx.payer] || 0) + tx.myShare) * 100) / 100;
-          }
-        } else if (tx.type === 'CREDIT') {
-          if (tx.mode === 'UPI' && targetAcc) targetAcc.balance -= tx.amount;
-          else if (tx.mode === 'CASH') state.cashBalance -= tx.amount;
-        } else if (tx.type === 'SETTLE_IN') {
-          if (tx.mode === 'UPI' && targetAcc) targetAcc.balance -= tx.amount;
-          else state.cashBalance -= tx.amount;
-        } else if (tx.type === 'SETTLE_OUT') {
-          if (tx.mode === 'UPI' && targetAcc) targetAcc.balance += tx.amount;
-          else state.cashBalance += tx.amount;
-        }
-
-        state.transactions.splice(idx, 1);
-        await persistState('delete_tx');
-        printLine(`[OK] Removed #${idNum} and reverted balances.`, 'warn');
-        playTone(420, 0.07);
-        return;
-      }
-
-      if (lower === 'export') {
-        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `cashflow_backup_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        printLine(`[OK] Exported ${state.transactions.length} transactions to JSON.`, 'credit');
-        playTone(800, 0.06);
-        return;
-      }
-
-      // --- NATURAL LANGUAGE PARSING ---
-      const parsed = parseNaturalInput(trimmed);
-
-      if (parsed.intent === 'BALANCE') {
-        printBalanceSheet();
-        playTone(700, 0.04);
-        return;
-      }
-
-      if (parsed.intent === 'ACC_TRANSFER') {
-        parsed.fromAcc.balance -= parsed.amount;
-        parsed.toAcc.balance += parsed.amount;
-        state.transactions.unshift({
-          id: state.nextId++,
-          ts: getTimestamp(),
-          type: 'TRANSFER',
-          amount: parsed.amount,
-          myShare: 0,
-          mode: 'UPI',
-          accountName: `${parsed.fromAcc.name}->${parsed.toAcc.name}`,
-          category: 'Transfer',
-          note: parsed.note
-        });
-        await persistState('acc_transfer');
-        printLine(`[TRANSFER] ${formatMoney(parsed.amount)} moved from ${parsed.fromAcc.name} -> ${parsed.toAcc.name}`, 'info');
-        printLine(`  ${parsed.fromAcc.name}: ${formatMoney(parsed.fromAcc.balance)} | ${parsed.toAcc.name}: ${formatMoney(parsed.toAcc.balance)}`, 'dim');
-        playTone(660, 0.06);
-        return;
-      }
-
-      if (parsed.intent === 'TRANSFER') {
-        const acc = parsed.account;
-        if (parsed.direction === 'UPI_TO_CASH') {
-          acc.balance -= parsed.amount;
-          state.cashBalance += parsed.amount;
-        } else {
-          state.cashBalance -= parsed.amount;
-          acc.balance += parsed.amount;
-        }
-        state.transactions.unshift({
-          id: state.nextId++,
-          ts: getTimestamp(),
-          type: 'TRANSFER',
-          amount: parsed.amount,
-          myShare: 0,
-          mode: 'UPI/CASH',
-          accountName: acc.name,
-          category: 'Transfer',
-          note: parsed.note
-        });
-        await persistState('atm_transfer');
-        printLine(`[TRANSFER] ${formatMoney(parsed.amount)} (${parsed.direction === 'UPI_TO_CASH' ? `${acc.name} -> CASH` : `CASH -> ${acc.name}`})`, 'warn');
-        printLine(`  ${acc.name}: ${formatMoney(acc.balance)} | CASH: ${formatMoney(state.cashBalance)}`, 'dim');
-        playTone(660, 0.06);
-        return;
-      }
-
-      if (parsed.intent === 'SETTLE_PAYABLE') {
-        const acc = parsed.account;
-        if (parsed.mode === 'UPI') acc.balance -= parsed.amount;
-        else state.cashBalance -= parsed.amount;
-
-        state.friends[parsed.friend] = Math.round(((state.friends[parsed.friend] || 0) + parsed.amount) * 100) / 100;
-        state.transactions.unshift({
-          id: state.nextId++,
-          ts: getTimestamp(),
-          type: 'SETTLE_OUT',
-          amount: parsed.amount,
-          myShare: 0,
-          mode: parsed.mode,
-          accountName: acc ? acc.name : 'CASH',
-          category: 'Settlement',
-          note: parsed.note
-        });
-        await persistState('settle_payable');
-        const rem = state.friends[parsed.friend];
-        const statusStr = rem < 0 ? `Still Dena Hai: ${formatMoney(Math.abs(rem))}` : 'All Settled (₹0.00)';
-        printLine(`[PAID BACK] Paid ${formatMoney(parsed.amount)} to ${parsed.friend} via ${acc ? acc.name : 'CASH'} | ${statusStr}`, 'warn');
-        playTone(540, 0.08, 'sine');
-        return;
-      }
-
-      if (parsed.intent === 'SETTLE_RECEIVABLE') {
-        const acc = parsed.account;
-        if (parsed.mode === 'UPI') acc.balance += parsed.amount;
-        else state.cashBalance += parsed.amount;
-
-        state.friends[parsed.friend] = Math.round(((state.friends[parsed.friend] || 0) - parsed.amount) * 100) / 100;
-        state.transactions.unshift({
-          id: state.nextId++,
-          ts: getTimestamp(),
-          type: 'SETTLE_IN',
-          amount: parsed.amount,
-          myShare: 0,
-          mode: parsed.mode,
-          accountName: acc ? acc.name : 'CASH',
-          category: 'Settlement',
-          note: parsed.note
-        });
-        await persistState('settle_receivable');
-        const rem = state.friends[parsed.friend];
-        const statusStr = rem > 0 ? `Still Lena Hai: ${formatMoney(rem)}` : 'All Settled (₹0.00)';
-        printLine(`[RECEIVED] +${formatMoney(parsed.amount)} from ${parsed.friend} -> ${acc ? acc.name : 'CASH'} | ${statusStr}`, 'credit');
-        playTone(880, 0.08, 'sine');
-        return;
-      }
-
-      if (parsed.intent === 'FRIEND_PAID_FOR_ME') {
-        state.friends[parsed.payer] = Math.round(((state.friends[parsed.payer] || 0) - parsed.myShare) * 100) / 100;
-        const tx = {
-          id: state.nextId++,
-          ts: getTimestamp(),
-          type: 'FRIEND_PAID',
-          amount: parsed.totalAmount,
-          myShare: parsed.myShare,
-          payer: parsed.payer,
-          mode: 'FRIEND',
-          accountName: parsed.payer,
-          category: parsed.category,
-          note: parsed.note
-        };
-        state.transactions.unshift(tx);
-        await persistState('friend_paid');
-
-        const splitTag = parsed.isBoth ? ` (Split of ${formatMoney(parsed.totalAmount)})` : '';
-        printLine(`[FRIEND PAID #${tx.id}] ${parsed.payer} paid for you | Your Expense: ${formatMoney(parsed.myShare)}${splitTag} [${parsed.category}]`, 'owe');
-        printLine(`  -> Wallet untouched | Dena Hai to ${parsed.payer}: ${formatMoney(Math.abs(state.friends[parsed.payer]))}`, 'owe');
-        playTone(460, 0.08, 'triangle');
-        return;
-      }
-
-      if (parsed.intent === 'TRANSACTION') {
-        const acc = parsed.account;
-        const channelLabel = parsed.mode === 'UPI' ? acc.name : 'CASH';
-
-        if (parsed.type === 'DEBIT') {
-          if (parsed.mode === 'UPI') acc.balance -= parsed.amount;
-          else state.cashBalance -= parsed.amount;
-        } else {
-          if (parsed.mode === 'UPI') acc.balance += parsed.amount;
-          else state.cashBalance += parsed.amount;
-        }
-
-        if (parsed.splitFriends && parsed.splitFriends.length > 0) {
-          parsed.splitFriends.forEach(fn => {
-            state.friends[fn] = Math.round(((state.friends[fn] || 0) + parsed.perFriendShare) * 100) / 100;
-          });
-        }
-
-        const tx = {
-          id: state.nextId++,
-          ts: getTimestamp(),
-          type: parsed.type,
-          amount: parsed.amount,
-          myShare: parsed.type === 'DEBIT' ? parsed.myShare : 0,
-          perFriendShare: parsed.perFriendShare,
-          splitFriends: parsed.splitFriends,
-          mode: parsed.mode,
-          accountName: channelLabel,
-          category: parsed.category,
-          note: parsed.note
-        };
-        state.transactions.unshift(tx);
-        await persistState('tx_entry');
-
-        const sign = parsed.type === 'CREDIT' ? '+' : '-';
-        const cls = parsed.type === 'CREDIT' ? 'credit' : 'debit';
-
-        if (parsed.splitFriends && parsed.splitFriends.length > 0) {
-          const fList = parsed.splitFriends.map(f => `${f} (+${formatMoney(parsed.perFriendShare)})`).join(', ');
-          printLine(`[SPLIT #${tx.id}] ${sign}${formatMoney(parsed.amount)} via ${channelLabel} | Your Share: ${formatMoney(parsed.myShare)} [${parsed.category}]`, 'split');
-          printLine(`  -> Lena Hai: ${fList}`, 'split');
-        } else {
-          printLine(`[LOGGED #${tx.id}] ${parsed.type} ${sign}${formatMoney(parsed.amount)} | ${channelLabel} | ${parsed.category}`, cls);
-        }
-
-        const balLeft = parsed.mode === 'UPI' ? acc.balance : state.cashBalance;
-        printLine(`  ${channelLabel} Balance: ${formatMoney(balLeft)}`, 'dim');
-        playTone(parsed.type === 'CREDIT' ? 860 : 390, 0.06, 'sine');
-        return;
-      }
-
-      printLine(`[?] Samajh nahi aaya. Example: "50 chai upi", "200 pizza with sachin", ya "bal".`, 'warn');
-      playTone(220, 0.1, 'sawtooth');
-    }
-
-    function printBalanceSheet() {
-      let totalReceivable = 0;
-      let totalPayable = 0;
-      Object.values(state.friends).forEach(val => {
-        if (val > 0) totalReceivable += val;
-        if (val < 0) totalPayable += Math.abs(val);
-      });
-
-      const totalUpi = getTotalUpiBalance();
-      const totalLiquid = totalUpi + state.cashBalance;
-      const effectiveNet = totalLiquid + totalReceivable - totalPayable;
-
-      let lines = `WALLET & UDHAR BALANCE SHEET\n\n`;
-      state.upiAccounts.forEach((acc, i) => {
-        const tag = state.upiAccounts.length > 1 && i === 0 ? ' [Primary]' : '';
-        lines += `  UPI (${acc.name})${tag.padEnd(10)} : ${formatMoney(acc.balance)}\n`;
-      });
-      if (state.upiAccounts.length > 1) {
-        lines += `  Total UPI Balance        : ${formatMoney(totalUpi)}\n`;
-      }
-      lines += `  Cash in Hand             : ${formatMoney(state.cashBalance)}\n`;
-      lines += `  Total Liquid Cash+UPI    : ${formatMoney(totalLiquid)}\n\n`;
-      lines += `  Friends Lena Hai (+)     : ${formatMoney(totalReceivable)}\n`;
-      lines += `  Friends Dena Hai (-)     : ${formatMoney(totalPayable)}\n`;
-      lines += `  Effective Net Worth      : ${formatMoney(effectiveNet)}`;
-      printBlock(lines);
-    }
-
-    function printDuesLedger() {
-      const entries = Object.entries(state.friends).filter(([_, amt]) => Math.abs(amt) >= 0.01);
-      if (entries.length === 0) {
-                printLine('Kisi dost ke saath koi udrhar baaki nahi hai (All settled).', 'dim', true);
-        return;
-      }
-      let out = `FRIEND UDHAR LEDGER (LENA / DENA)\n\n`;
-      entries.forEach(([name, amt]) => {
-        if (amt > 0) {
-          out += `  ${name.padEnd(14)} : LENA HAI  +${formatMoney(amt)}\n`;
-        } else {
-          out += `  ${name.padEnd(14)} : DENA HAI  -${formatMoney(Math.abs(amt))}\n`;
-        }
-      });
-      out += `\nTip: Type "settle <name> upi" or "settle <name> cash" to clear.`;
-      printBlock(out, 'split');
-    }
-
-    function printTransactions(filter) {
-      let list = state.transactions;
-      if (filter === 'upi') list = list.filter(t => t.mode === 'UPI');
-      else if (filter === 'cash') list = list.filter(t => t.mode === 'CASH');
-
-      if (list.length === 0) {
-        printLine(`No transactions found (${filter.toUpperCase()}).`, 'dim', true);
-        return;
-      }
-
-      let out = `TRANSACTION HISTORY (${filter.toUpperCase()} - ${list.length} entries)\n\n`;
-      list.slice(0, 25).forEach(t => {
-        const sign = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
-        const amtStr = `${sign}${formatMoney(t.amount)}`.padStart(11);
-        const chan = (t.accountName || t.mode).padEnd(8);
-        const splitTag = t.type === 'FRIEND_PAID'
-          ? ` [Paid by ${t.payer}]`
-          : (t.splitFriends && t.splitFriends.length ? ` [Split: ${t.splitFriends.join(',')}]` : '');
-        out += `#${String(t.id).padEnd(3)} ${t.ts.padEnd(12)} ${chan} ${amtStr}  ${t.category.padEnd(11)} ${t.note}${splitTag}\n`;
-      });
-      printBlock(out);
-    }
-
-    function printStats() {
-      const debits = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
-      if (debits.length === 0) {
-        printLine('Abhi tak koi personal kharch record nahi hua hai.', 'dim', true);
-        return;
-      }
-
-      const totalPersonal = debits.reduce((s, t) => s + t.myShare, 0);
-      const map = {};
-      debits.forEach(t => {
-        map[t.category] = (map[t.category] || 0) + t.myShare;
-      });
-
-      const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
-      let out = `PERSONAL EXPENSE BREAKDOWN (YOUR SHARE: ${formatMoney(totalPersonal)})\n\n`;
-      sorted.forEach(([cat, amt]) => {
-        const pct = Math.round((amt / totalPersonal) * 100);
-        const filled = Math.round((pct / 100) * 18);
-        const bar = '█'.repeat(filled) + '░'.repeat(18 - filled);
-        out += `${cat.padEnd(13)} ${bar} ${String(pct).padStart(3)}%  ${formatMoney(amt)}\n`;
-      });
-      printBlock(out);
-    }
-
-    // --- HISTORY & KEYBOARD / TOUCH CONTROLS ---
-    const cmdHistory = [];
-    let historyIdx = -1;
-
-    function navigateHistory(dir) {
-      if (cmdHistory.length === 0) return;
-      if (dir === 'UP') {
-        if (historyIdx < cmdHistory.length - 1) {
-          historyIdx++;
-          inputEl.value = cmdHistory[cmdHistory.length - 1 - historyIdx];
-          playTone(540, 0.02);
-        }
+      if (isCredit) {
+        if (isCash) state.cashBalance += amt; else acc.balance += amt;
       } else {
-        if (historyIdx > 0) {
-          historyIdx--;
-          inputEl.value = cmdHistory[cmdHistory.length - 1 - historyIdx];
-          playTone(500, 0.02);
-        } else if (historyIdx === 0) {
-          historyIdx = -1;
-          inputEl.value = '';
-        }
+        if (isCash) state.cashBalance -= amt; else acc.balance -= amt;
       }
-      inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+
+      state.transactions.unshift({
+        id: state.nextId++, ts: getTimestamp(), type: isCredit ? 'CREDIT' : 'DEBIT',
+        amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends,
+        accountName: chan, category: inferCategory(lower, isCredit), note: text
+      });
+      await persistState('tx');
+
+      if (splitFriends.length > 0) {
+        printLine(`[SPLIT] -${formatMoney(amt)} (${chan}) | Apka hissa: ${formatMoney(myShare)} | Lena Hai: ${splitFriends.join(', ')} (${formatMoney(perFriendShare)} each)`, 'split');
+      } else {
+        printLine(`[${isCredit ? 'CREDIT' : 'DEBIT'}] ${isCredit ? '+' : '-'}${formatMoney(amt)} (${chan}) | ${inferCategory(lower, isCredit)}`, isCredit ? 'credit' : 'debit');
+      }
     }
 
-    function submitInput() {
-      const val = inputEl.value;
-      if (val.trim()) {
-        cmdHistory.push(val);
-        historyIdx = -1;
-        runCommand(val);
-      }
+    btnEnter.addEventListener('click', () => {
+      const v = inputEl.value;
+      if (v.trim()) runCommand(v);
       inputEl.value = '';
       inputEl.focus();
-    }
-
-    function autoComplete() {
-      const cur = inputEl.value.trim().toLowerCase();
-      const cmds = ['bal', 'dues', 'settle ', 'ls', 'ls upi', 'ls cash', 'stats', 'setup', 'sync', 'help', 'clear', 'export', 'rm '];
-      const match = cmds.find(c => c.startsWith(cur));
-      if (match) {
-        inputEl.value = match;
-        playTone(760, 0.03);
-      }
-    }
-
+    });
     inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        submitInput();
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        navigateHistory('UP');
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        navigateHistory('DOWN');
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        autoComplete();
-      } else if (e.key.length === 1) {
-        playTone(620 + Math.random() * 80, 0.015, 'square', 0.015);
-      }
+      if (e.key === 'Enter') { e.preventDefault(); btnEnter.click(); }
     });
+    document.querySelectorAll('[data-cmd]').forEach(b => b.addEventListener('click', () => runCommand(b.getAttribute('data-cmd'))));
+    document.querySelectorAll('[data-insert]').forEach(b => b.addEventListener('click', () => {
+      inputEl.value = inputEl.value.replace(/\s+$/, '') + b.getAttribute('data-insert');
+      inputEl.focus();
+    }));
+    document.querySelectorAll('.tab-btn').forEach(tab => tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.getAttribute('data-tab');
+      if (target !== 'feed') runCommand(target);
+    }));
 
-    document.getElementById('btn-up').addEventListener('click', () => { navigateHistory('UP'); inputEl.focus(); });
-    document.getElementById('btn-down').addEventListener('click', () => { navigateHistory('DOWN'); inputEl.focus(); });
-    document.getElementById('btn-tab').addEventListener('click', () => { autoComplete(); inputEl.focus(); });
-    document.getElementById('btn-clear').addEventListener('click', () => { runCommand('clear'); inputEl.focus(); });
-    document.getElementById('btn-enter').addEventListener('click', () => { submitInput(); });
-
-    document.querySelectorAll('[data-cmd]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        runCommand(btn.getAttribute('data-cmd'));
-        inputEl.focus();
-      });
-    });
-
-    document.querySelectorAll('[data-insert]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const snippet = btn.getAttribute('data-insert');
-        inputEl.value = inputEl.value.replace(/\s+$/, '') + snippet;
-        playTone(660, 0.025);
-        inputEl.focus();
-      });
-    });
-
-    outputEl.addEventListener('click', () => {
-      if (window.getSelection().toString() === '') inputEl.focus();
-    });
-
-    // --- BOOT ---
     (async function boot() {
       state = await storageEngine.loadAndHeal();
-      lifecycleSync = new LifecycleSync(
-        storageEngine,
-        () => state,
-        (syncedState, newRev) => {
-          state = syncedState;
-          updateBadges();
-          printLine(`[SYNC] Updated from parallel session (rev #${newRev}).`, 'info', true);
-        },
-        () => updateBadges()
-      );
-      updateBadges();
-      const notice = storageEngine.recoveryLog.length > 0 ? storageEngine.recoveryLog.join(' | ') : '';
-      printBanner(notice);
-      inputEl.focus();
+      renderWalletCards();
+      if (!state.setupComplete) {
+        startSetupWizard(false);
+      } else {
+        printLine('Cash Flow OS Ready. Upar "UI: Minimal" button se aap kabhi bhi Minimal, Dark, ya Terminal theme badal sakte hain.', 'dim');
+      }
     })();
   </script>
 </body>
