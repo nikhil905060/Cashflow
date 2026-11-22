@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Dark Rounded Background -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Outer Cream Wallet Sleeve -->
+    <path
+        android:fillColor="#E6E4DF"
+        android:pathData="M24,30 C24,25.5 27.5,22 32,22 L76,22 C80.5,22 84,25.5 84,30 L84,78 C84,82.5 80.5,86 76,86 L32,86 C27.5,86 24,82.5 24,78 Z" />
+
+    <!-- Blue Card -->
+    <path
+        android:fillColor="#2997D8"
+        android:pathData="M28,31 C28,28 30.5,26 33.5,26 L74.5,26 C77.5,26 80,28 80,31 L80,42 L28,42 Z" />
+
+    <!-- Yellow Card -->
+    <path
+        android:fillColor="#F5B027"
+        android:pathData="M28,39 C28,36 30.5,34 33.5,34 L74.5,34 C77.5,34 80,36 80,39 L80,50 L28,50 Z" />
+
+    <!-- Green Card -->
+    <path
+        android:fillColor="#48B84B"
+        android:pathData="M28,47 C28,44 30.5,42 33.5,42 L74.5,42 C77.5,42 80,44 80,47 L80,58 L28,58 Z" />
+
+    <!-- Coral Red Card -->
+    <path
+        android:fillColor="#EB6E5C"
+        android:pathData="M28,55 C28,52 30.5,50 33.5,50 L74.5,50 C77.5,50 80,52 80,55 L80,68 L28,68 Z" />
+
+    <!-- Front Cream Pocket with Center Notch -->
+    <path
+        android:fillColor="#E6E4DF"
+        android:pathData="M24,58 L41,58 C44,58 46,66 54,66 C62,66 64,58 67,58 L84,58 L84,78 C84,82.5 80.5,86 76,86 L32,86 C27.5,86 24,82.5 24,78 Z" />
+</vector>
