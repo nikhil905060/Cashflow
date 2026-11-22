@@ -9,7 +9,7 @@
       --nb-bg: #FAF8F5;
       --nb-surface: #FFFFFF;
       --nb-ink: #111111;
-      --nb-muted: #555555;
+      --nb-muted: #666666;
       --nb-yellow: #FFD426;
       --nb-green: #22C55E;
       --nb-pink: #FB7185;
@@ -23,7 +23,7 @@
       --surface: var(--nb-surface);
       --fg: var(--nb-ink);
       --fg-dim: var(--nb-muted);
-      --credit: #15803D;
+      --credit: #16A34A;
       --debit: #DC2626;
       --warn: #B45309;
       --split: #6D28D9;
@@ -50,7 +50,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body {
       width: 100%; height: 100dvh; background: var(--bg); color: var(--fg);
-      font-family: var(--font-main); font-size: 14px; line-height: 1.45; overflow: hidden;
+      font-family: var(--font-main); font-size: 14px; line-height: 1.4; overflow: hidden;
     }
 
     body[data-ui="terminal"]::before {
@@ -59,6 +59,7 @@
       background-size: 100% 3px;
     }
 
+    /* LOCK SCREEN */
     #lock-screen {
       position: fixed; inset: 0; z-index: 9999; background: var(--nb-bg); color: var(--nb-ink);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -97,135 +98,184 @@
     body[data-ui="terminal"] .k-btn { background: #0d1a12; color: #00ff66; border: 1px solid #193823; box-shadow: none; border-radius: 4px; }
         #app {
       display: flex; flex-direction: column; height: 100dvh; max-width: 960px;
-      margin: 0 auto; padding: 12px 14px 10px;
+      margin: 0 auto; padding: 10px 14px 10px;
     }
 
+    /* TOP BAR */
     #top-bar {
       display: flex; justify-content: space-between; align-items: center;
-      gap: 8px; margin-bottom: 12px; flex-shrink: 0;
+      gap: 6px; margin-bottom: 8px; flex-shrink: 0;
     }
-    .brand-tag { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
-    .nb-icon-btn {
-      height: 36px; padding: 0 11px; background: var(--nb-surface); color: var(--nb-ink);
-      border: var(--nb-border); border-radius: 8px; box-shadow: var(--nb-shadow-sm);
+    .brand-tag { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+    .top-controls { display: flex; gap: 6px; align-items: center; }
+    .nb-pill {
+      height: 30px; padding: 0 10px; background: var(--nb-surface); color: var(--nb-ink);
+      border: var(--nb-border); border-radius: 999px;
       font-weight: 800; font-size: 11px; cursor: pointer; font-family: inherit;
-      display: inline-flex; align-items: center; gap: 5px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease;
+      display: inline-flex; align-items: center; gap: 4px;
     }
-    .nb-icon-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #111111; }
-    .nb-icon-btn.yellow { background: var(--nb-yellow); }
-
-    body[data-ui="terminal"] .nb-icon-btn {
-      background: #08100b; color: #00ff66; border: 1px solid #00b347;
-      border-radius: 4px; box-shadow: none; height: 30px; font-size: 11px;
+    .nb-pill.dark { background: #1A1A1A; color: #FFFFFF; }
+    body[data-ui="terminal"] .nb-pill {
+      background: #08100b; color: #00ff66; border: 1px solid #00b347; border-radius: 4px;
     }
 
+    /* CENTER WALLET LOGO BADGE */
+    #logo-wrap {
+      display: flex; justify-content: center; margin-bottom: 8px; flex-shrink: 0;
+    }
+    body[data-ui="terminal"] #logo-wrap { display: none; }
+    .wallet-badge {
+      width: 44px; height: 44px; background: #1A1A1A; border: var(--nb-border);
+      border-radius: 12px; box-shadow: var(--nb-shadow-sm);
+      display: flex; align-items: center; justify-content: center; padding: 6px;
+    }
+
+    /* FOLDER-TAB GRID */
     #nb-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px 10px;
-      margin-bottom: 12px; flex-shrink: 0;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+      margin-bottom: 10px; flex-shrink: 0;
     }
     body[data-ui="terminal"] #nb-grid { display: none; }
 
     .folder-card-wrap { display: flex; flex-direction: column; cursor: pointer; }
     .folder-tab {
-      width: 54px; height: 9px; border: var(--nb-border); border-bottom: none;
+      width: 52px; height: 8px; border: var(--nb-border); border-bottom: none;
       border-radius: 6px 6px 0 0;
     }
     .folder-body {
       background: var(--nb-surface); border: var(--nb-border);
       border-radius: 0 12px 12px 12px; box-shadow: var(--nb-shadow);
-      padding: 9px 11px; transition: transform 0.08s ease, box-shadow 0.08s ease;
+      padding: 8px 10px; display: flex; align-items: center; gap: 8px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
     }
     .folder-card-wrap:active .folder-body {
       transform: translate(2px, 2px); box-shadow: 1px 1px 0px #111111;
     }
-    .folder-top { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 6px; }
-    .folder-icon-box {
-      width: 30px; height: 30px; border: var(--nb-border); border-radius: 7px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 13px; color: var(--nb-ink); flex-shrink: 0;
+    .folder-icon { font-size: 15px; font-weight: 800; color: var(--nb-ink); }
+    .folder-info { display: flex; flex-direction: column; min-width: 0; }
+    .folder-title { font-size: 13px; font-weight: 800; color: var(--nb-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .folder-meta { font-size: 10.5px; color: var(--nb-muted); font-weight: 600; }
+
+    /* MAIN OUTPUT CARD (MATCHING REFERENCE UI) */
+    #feed-card {
+      flex: 1; display: flex; flex-direction: column; min-height: 0;
+      background: var(--nb-surface); border: var(--nb-border);
+      border-radius: 16px; box-shadow: var(--nb-shadow); padding: 12px 14px 10px;
+      overflow: hidden;
     }
-    .folder-meta { font-size: 11px; color: var(--nb-muted); font-weight: 600; line-height: 1.25; }
-    .folder-title { font-size: 13.5px; font-weight: 800; color: var(--nb-ink); }
+    body[data-ui="terminal"] #feed-card {
+      background: transparent; border: none; box-shadow: none; padding: 0; border-radius: 0;
+    }
+
+    #feed-card-header {
+      text-align: center; font-size: 14px; font-weight: 800; color: var(--nb-ink);
+      padding-bottom: 8px; border-bottom: 1.5px solid #ECEAE4; margin-bottom: 6px; flex-shrink: 0;
+    }
+    body[data-ui="terminal"] #feed-card-header { display: none; }
 
     #output {
       flex: 1; overflow-y: auto; padding-right: 2px;
       -webkit-overflow-scrolling: touch;
     }
-    .line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-word; font-weight: 500; }
-    .section-gap { margin-top: 1.4em; }
-    .cmd-echo { font-weight: 800; color: var(--fg); }
+
+    /* STRUCTURED FEED ROWS */
+    .tx-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 2px; border-bottom: 1px solid #F0EEE9;
+    }
+    body[data-ui="terminal"] .tx-row { border-bottom: 1px dashed #193823; }
+    .tx-left { display: flex; flex-direction: column; min-width: 0; padding-right: 8px; }
+    .tx-title { font-size: 14px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-sub { font-size: 11px; color: var(--fg-dim); font-weight: 500; }
+    .tx-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+    .tx-amt { font-size: 14px; font-weight: 800; }
+    .tx-cat { font-size: 11px; color: var(--fg-dim); font-weight: 600; }
+
+    .line { margin-bottom: 5px; white-space: pre-wrap; word-break: break-word; font-weight: 600; font-size: 13px; }
+    .cmd-echo { font-weight: 800; color: var(--fg); margin-top: 6px; }
     .dim { color: var(--fg-dim); }
-    .credit { color: var(--credit); font-weight: 700; }
-    .debit { color: var(--debit); font-weight: 700; }
-    .warn { color: var(--warn); font-weight: 700; }
-    .split { color: var(--split); font-weight: 700; }
-    .owe { color: var(--owe); font-weight: 700; }
-    .info { color: var(--info); font-weight: 700; }
+    .credit { color: var(--credit); }
+    .debit { color: var(--debit); }
+    .warn { color: var(--warn); }
+    .split { color: var(--split); }
+    .owe { color: var(--owe); }
+    .info { color: var(--info); }
 
     .box-block {
-      background: var(--nb-surface); border: var(--nb-border);
-      border-radius: 12px; box-shadow: var(--nb-shadow);
-      padding: 12px; margin: 1.1em 0; white-space: pre; overflow-x: auto;
-      font-family: var(--font-mono); font-size: 12px; color: var(--nb-ink);
+      background: #FAF8F5; border: 1.5px solid #111111; border-radius: 10px;
+      padding: 10px; margin: 8px 0; white-space: pre; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 11.5px; color: #111111;
     }
     body[data-ui="terminal"] .box-block {
-      background: transparent; border: none; box-shadow: none;
-      padding: 4px 0; margin: 1.8em 0; color: #00ff66;
+      background: transparent; border: none; padding: 4px 0; color: #00ff66;
     }
 
+    /* CARD FOOTER TOTAL */
+    #feed-card-footer {
+      display: flex; flex-direction: column; align-items: flex-end;
+      padding-top: 8px; border-top: 1.5px solid #ECEAE4; margin-top: 4px; flex-shrink: 0;
+    }
+    body[data-ui="terminal"] #feed-card-footer { display: none; }
+    .footer-total { font-size: 15px; font-weight: 800; color: var(--nb-ink); }
+    .footer-sub { font-size: 10.5px; color: var(--nb-muted); font-weight: 600; }
+
+    /* QUICK ACTION CHIPS */
     #chips-row {
-      display: flex; gap: 7px; overflow-x: auto; margin-top: 8px; padding-bottom: 4px;
+      display: flex; gap: 7px; overflow-x: auto; margin-top: 9px; padding-bottom: 2px;
       scrollbar-width: none; flex-shrink: 0;
     }
     #chips-row::-webkit-scrollbar { display: none; }
     .chip {
       background: var(--nb-surface); color: var(--nb-ink); border: var(--nb-border);
-      border-radius: 8px; box-shadow: 2px 2px 0px #111111; padding: 4px 10px;
-      font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      border-radius: 999px; box-shadow: 2px 2px 0px #111111; padding: 5px 12px;
+      font-size: 11.5px; font-weight: 800; cursor: pointer; white-space: nowrap; flex-shrink: 0;
     }
+    .chip.yellow { background: var(--nb-yellow); }
     .chip:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px #111111; }
     body[data-ui="terminal"] .chip {
       background: #0d1a12; color: #00ff66; border: 1px solid #193823;
       border-radius: 4px; box-shadow: none;
     }
 
+    /* BOTTOM INPUT BAR */
     #bottom-input-area { margin-top: 8px; flex-shrink: 0; }
-    .nb-input-wrap { display: flex; gap: 7px; align-items: stretch; }
+    .nb-input-wrap { display: flex; gap: 8px; align-items: center; }
     .nb-input-box {
-      flex: 1; display: flex; align-items: center; gap: 7px;
+      flex: 1; display: flex; align-items: center; gap: 6px;
       background: var(--nb-surface); border: var(--nb-border);
-      border-radius: 10px; box-shadow: var(--nb-shadow); padding: 0 10px; height: 46px;
+      border-radius: 999px; box-shadow: var(--nb-shadow); padding: 0 8px 0 14px; height: 46px;
     }
-    .nb-hash { font-weight: 800; font-size: 15px; color: var(--nb-ink); white-space: nowrap; }
+    .nb-hash { font-weight: 800; font-size: 13px; color: var(--nb-ink); white-space: nowrap; }
+    body:not([data-ui="terminal"]) .nb-hash { display: none; }
     #cmd-input {
       flex: 1; border: none; outline: none; background: transparent;
       font-family: inherit; font-size: 14px; font-weight: 600; color: var(--nb-ink); min-width: 30px;
     }
-    #cmd-input::placeholder { color: var(--nb-muted); }
+    #cmd-input::placeholder { color: var(--nb-muted); font-weight: 500; }
 
     #mic-btn {
-      background: transparent; border: none; font-size: 17px; cursor: pointer;
-      padding: 4px; color: var(--nb-ink); flex-shrink: 0;
+      width: 32px; height: 32px; border-radius: 50%; background: var(--nb-yellow);
+      border: 1.5px solid #111111; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    #mic-btn.listening { color: #DC2626; transform: scale(1.15); }
+    #mic-btn.listening { background: #FB7185; transform: scale(1.1); }
 
     #submit-btn {
-      min-width: 48px; padding: 0 14px; height: 46px; background: var(--nb-yellow); color: var(--nb-ink);
-      border: var(--nb-border); border-radius: 10px; box-shadow: var(--nb-shadow);
-      font-size: 20px; font-weight: 800; cursor: pointer; font-family: inherit;
-      transition: transform 0.08s ease, box-shadow 0.08s ease;
+      width: 46px; height: 46px; background: var(--nb-yellow); color: var(--nb-ink);
+      border: var(--nb-border); border-radius: 50%; box-shadow: var(--nb-shadow);
+      font-size: 22px; font-weight: 800; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     #submit-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #111111; }
 
     body[data-ui="terminal"] .nb-input-box {
-      background: transparent; border: none; box-shadow: none; padding: 0; height: 38px;
+      background: transparent; border: none; box-shadow: none; padding: 0; height: 36px; border-radius: 0;
     }
-    body[data-ui="terminal"] .nb-hash, body[data-ui="terminal"] #mic-btn { color: #00ff66; font-size: 13px; }
     body[data-ui="terminal"] #cmd-input { color: #00ff66; font-family: var(--font-mono); }
+    body[data-ui="terminal"] #mic-btn { background: #0d1a12; border: 1px solid #00ff66; color: #00ff66; }
     body[data-ui="terminal"] #submit-btn {
-      background: #00ff66; color: #040705; border: none; box-shadow: none;
-      border-radius: 4px; height: 34px; font-size: 12px;
+      width: auto; padding: 0 12px; height: 34px; background: #00ff66; color: #040705;
+      border: none; box-shadow: none; border-radius: 4px; font-size: 12px; font-family: var(--font-mono);
     }
   </style>
 </head>
@@ -259,17 +309,37 @@
 
   <div id="app">
     <div id="top-bar">
-      <span class="brand-tag" id="brand-title">Cash Flow OS</span>
-      <div style="display:flex; gap:6px; align-items:center;">
-        <button type="button" class="nb-icon-btn" id="mask-toggle">HIDE</button>
-        <button type="button" class="nb-icon-btn yellow" id="ui-toggle">UI: Neo-Brutal</button>
-        <button type="button" class="nb-icon-btn" id="bal-badge">₹0</button>
+      <span class="brand-tag">Cash Flow OS</span>
+      <div class="top-controls">
+        <button type="button" class="nb-pill" id="mask-toggle">HIDE</button>
+        <button type="button" class="nb-pill" id="ui-toggle">UI</button>
+        <button type="button" class="nb-pill dark" id="bal-badge">₹0</button>
+      </div>
+    </div>
+
+    <div id="logo-wrap">
+      <div class="wallet-badge">
+        <svg viewBox="0 0 64 64" width="30" height="30">
+          <rect x="6" y="6" width="52" height="52" rx="12" fill="#E6E4DF"/>
+          <rect x="10" y="10" width="44" height="14" rx="4" fill="#2997D8"/>
+          <rect x="10" y="17" width="44" height="14" rx="4" fill="#F5B027"/>
+          <rect x="10" y="24" width="44" height="14" rx="4" fill="#48B84B"/>
+          <rect x="10" y="31" width="44" height="16" rx="4" fill="#EB6E5C"/>
+          <path d="M6,38 H22 C25,38 27,45 32,45 C37,45 39,38 42,38 H58 V50 C58,54.4 54.4,58 50,58 H14 C9.6,58 6,54.4 6,50 Z" fill="#E6E4DF"/>
+        </svg>
       </div>
     </div>
 
     <div id="nb-grid"></div>
 
-    <div id="output" aria-live="polite"></div>
+    <div id="feed-card">
+      <div id="feed-card-header">Transaction Feed &amp; Output</div>
+      <div id="output" aria-live="polite"></div>
+      <div id="feed-card-footer">
+        <div class="footer-total" id="footer-total-val">Total: ₹0</div>
+        <div class="footer-sub">Total net balance</div>
+      </div>
+    </div>
 
     <div id="chips-row">
       <button type="button" class="chip" data-cmd="bal">Balance</button>
@@ -279,17 +349,15 @@
       <button type="button" class="chip" data-insert="find ">Search</button>
       <button type="button" class="chip" data-insert=" with ">+with</button>
       <button type="button" class="chip" data-insert=" paid by ">+paid by</button>
-      <button type="button" class="chip" data-insert=" upi">+upi</button>
-      <button type="button" class="chip" data-insert=" cash">+cash</button>
-      <button type="button" class="chip" data-cmd="clear">Clear</button>
+      <button type="button" class="chip yellow" data-cmd="clear">Clear</button>
     </div>
 
     <div id="bottom-input-area">
       <div class="nb-input-wrap">
         <div class="nb-input-box">
-          <span class="nb-hash" id="prompt-text">#</span>
+          <span class="nb-hash" id="prompt-text">user@cashflow:~$</span>
           <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-            placeholder="50 chai upi | find sachin | edit" />
+            placeholder="50 chai upi | 200 pizza with sachin" />
           <button type="button" id="mic-btn" title="Voice Input">🎤</button>
         </div>
         <button type="button" id="submit-btn" aria-label="Send">+</button>
@@ -301,10 +369,10 @@
     const cmdInput = document.getElementById('cmd-input');
     const submitBtn = document.getElementById('submit-btn');
     const micBtn = document.getElementById('mic-btn');
-    const promptEl = document.getElementById('prompt-text');
     const uiToggle = document.getElementById('ui-toggle');
     const maskToggle = document.getElementById('mask-toggle');
     const balBadge = document.getElementById('bal-badge');
+    const footerTotalVal = document.getElementById('footer-total-val');
     const nbGrid = document.getElementById('nb-grid');
 
     const lockScreen = document.getElementById('lock-screen');
@@ -322,6 +390,7 @@
     const PIN_KEY        = 'cashflow_os_pin_v1';
     const LAST_BKP_KEY   = 'cashflow_os_last_auto_backup';
 
+    // --- BIOMETRIC & PIN LOCK ---
     let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
 
     function getSavedPin() {
@@ -399,6 +468,7 @@
     window.addEventListener('pagehide', engageLock);
     engageLock();
 
+    // --- VOICE TO TEXT ---
     window.onVoiceResult = function(spokenText) {
       micBtn.classList.remove('listening');
       cmdInput.value = spokenText;
@@ -426,6 +496,7 @@
       }
     });
 
+    // --- MASK & UI SWITCHER ---
     let isMasked = false;
     try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
     maskToggle.textContent = isMasked ? 'SHOW' : 'HIDE';
@@ -440,14 +511,14 @@
     function applyUiMode(mode) {
       currentUi = mode === 'terminal' ? 'terminal' : 'neobrutal';
       document.body.setAttribute('data-ui', currentUi);
-      uiToggle.textContent = currentUi === 'terminal' ? 'UI: Terminal' : 'UI: Neo-Brutal';
-      promptEl.textContent = currentUi === 'terminal' ? 'user@cashflow:~$' : '#';
+      uiToggle.textContent = currentUi === 'terminal' ? 'TERM' : 'UI';
       submitBtn.textContent = currentUi === 'terminal' ? 'EXEC' : '+';
       try { localStorage.setItem(UI_PREF_KEY, currentUi); } catch (e) {}
     }
     uiToggle.addEventListener('click', () => applyUiMode(currentUi === 'neobrutal' ? 'terminal' : 'neobrutal'));
     try { const s = localStorage.getItem(UI_PREF_KEY); if (s) applyUiMode(s); } catch (e) {}
 
+    // --- STORAGE & DAILY AUTO-BACKUP ---
     function fnv1aHash(str) {
       let h = 0x811c9dc5;
       for (let i = 0; i < str.length; i++) {
@@ -612,7 +683,9 @@
     function renderFolderCards() {
       const totalUpi = getTotalUpiBalance();
       const totalNet = totalUpi + state.cashBalance;
-      balBadge.textContent = displayBal(totalNet);
+      const formattedTotal = displayBal(totalNet);
+      balBadge.textContent = formattedTotal;
+      footerTotalVal.textContent = `Total: ${formattedTotal}`;
 
       if (!state.setupComplete) {
         nbGrid.innerHTML = '';
@@ -623,21 +696,21 @@
       Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
 
       const cards = [
-        { color: '#22C55E', icon: '⚡', meta: `${state.upiAccounts.length} account(s)`, title: `UPI: ${displayBal(totalUpi)}`, cmd: 'bal' },
-        { color: '#FCD34D', icon: '₹',  meta: 'In wallet', title: `Cash: ${displayBal(state.cashBalance)}`, cmd: 'bal' },
-        { color: '#FB7185', icon: '⇄',  meta: isMasked ? '••••' : `Lena ₹${rec} • Dena ₹${pay}`, title: 'Friend Udhar', cmd: 'dues' },
-        { color: '#818CF8', icon: '☰',  meta: `${state.transactions.length} entries`, title: 'History & Stats', cmd: 'ls' }
+        { color: '#22C55E', icon: '⚡', title: `UPI ${displayBal(totalUpi)}`, meta: `${state.upiAccounts.length} linked`, cmd: 'bal' },
+        { color: '#FCD34D', icon: '₹',  title: `Cash ${displayBal(state.cashBalance)}`, meta: 'In wallet', cmd: 'bal' },
+        { color: '#FB7185', icon: '⇄',  title: 'Friend Udhar', meta: isMasked ? '••••' : `Lena ₹${rec} • Dena ₹${pay}`, cmd: 'dues' },
+        { color: '#818CF8', icon: '☰',  title: 'History & Stats', meta: `${state.transactions.length} entries`, cmd: 'ls' }
       ];
 
       nbGrid.innerHTML = cards.map(c => `
         <div class="folder-card-wrap" data-card-cmd="${c.cmd}">
           <div class="folder-tab" style="background:${c.color}"></div>
           <div class="folder-body">
-            <div class="folder-top">
-              <div class="folder-icon-box" style="background:${c.color}">${c.icon}</div>
+            <span class="folder-icon">${c.icon}</span>
+            <div class="folder-info">
+              <div class="folder-title">${c.title}</div>
               <div class="folder-meta">${c.meta}</div>
             </div>
-            <div class="folder-title">${c.title}</div>
           </div>
         </div>
       `).join('');
@@ -645,6 +718,34 @@
       nbGrid.querySelectorAll('[data-card-cmd]').forEach(el => {
         el.addEventListener('click', () => runCommand(el.getAttribute('data-card-cmd')));
       });
+    }
+
+    function renderRecentFeedRows() {
+      if (!state.transactions.length) return;
+      outputEl.innerHTML = '';
+      state.transactions.slice(0, 15).forEach(t => appendTxRow(t));
+    }
+
+    function appendTxRow(t) {
+      const isPositive = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
+      const label = t.type === 'CREDIT' ? 'Credited' : (t.type === 'SETTLE_IN' ? 'Settled In' : (t.type === 'FRIEND_PAID' ? `${t.payer} Paid` : 'Debited'));
+      const sign = isPositive ? '+' : '-';
+      const amtCls = isPositive ? 'credit' : 'debit';
+
+      const row = document.createElement('div');
+      row.className = 'tx-row';
+      row.innerHTML = `
+        <div class="tx-left">
+          <div class="tx-title">${label} • ${t.note}</div>
+          <div class="tx-sub">#${t.id} • ${t.ts} • ${t.accountName}</div>
+        </div>
+        <div class="tx-right">
+          <div class="tx-amt ${amtCls}">${sign}₹${Number(t.amount).toLocaleString('en-IN')}</div>
+          <div class="tx-cat">${t.category || 'General'}</div>
+        </div>
+      `;
+      outputEl.appendChild(row);
+      outputEl.scrollTop = outputEl.scrollHeight;
     }
 
     async function persistState(reason = 'cmd') {
@@ -655,7 +756,8 @@
 
     function printLine(text, cls = '', gap = false) {
       const div = document.createElement('div');
-      div.className = `line ${cls}${gap ? ' section-gap' : ''}`;
+      div.className = `line ${cls}`;
+      if (gap) div.style.marginTop = '8px';
       div.textContent = text;
       outputEl.appendChild(div);
       outputEl.scrollTop = outputEl.scrollHeight;
@@ -701,8 +803,7 @@
 
     function startSetupWizard(isReconfig = false) {
       wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
-      promptEl.textContent = currentUi === 'terminal' ? 'setup@cashflow:~$' : 'setup>';
-      cmdInput.placeholder = 'Kitne UPI accounts hain? (e.g. 1, 2, 3)...';
+      cmdInput.placeholder = 'Kitne UPI accounts hain? (1, 2, 3)...';
       printLine(isReconfig ? 'WALLET RE-SETUP' : 'WELCOME TO CASH FLOW OS', 'warn', true);
       printLine('Apke pass abhi kitne UPI / Bank accounts hain? (1, 2, ya 3 likhein)', 'info');
     }
@@ -753,8 +854,7 @@
         if (isNaN(cash) || cash < 0) return printLine('Sahi Cash amount likhein.', 'debit');
         state.upiAccounts = wizard.collectedAccounts;
         state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
-        promptEl.textContent = currentUi === 'terminal' ? 'user@cashflow:~$' : '#';
-        cmdInput.placeholder = '50 chai upi | find sachin | edit';
+        cmdInput.placeholder = '50 chai upi | 200 pizza with sachin';
         await persistState('setup');
         printLine('Setup Complete! Ab aap apna daily hisab likh sakte hain.', 'credit', true);
       }
@@ -788,9 +888,11 @@
     async function runCommand(raw) {
       const text = raw.trim();
       if (!text) return;
-      printLine(`> ${text}`, 'cmd-echo', true);
 
-      if (wizard.active) return handleWizardInput(text);
+      if (wizard.active) {
+        printLine(`> ${text}`, 'cmd-echo');
+        return handleWizardInput(text);
+      }
       const lower = text.toLowerCase();
 
       if (lower === 'setup') return startSetupWizard(true);
@@ -808,15 +910,15 @@
         const path = runDailyAutoBackup(true);
         const jsonStr = JSON.stringify(state);
         try { await navigator.clipboard.writeText(jsonStr); } catch (e) {}
-        return printLine(`[BACKUP OK] Copied to clipboard & saved to ${path || 'storage'}.`, 'credit');
+        return printLine(`[BACKUP OK] Copied & saved to ${path || 'storage'}.`, 'credit');
       }
 
       if (lower.startsWith('restore ')) {
         try {
-          const parsed = JSON.parse(text.slice(8).trim());
-          state = normalizeState(parsed);
+          state = normalizeState(JSON.parse(text.slice(8).trim()));
           await persistState('restore');
-          return printLine(`[RESTORED] ${state.transactions.length} entries loaded successfully.`, 'credit');
+          renderRecentFeedRows();
+          return printLine(`[RESTORED] ${state.transactions.length} entries loaded.`, 'credit');
         } catch (e) {
           return printLine('[ERR] Invalid backup JSON.', 'debit');
         }
@@ -829,6 +931,7 @@
         if (idx === -1) return printLine(`ID #${arg} nahi mila.`, 'debit');
         const reverted = revertTransactionByIndex(idx);
         await persistState('edit_revert');
+        renderRecentFeedRows();
         cmdInput.value = reverted.note;
         cmdInput.focus();
         return printLine(`[EDITING #${reverted.id}] Purana balance adjust kar diya. Neeche text sudhar kar + dabayein.`, 'warn');
@@ -838,6 +941,7 @@
         if (!state.transactions.length) return printLine('Undo karne ke liye koi entry nahi hai.', 'dim');
         const reverted = revertTransactionByIndex(0);
         await persistState('undo');
+        renderRecentFeedRows();
         return printLine(`[UNDO #${reverted.id}] "${reverted.note}" hata diya aur balance wapas kar diya.`, 'warn');
       }
 
@@ -889,7 +993,7 @@
         }
         if (!list.length) return printLine(`"${filterStr || 'all'}" ke liye koi transaction nahi hai.`, 'dim');
         const periodSpend = list.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID')).reduce((s, t) => s + (t.myShare || 0), 0);
-        let out = `HISTORY (${(filterStr || 'ALL').toUpperCase()} - ${list.length} entries | Your Spend: ${formatMoney(periodSpend)})\n\n`;
+        let out = `HISTORY (${(filterStr || 'ALL').toUpperCase()} - ${list.length} entries | Spend: ${formatMoney(periodSpend)})\n\n`;
         list.slice(0, 35).forEach(t => {
           const s = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
           out += `#${t.id} ${t.ts} | ${t.accountName} | ${s}${formatMoney(t.amount)} | ${t.note}\n`;
@@ -919,19 +1023,17 @@
         const abs = Math.abs(val);
         const isCash = /\bcash\b/.test(lower);
         const acc = isCash ? null : resolveUpiAccount(lower);
-        if (val > 0) {
-          if (isCash) state.cashBalance += abs; else acc.balance += abs;
-          state.friends[fKey] = 0;
-          state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'SETTLE_IN', amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name, category: 'Settlement', note: `Settled from ${fKey}` });
-          await persistState('settle');
-          return printLine(`[SETTLED] ${fKey} se ${formatMoney(abs)} mile.`, 'credit');
-        } else {
-          if (isCash) state.cashBalance -= abs; else acc.balance -= abs;
-          state.friends[fKey] = 0;
-          state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'SETTLE_OUT', amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name, category: 'Settlement', note: `Paid to ${fKey}` });
-          await persistState('settle');
-          return printLine(`[SETTLED] ${fKey} ko ${formatMoney(abs)} diye.`, 'warn');
-        }
+        const txObj = {
+          id: state.nextId++, ts: getTimestamp(), type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
+          amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name,
+          category: 'Settlement', note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
+        };
+        if (val > 0) { if (isCash) state.cashBalance += abs; else acc.balance += abs; }
+        else { if (isCash) state.cashBalance -= abs; else acc.balance -= abs; }
+        state.friends[fKey] = 0;
+        state.transactions.unshift(txObj);
+        await persistState('settle');
+        return appendTxRow(txObj);
       }
 
       if (lower.startsWith('rm ')) {
@@ -940,7 +1042,8 @@
         if (idx === -1) return printLine(`ID #${id} nahi mila.`, 'debit');
         revertTransactionByIndex(idx);
         await persistState('rm');
-        return printLine(`[DELETED] #${id} hata diya aur balance wapas adjust kar diya.`, 'warn');
+        renderRecentFeedRows();
+        return printLine(`[DELETED] #${id} hata diya aur balance adjust kar diya.`, 'warn');
       }
 
       const amt = extractAmount(text);
@@ -952,9 +1055,10 @@
         const isBoth = /\b(both|dono|split)\b/.test(lower);
         const myShare = isBoth ? Math.round((amt / 2) * 100) / 100 : amt;
         state.friends[payer] = Math.round(((state.friends[payer] || 0) - myShare) * 100) / 100;
-        state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text });
+        const txObj = { id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text };
+        state.transactions.unshift(txObj);
         await persistState('friend_paid');
-        return printLine(`[FRIEND PAID] ${payer} ne pay kiya | Apka kharch: ${formatMoney(myShare)} | Dena Hai: ${formatMoney(Math.abs(state.friends[payer]))}`, 'owe');
+        return appendTxRow(txObj);
       }
 
       const isCredit = text.startsWith('+') || /\b(credit|credited|received|salary|stipend|income|added|refund|cashback|mila|mile|aaye)\b/.test(lower);
@@ -972,25 +1076,20 @@
       if (!isCredit && splitFriends.length > 0) {
         perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100;
         myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100;
-        splitFriends.forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) + perFriendShare) * 100) / 100);
+                splitFriends.forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) + perFriendShare) * 100) / 100);
       }
 
-      if (isCredit) {
-        if (isCash) state.cashBalance += amt; else acc.balance += amt;
-      } else {
-        if (isCash) state.cashBalance -= amt; else acc.balance -= amt;
-      }
+      if (isCredit) { if (isCash) state.cashBalance += amt; else acc.balance += amt; }
+      else { if (isCash) state.cashBalance -= amt; else acc.balance -= amt; }
 
-      state.transactions.unshift({
+      const txObj = {
         id: state.nextId++, ts: getTimestamp(), type: isCredit ? 'CREDIT' : 'DEBIT',
         amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends,
         accountName: chan, category: inferCategory(lower, isCredit), note: text
-      });
+      };
+      state.transactions.unshift(txObj);
       await persistState('tx');
-
-      if (splitFriends.length > 0) {
-                printLine(`[SPLIT] -${formatMoney(amt)} (${chan}) | Apka hissa: ${formatMoney(myShare)} \vert{} Lena Hai:${splitFriends.join(', ')} (${formatMoney(perFriendShare)} each)`, 'split'); } else { printLine(`[${isCredit ? 'CREDIT' : 'DEBIT'}] ${isCredit ? '+' : '-'}${formatMoney(amt)} (${chan}) \vert{}${inferCategory(lower, isCredit)}`, isCredit ? 'credit' : 'debit');
-      }
+      appendTxRow(txObj);
     }
 
     submitBtn.addEventListener('click', () => {
@@ -1015,8 +1114,10 @@
       runDailyAutoBackup(false);
       if (!state.setupComplete) {
         startSetupWizard(false);
+      } else if (state.transactions.length > 0) {
+        renderRecentFeedRows();
       } else {
-        printLine('Cash Flow OS Ready. Commands: find <word>, edit, undo, ls nov, backup.', 'dim');
+        printLine('Cash Flow OS Ready. Type "50 chai upi" to add your first entry.', 'dim');
       }
     })();
   </script>
