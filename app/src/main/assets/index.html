@@ -65,47 +65,36 @@
       padding: 24px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     }
     #lock-screen.unlocked { display: none; }
-    body[data-ui="terminal"] #lock-screen {
-      background: #040705; color: #00ff66; font-family: var(--font-mono);
-    }
+    body[data-ui="terminal"] #lock-screen { background: #040705; color: #00ff66; font-family: var(--font-mono); }
 
     .lock-card {
       width: 100%; max-width: 310px; background: var(--nb-surface);
       border: var(--nb-border); border-radius: 16px; box-shadow: var(--nb-shadow);
       padding: 20px 16px; text-align: center;
     }
-    body[data-ui="terminal"] .lock-card {
-      background: #08100b; border: 1px solid #00ff66; box-shadow: none; border-radius: 6px;
-    }
+    body[data-ui="terminal"] .lock-card { background: #08100b; border: 1px solid #00ff66; box-shadow: none; border-radius: 6px; }
     .lock-badge {
       display: inline-block; background: var(--nb-yellow); color: #111111;
       border: var(--nb-border); border-radius: 8px; padding: 3px 10px;
       font-size: 11px; font-weight: 800; margin-bottom: 8px;
     }
-    body[data-ui="terminal"] .lock-badge {
-      background: #00ff66; color: #040705; border: none; border-radius: 4px;
-    }
+    body[data-ui="terminal"] .lock-badge { background: #00ff66; color: #040705; border: none; border-radius: 4px; }
     .lock-title { font-size: 19px; font-weight: 800; margin-bottom: 3px; }
     .lock-sub { font-size: 12px; color: var(--fg-dim); margin-bottom: 14px; }
     .pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; }
-    .pin-dot {
-      width: 15px; height: 15px; border: 2px solid currentColor; border-radius: 50%;
-      background: transparent; transition: background 0.1s;
-    }
+    .pin-dot { width: 15px; height: 15px; border: 2px solid currentColor; border-radius: 50%; }
     .pin-dot.filled { background: currentColor; }
     .lock-err { font-size: 12px; color: var(--debit); font-weight: 700; min-height: 18px; margin-bottom: 6px; }
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
     .k-btn {
       height: 46px; background: var(--nb-surface); color: var(--nb-ink);
       border: var(--nb-border); border-radius: 10px; box-shadow: var(--nb-shadow-sm);
-      font-size: 18px; font-weight: 800; cursor: pointer; font-family: inherit;
+      font-size: 17px; font-weight: 800; cursor: pointer; font-family: inherit;
     }
     .k-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #111111; }
     .k-btn.yellow { background: var(--nb-yellow); }
-    body[data-ui="terminal"] .k-btn {
-      background: #0d1a12; color: #00ff66; border: 1px solid #193823;
-      box-shadow: none; border-radius: 4px;
-    }
+    .k-btn.green { background: var(--nb-green); }
+    body[data-ui="terminal"] .k-btn { background: #0d1a12; color: #00ff66; border: 1px solid #193823; box-shadow: none; border-radius: 4px; }
         #app {
       display: flex; flex-direction: column; height: 100dvh; max-width: 960px;
       margin: 0 auto; padding: 12px 14px 10px;
@@ -202,18 +191,24 @@
     }
 
     #bottom-input-area { margin-top: 8px; flex-shrink: 0; }
-    .nb-input-wrap { display: flex; gap: 8px; align-items: stretch; }
+    .nb-input-wrap { display: flex; gap: 7px; align-items: stretch; }
     .nb-input-box {
-      flex: 1; display: flex; align-items: center; gap: 8px;
+      flex: 1; display: flex; align-items: center; gap: 7px;
       background: var(--nb-surface); border: var(--nb-border);
-      border-radius: 10px; box-shadow: var(--nb-shadow); padding: 0 12px; height: 46px;
+      border-radius: 10px; box-shadow: var(--nb-shadow); padding: 0 10px; height: 46px;
     }
     .nb-hash { font-weight: 800; font-size: 15px; color: var(--nb-ink); white-space: nowrap; }
     #cmd-input {
       flex: 1; border: none; outline: none; background: transparent;
-      font-family: inherit; font-size: 14px; font-weight: 600; color: var(--nb-ink); min-width: 40px;
+      font-family: inherit; font-size: 14px; font-weight: 600; color: var(--nb-ink); min-width: 30px;
     }
     #cmd-input::placeholder { color: var(--nb-muted); }
+
+    #mic-btn {
+      background: transparent; border: none; font-size: 17px; cursor: pointer;
+      padding: 4px; color: var(--nb-ink); flex-shrink: 0;
+    }
+    #mic-btn.listening { color: #DC2626; transform: scale(1.15); }
 
     #submit-btn {
       min-width: 48px; padding: 0 14px; height: 46px; background: var(--nb-yellow); color: var(--nb-ink);
@@ -226,7 +221,7 @@
     body[data-ui="terminal"] .nb-input-box {
       background: transparent; border: none; box-shadow: none; padding: 0; height: 38px;
     }
-    body[data-ui="terminal"] .nb-hash { color: #00ff66; font-size: 12px; }
+    body[data-ui="terminal"] .nb-hash, body[data-ui="terminal"] #mic-btn { color: #00ff66; font-size: 13px; }
     body[data-ui="terminal"] #cmd-input { color: #00ff66; font-family: var(--font-mono); }
     body[data-ui="terminal"] #submit-btn {
       background: #00ff66; color: #040705; border: none; box-shadow: none;
@@ -239,7 +234,7 @@
     <div class="lock-card">
       <div class="lock-badge">LOCKED</div>
       <div class="lock-title" id="lock-heading">Unlock Cash Flow</div>
-      <div class="lock-sub" id="lock-sub">Enter 4-digit PIN</div>
+      <div class="lock-sub" id="lock-sub">Enter PIN or Use Fingerprint</div>
       <div class="pin-dots" id="pin-dots">
         <span class="pin-dot"></span><span class="pin-dot"></span>
         <span class="pin-dot"></span><span class="pin-dot"></span>
@@ -255,7 +250,7 @@
         <button type="button" class="k-btn" data-key="7">7</button>
         <button type="button" class="k-btn" data-key="8">8</button>
         <button type="button" class="k-btn" data-key="9">9</button>
-        <button type="button" class="k-btn yellow" id="pin-clear">C</button>
+        <button type="button" class="k-btn green" id="btn-biometric">FP</button>
         <button type="button" class="k-btn" data-key="0">0</button>
         <button type="button" class="k-btn yellow" id="pin-back">⌫</button>
       </div>
@@ -280,7 +275,8 @@
       <button type="button" class="chip" data-cmd="bal">Balance</button>
       <button type="button" class="chip" data-cmd="dues">Udhar</button>
       <button type="button" class="chip" data-cmd="ls">History</button>
-      <button type="button" class="chip" data-cmd="stats">Stats</button>
+      <button type="button" class="chip" data-cmd="edit">Edit Last</button>
+      <button type="button" class="chip" data-insert="find ">Search</button>
       <button type="button" class="chip" data-insert=" with ">+with</button>
       <button type="button" class="chip" data-insert=" paid by ">+paid by</button>
       <button type="button" class="chip" data-insert=" upi">+upi</button>
@@ -293,7 +289,8 @@
         <div class="nb-input-box">
           <span class="nb-hash" id="prompt-text">#</span>
           <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-            placeholder="50 chai upi | 200 pizza with sachin" />
+            placeholder="50 chai upi | find sachin | edit" />
+          <button type="button" id="mic-btn" title="Voice Input">🎤</button>
         </div>
         <button type="button" id="submit-btn" aria-label="Send">+</button>
       </div>
@@ -303,6 +300,7 @@
     const outputEl = document.getElementById('output');
     const cmdInput = document.getElementById('cmd-input');
     const submitBtn = document.getElementById('submit-btn');
+    const micBtn = document.getElementById('mic-btn');
     const promptEl = document.getElementById('prompt-text');
     const uiToggle = document.getElementById('ui-toggle');
     const maskToggle = document.getElementById('mask-toggle');
@@ -322,102 +320,115 @@
     const UI_PREF_KEY    = 'cashflow_os_ui_mode_v2';
     const MASK_PREF_KEY  = 'cashflow_os_masked_v1';
     const PIN_KEY        = 'cashflow_os_pin_v1';
+    const LAST_BKP_KEY   = 'cashflow_os_last_auto_backup';
 
-    let pinBuffer = '';
-    let isSettingPin = false;
-    let tempFirstPin = '';
+    let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
 
     function getSavedPin() {
       try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; }
     }
-
     function updatePinDots() {
-      pinDots.forEach((dot, idx) => dot.classList.toggle('filled', idx < pinBuffer.length));
+      pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length));
+    }
+    function unlockApp() {
+      pinBuffer = ''; tempFirstPin = ''; updatePinDots();
+      lockScreen.classList.add('unlocked');
+    }
+    window.onNativeUnlock = unlockApp;
+
+    function triggerBiometricPrompt() {
+      try {
+        if (window.AndroidNative && typeof window.AndroidNative.triggerBiometric === 'function') {
+          window.AndroidNative.triggerBiometric();
+        } else {
+          lockErr.textContent = 'Fingerprint available in Android APK';
+        }
+      } catch (e) {}
     }
 
     function engageLock() {
-      pinBuffer = '';
-      tempFirstPin = '';
-      lockErr.textContent = '';
+      pinBuffer = ''; tempFirstPin = ''; lockErr.textContent = '';
       if (!getSavedPin()) {
         isSettingPin = true;
         lockHeading.textContent = 'Create 4-Digit PIN';
-        lockSub.textContent = 'Set a PIN to protect Cash Flow OS';
+        lockSub.textContent = 'Set backup PIN for Cash Flow OS';
       } else {
         isSettingPin = false;
         lockHeading.textContent = 'Unlock Cash Flow';
-        lockSub.textContent = 'Enter 4-digit PIN';
+        lockSub.textContent = 'Enter PIN or tap FP for Fingerprint';
       }
       updatePinDots();
       lockScreen.classList.remove('unlocked');
       cmdInput.blur();
+      if (!isSettingPin) setTimeout(triggerBiometricPrompt, 200);
     }
 
-    function handlePinDigit(d) {
+    document.querySelectorAll('[data-key]').forEach(b => b.addEventListener('click', () => {
       if (pinBuffer.length >= 4) return;
-      pinBuffer += d;
+      pinBuffer += b.getAttribute('data-key');
       lockErr.textContent = '';
       updatePinDots();
-
       if (pinBuffer.length === 4) {
         setTimeout(() => {
           if (isSettingPin) {
             if (!tempFirstPin) {
-              tempFirstPin = pinBuffer;
-              pinBuffer = '';
-              updatePinDots();
-              lockHeading.textContent = 'Confirm PIN';
-              lockSub.textContent = 'Re-enter the same 4-digit PIN';
+              tempFirstPin = pinBuffer; pinBuffer = ''; updatePinDots();
+              lockHeading.textContent = 'Confirm PIN'; lockSub.textContent = 'Re-enter 4-digit PIN';
             } else if (pinBuffer === tempFirstPin) {
               try { localStorage.setItem(PIN_KEY, pinBuffer); } catch (e) {}
-              pinBuffer = '';
-              tempFirstPin = '';
-              updatePinDots();
-              lockScreen.classList.add('unlocked');
+              unlockApp();
             } else {
-              lockErr.textContent = 'PINs did not match. Try again.';
-              tempFirstPin = '';
-              pinBuffer = '';
-              updatePinDots();
+              lockErr.textContent = 'PINs did not match'; tempFirstPin = ''; pinBuffer = ''; updatePinDots();
               lockHeading.textContent = 'Create 4-Digit PIN';
-              lockSub.textContent = 'Set a PIN to protect Cash Flow OS';
             }
+          } else if (pinBuffer === getSavedPin()) {
+            unlockApp();
           } else {
-            if (pinBuffer === getSavedPin()) {
-              pinBuffer = '';
-              updatePinDots();
-              lockScreen.classList.add('unlocked');
-            } else {
-              lockErr.textContent = 'Wrong PIN. Try again.';
-              pinBuffer = '';
-              updatePinDots();
-            }
+            lockErr.textContent = 'Wrong PIN'; pinBuffer = ''; updatePinDots();
           }
-        }, 90);
+        }, 80);
       }
-    }
+    }));
 
-    document.querySelectorAll('[data-key]').forEach(btn => {
-      btn.addEventListener('click', () => handlePinDigit(btn.getAttribute('data-key')));
-    });
-    document.getElementById('pin-clear').addEventListener('click', () => {
-      pinBuffer = ''; lockErr.textContent = ''; updatePinDots();
-    });
+    document.getElementById('btn-biometric').addEventListener('click', triggerBiometricPrompt);
     document.getElementById('pin-back').addEventListener('click', () => {
       pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots();
     });
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') engageLock();
-    });
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(); });
     window.addEventListener('pagehide', engageLock);
-    window.addEventListener('blur', engageLock);
     engageLock();
+
+    window.onVoiceResult = function(spokenText) {
+      micBtn.classList.remove('listening');
+      cmdInput.value = spokenText;
+      cmdInput.focus();
+    };
+    window.onVoiceError = function() {
+      micBtn.classList.remove('listening');
+      printLine('[VOICE] Mic sun nahi paya, dubara try karein.', 'warn');
+    };
+
+    micBtn.addEventListener('click', () => {
+      micBtn.classList.add('listening');
+      if (window.AndroidNative && typeof window.AndroidNative.startVoiceInput === 'function') {
+        window.AndroidNative.startVoiceInput();
+      } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const rec = new SR();
+        rec.lang = 'en-IN';
+        rec.onresult = (e) => window.onVoiceResult(e.results[0][0].transcript);
+        rec.onerror = () => window.onVoiceError();
+        rec.start();
+      } else {
+        micBtn.classList.remove('listening');
+        printLine('[VOICE] Voice input is device par supported nahi hai.', 'warn');
+      }
+    });
 
     let isMasked = false;
     try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
     maskToggle.textContent = isMasked ? 'SHOW' : 'HIDE';
-
     maskToggle.addEventListener('click', () => {
       isMasked = !isMasked;
       try { localStorage.setItem(MASK_PREF_KEY, isMasked ? '1' : '0'); } catch (e) {}
@@ -434,15 +445,8 @@
       submitBtn.textContent = currentUi === 'terminal' ? 'EXEC' : '+';
       try { localStorage.setItem(UI_PREF_KEY, currentUi); } catch (e) {}
     }
-
-    uiToggle.addEventListener('click', () => {
-      applyUiMode(currentUi === 'neobrutal' ? 'terminal' : 'neobrutal');
-    });
-
-    try {
-      const savedUi = localStorage.getItem(UI_PREF_KEY);
-      if (savedUi) applyUiMode(savedUi);
-    } catch (e) {}
+    uiToggle.addEventListener('click', () => applyUiMode(currentUi === 'neobrutal' ? 'terminal' : 'neobrutal'));
+    try { const s = localStorage.getItem(UI_PREF_KEY); if (s) applyUiMode(s); } catch (e) {}
 
     function fnv1aHash(str) {
       let h = 0x811c9dc5;
@@ -454,14 +458,7 @@
     }
 
     function createDefaultState() {
-      return {
-        setupComplete: false,
-        upiAccounts: [],
-        cashBalance: 0,
-        transactions: [],
-        friends: {},
-        nextId: 1
-      };
+      return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 };
     }
 
     function normalizeState(raw) {
@@ -485,22 +482,15 @@
 
     function computeStateChecksum(st) {
       return fnv1aHash(JSON.stringify({
-        setupComplete: st.setupComplete,
-        upiAccounts: st.upiAccounts,
-        cashBalance: Number(st.cashBalance.toFixed(2)),
-        transactions: st.transactions,
-        friends: st.friends,
-        nextId: st.nextId
+        setupComplete: st.setupComplete, upiAccounts: st.upiAccounts,
+        cashBalance: Number(st.cashBalance.toFixed(2)), transactions: st.transactions,
+        friends: st.friends, nextId: st.nextId
       }));
     }
 
     function wrapEnvelope(stateObj, rev, source = 'local') {
       const normalized = normalizeState(stateObj);
-      return {
-        schema: 5, rev, updatedAt: Date.now(), source,
-        checksum: computeStateChecksum(normalized),
-        payload: normalized
-      };
+      return { schema: 5, rev, updatedAt: Date.now(), source, checksum: computeStateChecksum(normalized), payload: normalized };
     }
 
     function verifyEnvelope(env) {
@@ -510,11 +500,8 @@
 
     class StorageEngine {
       constructor() {
-        this.db = null;
-        this.currentRev = 0;
-        this.lastChecksum = '';
-        this.l1Healthy = false;
-        this.l2Healthy = false;
+        this.db = null; this.currentRev = 0; this.lastChecksum = '';
+        this.l1Healthy = false; this.l2Healthy = false;
         this.idbReadyPromise = this._openIDB();
       }
       _openIDB() {
@@ -523,10 +510,8 @@
           try {
             const req = indexedDB.open(IDB_DB_NAME, 1);
             req.onupgradeneeded = (e) => {
-              const db = e.target.result;
-              if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
-                db.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' });
-              }
+              if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME))
+                e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' });
             };
             req.onsuccess = (e) => { this.db = e.target.result; this.l2Healthy = true; resolve(this.db); };
             req.onerror = () => resolve(null);
@@ -538,10 +523,7 @@
         [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => {
           try {
             const raw = localStorage.getItem(k);
-            if (raw) {
-              const p = JSON.parse(raw);
-              if (verifyEnvelope(p)) { list.push(p); this.l1Healthy = true; }
-            }
+            if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) { list.push(p); this.l1Healthy = true; } }
           } catch (e) {}
         });
         return list.sort((a, b) => b.rev - a.rev)[0] || null;
@@ -559,8 +541,7 @@
         if (!this.db) return null;
         return new Promise((resolve) => {
           try {
-            const tx = this.db.transaction(IDB_STORE_NAME, 'readonly');
-            const req = tx.objectStore(IDB_STORE_NAME).getAll();
+            const req = this.db.transaction(IDB_STORE_NAME, 'readonly').objectStore(IDB_STORE_NAME).getAll();
             req.onsuccess = () => {
               const valid = (req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev);
               resolve(valid[0] || null);
@@ -606,7 +587,21 @@
     let state = createDefaultState();
     let wizard = { active: false, step: null, totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
 
-    function getTotalUpiBalance() {
+    function runDailyAutoBackup(force = false) {
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        const last = localStorage.getItem(LAST_BKP_KEY);
+        if (!force && last === today) return null;
+        const jsonStr = JSON.stringify(state);
+        localStorage.setItem('cashflow_os_daily_snapshot_' + today, jsonStr);
+        localStorage.setItem(LAST_BKP_KEY, today);
+        if (window.AndroidNative && typeof window.AndroidNative.saveDailyBackup === 'function') {
+          return window.AndroidNative.saveDailyBackup(jsonStr);
+        }
+        return 'Saved in LocalStorage (' + today + ')';
+      } catch (e) { return null; }
+    }
+          function getTotalUpiBalance() {
       return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0);
     }
 
@@ -655,8 +650,10 @@
     async function persistState(reason = 'cmd') {
       await storageEngine.commit(state, reason);
       renderFolderCards();
+      runDailyAutoBackup(true);
     }
-          function printLine(text, cls = '', gap = false) {
+
+    function printLine(text, cls = '', gap = false) {
       const div = document.createElement('div');
       div.className = `line ${cls}${gap ? ' section-gap' : ''}`;
       div.textContent = text;
@@ -683,6 +680,25 @@
              now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
     }
 
+    function revertTransactionByIndex(idx) {
+      const tx = state.transactions[idx];
+      const acc = state.upiAccounts.find(a => a.name === tx.accountName) || state.upiAccounts[0];
+      if (tx.type === 'DEBIT') {
+        if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
+        (tx.splitFriends || []).forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) - tx.perFriendShare) * 100) / 100);
+      } else if (tx.type === 'FRIEND_PAID') {
+        state.friends[tx.payer] = Math.round(((state.friends[tx.payer] || 0) + tx.myShare) * 100) / 100;
+      } else if (tx.type === 'CREDIT') {
+        if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
+      } else if (tx.type === 'SETTLE_IN') {
+        if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
+      } else if (tx.type === 'SETTLE_OUT') {
+        if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
+      }
+      state.transactions.splice(idx, 1);
+      return tx;
+    }
+
     function startSetupWizard(isReconfig = false) {
       wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
       promptEl.textContent = currentUi === 'terminal' ? 'setup@cashflow:~$' : 'setup>';
@@ -696,12 +712,9 @@
       if (wizard.step === 'COUNT') {
         const count = parseInt(text.replace(/[^\d]/g, ''), 10);
         if (!count || count < 1 || count > 10) return printLine('1 se 10 ke beech sankhya likhein.', 'debit');
-        wizard.totalAccounts = count;
-        wizard.currentIdx = 0;
-        wizard.collectedAccounts = [];
+        wizard.totalAccounts = count; wizard.currentIdx = 0; wizard.collectedAccounts = [];
         if (count === 1) {
-          wizard.step = 'ACC_BAL';
-          wizard.tempName = 'UPI';
+          wizard.step = 'ACC_BAL'; wizard.tempName = 'UPI';
           printLine('1 UPI Account selected. Isme abhi kitna balance hai? (e.g. 2135)', 'info', true);
           cmdInput.placeholder = 'Enter UPI balance...';
         } else {
@@ -714,8 +727,7 @@
       if (wizard.step === 'ACC_NAME') {
         const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
         if (!name) return printLine('Sahi naam likhein.', 'debit');
-        wizard.tempName = name;
-        wizard.step = 'ACC_BAL';
+        wizard.tempName = name; wizard.step = 'ACC_BAL';
         printLine(`${name} mein abhi kitna balance hai?`, 'info', true);
         cmdInput.placeholder = `Balance in ${name}...`;
         return;
@@ -740,11 +752,9 @@
         const cash = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
         if (isNaN(cash) || cash < 0) return printLine('Sahi Cash amount likhein.', 'debit');
         state.upiAccounts = wizard.collectedAccounts;
-        state.cashBalance = cash;
-        state.setupComplete = true;
-        wizard.active = false;
+        state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
         promptEl.textContent = currentUi === 'terminal' ? 'user@cashflow:~$' : '#';
-        cmdInput.placeholder = '50 chai upi | 200 pizza with sachin';
+        cmdInput.placeholder = '50 chai upi | find sachin | edit';
         await persistState('setup');
         printLine('Setup Complete! Ab aap apna daily hisab likh sakte hain.', 'credit', true);
       }
@@ -785,16 +795,72 @@
 
       if (lower === 'setup') return startSetupWizard(true);
       if (lower === 'lock') return engageLock();
+      if (lower === 'clear') { outputEl.innerHTML = ''; return; }
+
       if (lower.startsWith('pin ')) {
         const newPin = text.split(/\s+/)[1] || '';
         if (!/^\d{4}$/.test(newPin)) return printLine('Usage: pin 1234 (4 digits only)', 'debit');
         try { localStorage.setItem(PIN_KEY, newPin); } catch (e) {}
         return printLine('[OK] App Lock PIN updated.', 'credit');
       }
-      if (lower === 'clear') { outputEl.innerHTML = ''; return; }
-      if (lower === 'sync') {
-        return printBlock(`SYNC STATUS\nRev: #${storageEngine.currentRev} | Checksum: ${storageEngine.lastChecksum}\nL1 Storage: ${storageEngine.l1Healthy ? 'OK' : 'ERR'} | L2 IDB: ${storageEngine.l2Healthy ? 'OK' : 'ERR'}`, 'info');
+
+      if (lower === 'backup') {
+        const path = runDailyAutoBackup(true);
+        const jsonStr = JSON.stringify(state);
+        try { await navigator.clipboard.writeText(jsonStr); } catch (e) {}
+        return printLine(`[BACKUP OK] Copied to clipboard & saved to ${path || 'storage'}.`, 'credit');
       }
+
+      if (lower.startsWith('restore ')) {
+        try {
+          const parsed = JSON.parse(text.slice(8).trim());
+          state = normalizeState(parsed);
+          await persistState('restore');
+          return printLine(`[RESTORED] ${state.transactions.length} entries loaded successfully.`, 'credit');
+        } catch (e) {
+          return printLine('[ERR] Invalid backup JSON.', 'debit');
+        }
+      }
+
+      if (lower === 'edit' || lower.startsWith('edit ')) {
+        if (!state.transactions.length) return printLine('Edit karne ke liye koi entry nahi hai.', 'dim');
+        const arg = lower.split(/\s+/)[1];
+        const idx = arg ? state.transactions.findIndex(t => t.id === parseInt(arg, 10)) : 0;
+        if (idx === -1) return printLine(`ID #${arg} nahi mila.`, 'debit');
+        const reverted = revertTransactionByIndex(idx);
+        await persistState('edit_revert');
+        cmdInput.value = reverted.note;
+        cmdInput.focus();
+        return printLine(`[EDITING #${reverted.id}] Purana balance adjust kar diya. Neeche text sudhar kar + dabayein.`, 'warn');
+      }
+
+      if (lower === 'undo') {
+        if (!state.transactions.length) return printLine('Undo karne ke liye koi entry nahi hai.', 'dim');
+        const reverted = revertTransactionByIndex(0);
+        await persistState('undo');
+        return printLine(`[UNDO #${reverted.id}] "${reverted.note}" hata diya aur balance wapas kar diya.`, 'warn');
+      }
+
+      if (lower.startsWith('find ') || lower.startsWith('search ')) {
+        const q = lower.replace(/^(?:find|search)\s+/, '').trim();
+        if (!q) return printLine('Usage: find chai | find sachin', 'warn');
+        const matches = state.transactions.filter(t =>
+          t.note.toLowerCase().includes(q) ||
+          (t.category && t.category.toLowerCase().includes(q)) ||
+          (t.accountName && t.accountName.toLowerCase().includes(q)) ||
+          (t.payer && t.payer.toLowerCase().includes(q)) ||
+          (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
+        );
+        if (!matches.length) return printLine(`"${q}" se milti koi entry nahi mili.`, 'dim');
+        const total = matches.reduce((s, t) => s + t.amount, 0);
+        let out = `SEARCH: "${q.toUpperCase()}" (${matches.length} entries | Total: ${formatMoney(total)})\n\n`;
+        matches.slice(0, 30).forEach(t => {
+          const s = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
+          out += `#${t.id} ${t.ts} | ${t.accountName} | ${s}${formatMoney(t.amount)} | ${t.note}\n`;
+        });
+        return printBlock(out, 'info');
+      }
+
       if (lower === 'bal' || lower === 'balance' || /\b(kitna|bacha|balance|mauke|moke)\b/.test(lower) && !extractAmount(text)) {
         let rec = 0, pay = 0;
         Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
@@ -806,6 +872,7 @@
         out += `  Net Worth    : ${formatMoney(getTotalUpiBalance() + state.cashBalance + rec - pay, true)}`;
         return printBlock(out);
       }
+
       if (lower === 'dues' || lower === 'udhar') {
         const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
         if (!list.length) return printLine('Kisi dost ke saath udhar baaki nahi hai.', 'dim');
@@ -813,15 +880,23 @@
         list.forEach(([n, v]) => out += `  ${n.padEnd(12)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v, true) : 'DENA HAI -' + formatMoney(Math.abs(v), true)}\n`);
         return printBlock(out, 'split');
       }
-      if (lower === 'ls' || lower === 'history') {
-        if (!state.transactions.length) return printLine('Abhi koi transaction nahi hai.', 'dim');
-        let out = `HISTORY (${state.transactions.length})\n\n`;
-        state.transactions.slice(0, 25).forEach(t => {
+
+      if (lower === 'ls' || lower.startsWith('ls ') || lower === 'history') {
+        const filterStr = lower.replace(/^(?:ls|history)\s*/, '').trim();
+        let list = state.transactions;
+        if (filterStr && filterStr !== 'all') {
+          list = list.filter(t => t.ts.toLowerCase().includes(filterStr));
+        }
+        if (!list.length) return printLine(`"${filterStr || 'all'}" ke liye koi transaction nahi hai.`, 'dim');
+        const periodSpend = list.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID')).reduce((s, t) => s + (t.myShare || 0), 0);
+        let out = `HISTORY (${(filterStr || 'ALL').toUpperCase()} - ${list.length} entries | Your Spend: ${formatMoney(periodSpend)})\n\n`;
+        list.slice(0, 35).forEach(t => {
           const s = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
           out += `#${t.id} ${t.ts} | ${t.accountName} | ${s}${formatMoney(t.amount)} | ${t.note}\n`;
         });
         return printBlock(out);
       }
+
       if (lower === 'stats') {
         const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
         if (!deb.length) return printLine('Abhi koi personal kharch nahi hai.', 'dim');
@@ -834,6 +909,7 @@
         });
         return printBlock(out);
       }
+
       if (lower.startsWith('settle ')) {
         const parts = text.split(/\s+/);
         const name = capitalize(parts[1] || '');
@@ -857,27 +933,18 @@
           return printLine(`[SETTLED] ${fKey} ko ${formatMoney(abs)} diye.`, 'warn');
         }
       }
+
       if (lower.startsWith('rm ')) {
         const id = parseInt(lower.split(/\s+/)[1], 10);
         const idx = state.transactions.findIndex(t => t.id === id);
         if (idx === -1) return printLine(`ID #${id} nahi mila.`, 'debit');
-        const tx = state.transactions[idx];
-        const acc = state.upiAccounts.find(a => a.name === tx.accountName) || state.upiAccounts[0];
-        if (tx.type === 'DEBIT') {
-          if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
-          (tx.splitFriends || []).forEach(f => state.friends[f] = (state.friends[f] || 0) - tx.perFriendShare);
-        } else if (tx.type === 'FRIEND_PAID') {
-          state.friends[tx.payer] = (state.friends[tx.payer] || 0) + tx.myShare;
-        } else if (tx.type === 'CREDIT') {
-          if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
-        }
-        state.transactions.splice(idx, 1);
+        revertTransactionByIndex(idx);
         await persistState('rm');
         return printLine(`[DELETED] #${id} hata diya aur balance wapas adjust kar diya.`, 'warn');
       }
 
       const amt = extractAmount(text);
-      if (!amt || amt <= 0) return printLine('Amount samajh nahi aaya. Example: "50 chai upi" ya "200 pizza with sachin"', 'warn');
+      if (!amt || amt <= 0) return printLine('Amount samajh nahi aaya. Example: "50 chai upi" ya "find sachin"', 'warn');
 
       const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+)/) || lower.match(/^([a-zA-Z]+)\s+(?:ne|paid)\b/);
       if (paidByM && !NON_FRIEND.has(paidByM[1].toLowerCase())) {
@@ -922,9 +989,7 @@
       await persistState('tx');
 
       if (splitFriends.length > 0) {
-        printLine(`[SPLIT] -${formatMoney(amt)} (${chan}) | Apka hissa: ${formatMoney(myShare)} | Lena Hai: ${splitFriends.join(', ')} (${formatMoney(perFriendShare)} each)`, 'split');
-      } else {
-        printLine(`[${isCredit ? 'CREDIT' : 'DEBIT'}] ${isCredit ? '+' : '-'}${formatMoney(amt)} (${chan}) | ${inferCategory(lower, isCredit)}`, isCredit ? 'credit' : 'debit');
+                printLine(`[SPLIT] -${formatMoney(amt)} (${chan}) | Apka hissa: ${formatMoney(myShare)} \vert{} Lena Hai:${splitFriends.join(', ')} (${formatMoney(perFriendShare)} each)`, 'split'); } else { printLine(`[${isCredit ? 'CREDIT' : 'DEBIT'}] ${isCredit ? '+' : '-'}${formatMoney(amt)} (${chan}) \vert{}${inferCategory(lower, isCredit)}`, isCredit ? 'credit' : 'debit');
       }
     }
 
@@ -947,10 +1012,11 @@
     (async function boot() {
       state = await storageEngine.loadAndHeal();
       renderFolderCards();
+      runDailyAutoBackup(false);
       if (!state.setupComplete) {
         startSetupWizard(false);
       } else {
-        printLine('Cash Flow OS Ready. Type "setup" to reconfigure wallets or "pin 1234" to change lock PIN.', 'dim');
+        printLine('Cash Flow OS Ready. Commands: find <word>, edit, undo, ls nov, backup.', 'dim');
       }
     })();
   </script>
