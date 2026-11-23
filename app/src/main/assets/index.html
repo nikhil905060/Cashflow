@@ -6,7 +6,6 @@
   <title>Cash Flow OS</title>
   <style>
     :root {
-      /* SOFT BENTO PILL UI (DEFAULT) */
       --bg: #F4F4F5;
       --surface: #FFFFFF;
       --surface-alt: #E4E4E7;
@@ -60,7 +59,6 @@
       background-size: 100% 3px;
     }
 
-    /* LOCK SCREEN */
     #lock-screen {
       position: fixed; inset: 0; z-index: 9999; background: var(--bg); color: var(--fg);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -114,7 +112,6 @@
       margin: 0 auto; padding: 12px 14px 10px;
     }
 
-    /* TOP BAR */
     #top-bar {
       display: flex; justify-content: space-between; align-items: center;
       gap: 6px; margin-bottom: 10px; flex-shrink: 0;
@@ -143,45 +140,41 @@
       background: #08100b; color: #00ff66; border: 1px solid #00b347; border-radius: 4px; height: 28px;
     }
 
-    /* SOFT BENTO HERO NET WORTH CARD */
     #bento-hero {
       background: #141518; color: #FFFFFF; border-radius: 28px;
-      padding: 16px 20px; margin-bottom: 10px; flex-shrink: 0;
+      padding: 15px 20px; margin-bottom: 10px; flex-shrink: 0;
       display: flex; justify-content: space-between; align-items: center;
     }
     body:not([data-ui="bento"]) #bento-hero { display: none; }
     .hero-lbl { font-size: 11.5px; color: #A1A1AA; font-weight: 600; }
-    .hero-num { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 2px; }
+    .hero-num { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 2px; }
     .hero-circle-btn {
       width: 44px; height: 44px; border-radius: 50%; background: #27272A; color: #10B981;
       border: none; font-size: 16px; font-weight: 800; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* WALLET CARDS GRID (BENTO + NEO-BRUTAL) */
     #cards-grid {
       display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
       margin-bottom: 10px; flex-shrink: 0;
     }
     body[data-ui="terminal"] #cards-grid { display: none; }
 
-    /* Soft Bento Card Style */
     .bento-card {
-      background: #FFFFFF; border-radius: 26px; padding: 14px 16px;
+      background: #FFFFFF; border-radius: 26px; padding: 13px 16px;
       cursor: pointer; transition: transform 0.1s ease;
     }
     .bento-card.alt { background: #E4E4E7; }
     .bento-card:active { transform: scale(0.97); }
-    .bento-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .bento-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .bento-circle-icon {
-      width: 34px; height: 34px; border-radius: 50%; background: #F4F4F5; color: #111315;
+      width: 32px; height: 32px; border-radius: 50%; background: #F4F4F5; color: #111315;
       display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;
     }
     .bento-card.alt .bento-circle-icon { background: #FFFFFF; }
     .bento-sub { font-size: 11px; color: #71717A; font-weight: 600; }
-    .bento-val { font-size: 19px; font-weight: 800; color: #111315; letter-spacing: -0.02em; }
+    .bento-val { font-size: 18px; font-weight: 800; color: #111315; letter-spacing: -0.02em; }
 
-    /* Neo-Brutalist Folder-Tab Card Style */
     .folder-card-wrap { display: flex; flex-direction: column; cursor: pointer; }
     .folder-tab {
       width: 52px; height: 8px; border: 2px solid #111111; border-bottom: none;
@@ -197,10 +190,9 @@
     .folder-title { font-size: 13px; font-weight: 800; color: #111111; }
     .folder-meta { font-size: 10.5px; color: #666666; font-weight: 600; }
 
-    /* MAIN FEED CARD */
     #feed-card {
       flex: 1; display: flex; flex-direction: column; min-height: 0;
-      background: var(--surface); border-radius: 28px; padding: 14px 16px 10px;
+      background: var(--surface); border-radius: 28px; padding: 13px 15px 10px;
       overflow: hidden;
     }
     body[data-ui="neobrutal"] #feed-card {
@@ -217,12 +209,25 @@
     }
     body[data-ui="terminal"] #feed-card-header { display: none; }
 
+    .filter-bar {
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px;
+      border-bottom: 1px solid #ECEAE4; flex-shrink: 0; scrollbar-width: none;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .f-pill {
+      padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700;
+      background: #F4F4F5; color: #111315; border: none; cursor: pointer; white-space: nowrap;
+    }
+    .f-pill.active { background: #141518; color: #FFFFFF; }
+    body[data-ui="neobrutal"] .f-pill { border: 1.5px solid #111111; background: #FFFFFF; }
+    body[data-ui="neobrutal"] .f-pill.active { background: #FFD426; color: #111111; }
+    body[data-ui="terminal"] .f-pill { background: #0d1a12; color: #00ff66; border: 1px solid #00ff66; border-radius: 4px; }
+
     #output {
       flex: 1; overflow-y: auto; padding-right: 2px;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* PILL TRANSACTION ROWS */
     .tx-row {
       display: flex; justify-content: space-between; align-items: center;
       background: #F4F4F5; border-radius: 999px; padding: 9px 14px; margin-bottom: 8px;
@@ -237,11 +242,11 @@
     }
 
     .tx-left { display: flex; flex-direction: column; min-width: 0; padding-right: 8px; }
-    .tx-title { font-size: 13.5px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-title { font-size: 13px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tx-sub { font-size: 10.5px; color: var(--fg-dim); font-weight: 600; }
 
     .tx-amt-pill {
-      padding: 5px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 800;
+      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 800;
       background: #FFFFFF; flex-shrink: 0;
     }
     body[data-ui="terminal"] .tx-amt-pill { background: transparent; padding: 0; }
@@ -266,7 +271,6 @@
       background: transparent; border: none; padding: 4px 0; color: #00ff66;
     }
 
-    /* QUICK ACTION PILL CHIPS */
     #chips-row {
       display: flex; gap: 7px; overflow-x: auto; margin-top: 9px; padding-bottom: 2px;
       scrollbar-width: none; flex-shrink: 0;
@@ -287,7 +291,6 @@
       background: #0d1a12; color: #00ff66; border: 1px solid #193823; border-radius: 4px; height: 28px;
     }
 
-    /* FLOATING CAPSULE INPUT BAR */
     #bottom-input-area { margin-top: 8px; flex-shrink: 0; }
     .nb-input-wrap { display: flex; gap: 8px; align-items: center; }
     .nb-input-box {
@@ -400,8 +403,14 @@
 
     <div id="feed-card">
       <div id="feed-card-header">
-        <span>Recent Activity</span>
-        <span style="font-size:11px; color:var(--fg-dim); font-weight:600;" id="entry-count-lbl">0 entries</span>
+        <span id="feed-title-lbl">Recent Activity</span>
+        <span style="font-size:11px; color:var(--fg-dim); font-weight:700;" id="entry-count-lbl">0 entries</span>
+      </div>
+      <div class="filter-bar" id="history-filter-bar" style="display:none;">
+        <button type="button" class="f-pill active" data-hfilter="all">All</button>
+        <button type="button" class="f-pill" data-hfilter="today">Today</button>
+        <button type="button" class="f-pill" data-hfilter="month">This Month</button>
+        <input type="date" id="date-picker-input" style="border:none; background:#F4F4F5; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700;" />
       </div>
       <div id="output" aria-live="polite"></div>
     </div>
@@ -422,7 +431,7 @@
         <div class="nb-input-box">
           <span class="nb-hash" id="prompt-text">user@cashflow:~$</span>
           <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-            placeholder="50 chai upi | 200 pizza with sachin" />
+            placeholder="50 chai upi | 353 manish recharge" />
           <button type="button" id="mic-btn" title="Voice Input">🎤</button>
         </div>
         <button type="button" id="submit-btn" aria-label="Send">+</button>
@@ -439,8 +448,11 @@
     const maskToggle = document.getElementById('mask-toggle');
     const balBadge = document.getElementById('bal-badge');
     const heroNetVal = document.getElementById('hero-net-val');
+    const feedTitleLbl = document.getElementById('feed-title-lbl');
     const entryCountLbl = document.getElementById('entry-count-lbl');
     const cardsGrid = document.getElementById('cards-grid');
+    const historyFilterBar = document.getElementById('history-filter-bar');
+    const datePickerInput = document.getElementById('date-picker-input');
 
     const lockScreen = document.getElementById('lock-screen');
     const lockHeading = document.getElementById('lock-heading');
@@ -457,7 +469,6 @@
     const PIN_KEY        = 'cashflow_os_pin_v1';
     const LAST_BKP_KEY   = 'cashflow_os_last_auto_backup';
 
-    // --- BIOMETRIC & PIN LOCK ---
     let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
 
     function getSavedPin() {
@@ -535,7 +546,6 @@
     window.addEventListener('pagehide', engageLock);
     engageLock();
 
-    // --- VOICE TO TEXT ---
     window.onVoiceResult = function(spokenText) {
       micBtn.classList.remove('listening');
       cmdInput.value = spokenText;
@@ -563,7 +573,6 @@
       }
     });
 
-    // --- MASK & 3-WAY UI SWITCHER (BENTO -> BRUTAL -> TERM) ---
     let isMasked = false;
     try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
     maskToggle.textContent = isMasked ? 'SHOW' : 'HIDE';
@@ -822,7 +831,53 @@
       });
     }
 
+    function renderHistoryView(filterType = 'all', customQuery = '') {
+      historyFilterBar.style.display = 'flex';
+      feedTitleLbl.textContent = 'Transaction History';
+      outputEl.innerHTML = '';
+
+      const now = new Date();
+      const todayStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).toLowerCase();
+      const monthStr = now.toLocaleDateString('en-IN', { month: 'short' }).toLowerCase();
+
+      let list = state.transactions;
+      if (filterType === 'today') {
+        list = list.filter(t => t.ts.toLowerCase().includes(todayStr));
+      } else if (filterType === 'month') {
+        list = list.filter(t => t.ts.toLowerCase().includes(monthStr));
+      } else if (filterType === 'custom' && customQuery) {
+        list = list.filter(t => t.ts.toLowerCase().includes(customQuery.toLowerCase()));
+      }
+
+      const periodSpend = list.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID')).reduce((s, t) => s + (t.myShare || 0), 0);
+      entryCountLbl.textContent = `${list.length} • Spend ₹${periodSpend}`;
+
+      if (!list.length) {
+        return printLine(`Is date/month mein koi transaction nahi mila.`, 'dim');
+      }
+      list.forEach(t => appendTxRow(t));
+    }
+
+    document.querySelectorAll('[data-hfilter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-hfilter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderHistoryView(btn.getAttribute('data-hfilter'));
+      });
+    });
+
+    datePickerInput.addEventListener('change', (e) => {
+      if (!e.target.value) return;
+      const d = new Date(e.target.value + 'T00:00:00');
+      const formatted = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+      document.querySelectorAll('[data-hfilter]').forEach(b => b.classList.remove('active'));
+      renderHistoryView('custom', formatted);
+    });
+
     function renderRecentFeedRows() {
+      historyFilterBar.style.display = 'none';
+      feedTitleLbl.textContent = 'Recent Activity';
+      entryCountLbl.textContent = `${state.transactions.length} entries`;
       if (!state.transactions.length) return;
       outputEl.innerHTML = '';
       state.transactions.slice(0, 15).forEach(t => appendTxRow(t));
@@ -830,9 +885,12 @@
 
     function appendTxRow(t) {
       const isPositive = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
-      const label = t.type === 'CREDIT' ? 'Credited' : (t.type === 'SETTLE_IN' ? 'Settled In' : (t.type === 'FRIEND_PAID' ? `${t.payer} Paid` : 'Debited'));
+      let label = t.type === 'CREDIT' ? 'Credited' : (t.type === 'SETTLE_IN' ? 'Settled In' : (t.type === 'FRIEND_PAID' ? `${t.payer} Paid` : 'Debited'));
+      if (t.splitFriends && t.splitFriends.length > 0) {
+        label = t.fullLoan ? `Udhar → ${t.splitFriends.join(', ')}` : `Split w/ ${t.splitFriends.join(', ')}`;
+      }
       const sign = isPositive ? '+' : '-';
-      const amtCls = isPositive ? 'credit' : 'debit';
+      const amtCls = isPositive ? 'credit' : (t.splitFriends && t.splitFriends.length > 0 ? 'split' : 'debit');
 
       const row = document.createElement('div');
       row.className = 'tx-row';
@@ -874,10 +932,12 @@
       if (allowMask && isMasked) return '₹••••';
       return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); }
+    function capitalize(s) {
+      return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+    }
     function getTimestamp() {
       const now = new Date();
-      return now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ' ' +
+      return now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) + ' ' +
              now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
     }
 
@@ -953,13 +1013,20 @@
         if (isNaN(cash) || cash < 0) return printLine('Sahi Cash amount likhein.', 'debit');
         state.upiAccounts = wizard.collectedAccounts;
         state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
-        cmdInput.placeholder = '50 chai upi | 200 pizza with sachin';
+        cmdInput.placeholder = '50 chai upi | 353 manish recharge';
         await persistState('setup');
         printLine('Setup Complete! Ab aap apna daily hisab likh sakte hain.', 'credit', true);
       }
     }
 
-    const NON_FRIEND = new Set(['me','my','mere','mera','both','dono','hum','upi','cash','chai','food','khana','pizza','burger','auto','bus','petrol','bill','recharge','friend','dost','paid','for','by','with','and']);
+    const NON_FRIEND = new Set([
+      'me','my','mere','mera','both','dono','hum','upi','cash','chai','tea','coffee','food','khana',
+      'pizza','burger','lunch','dinner','nashta','milk','paneer','dahi','lassi','grocery','sabzi',
+      'auto','bus','train','petrol','diesel','cab','ticket','kiraya','bike','bill','bijli','rent',
+      'room','recharge','jio','vi','airtel','shirt','pant','shoes','amazon','flipkart','shopping',
+      'friend','dost','paid','for','by','with','and','ke','sath','ko','diye','diya','udhar','loan',
+      'credit','credited','received','salary','stipend','income','added','refund','cashback','mila','mile','aaye'
+    ]);
 
     function resolveUpiAccount(lower) {
       if (!state.upiAccounts.length) return { id: 'upi_1', name: 'UPI', balance: 0 };
@@ -977,7 +1044,7 @@
 
     function inferCategory(lower, isCredit) {
       if (isCredit) return 'Income';
-      if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|grocery|sabzi)\b/.test(lower)) return 'Food';
+      if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|paneer|grocery|sabzi)\b/.test(lower)) return 'Food';
       if (/\b(auto|bus|train|petrol|diesel|cab|ticket|kiraya|bike)\b/.test(lower)) return 'Transport';
       if (/\b(recharge|jio|vi|airtel|bill|bijli|rent|room)\b/.test(lower)) return 'Bills';
       if (/\b(shirt|pant|shoes|amazon|flipkart|shopping)\b/.test(lower)) return 'Shopping';
@@ -990,13 +1057,13 @@
 
       if (wizard.active) {
         printLine(`> ${text}`, 'cmd-echo');
-        return handleWizardInput(text);
+                return handleWizardInput(text);
       }
       const lower = text.toLowerCase();
 
       if (lower === 'setup') return startSetupWizard(true);
       if (lower === 'lock') return engageLock();
-      if (lower === 'clear') { outputEl.innerHTML = ''; return; }
+      if (lower === 'clear') { historyFilterBar.style.display = 'none'; outputEl.innerHTML = ''; return; }
 
       if (lower.startsWith('pin ')) {
         const newPin = text.split(/\s+/)[1] || '';
@@ -1045,13 +1112,14 @@
       }
 
       if (lower.startsWith('find ') || lower.startsWith('search ')) {
+        historyFilterBar.style.display = 'none';
         const q = lower.replace(/^(?:find|search)\s+/, '').trim();
-        if (!q) return printLine('Usage: find chai | find sachin', 'warn');
+        if (!q) return printLine('Usage: find chai | find manish', 'warn');
         const matches = state.transactions.filter(t =>
           t.note.toLowerCase().includes(q) ||
           (t.category && t.category.toLowerCase().includes(q)) ||
           (t.accountName && t.accountName.toLowerCase().includes(q)) ||
-                    (t.payer && t.payer.toLowerCase().includes(q)) ||
+          (t.payer && t.payer.toLowerCase().includes(q)) ||
           (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
         );
         if (!matches.length) return printLine(`"${q}" se milti koi entry nahi mili.`, 'dim');
@@ -1065,6 +1133,7 @@
       }
 
       if (lower === 'bal' || lower === 'balance' || /\b(kitna|bacha|balance|mauke|moke)\b/.test(lower) && !extractAmount(text)) {
+        historyFilterBar.style.display = 'none';
         let rec = 0, pay = 0;
         Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
         let out = `BALANCE SHEET\n\n`;
@@ -1077,6 +1146,7 @@
       }
 
       if (lower === 'dues' || lower === 'udhar') {
+        historyFilterBar.style.display = 'none';
         const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
         if (!list.length) return printLine('Kisi dost ke saath udhar baaki nahi hai.', 'dim');
         let out = `FRIEND UDHAR LEDGER\n\n`;
@@ -1086,21 +1156,15 @@
 
       if (lower === 'ls' || lower.startsWith('ls ') || lower === 'history') {
         const filterStr = lower.replace(/^(?:ls|history)\s*/, '').trim();
-        let list = state.transactions;
+        document.querySelectorAll('[data-hfilter]').forEach(b => b.classList.toggle('active', b.getAttribute('data-hfilter') === 'all'));
         if (filterStr && filterStr !== 'all') {
-          list = list.filter(t => t.ts.toLowerCase().includes(filterStr));
+          return renderHistoryView('custom', filterStr);
         }
-        if (!list.length) return printLine(`"${filterStr || 'all'}" ke liye koi transaction nahi hai.`, 'dim');
-        const periodSpend = list.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID')).reduce((s, t) => s + (t.myShare || 0), 0);
-        let out = `HISTORY (${(filterStr || 'ALL').toUpperCase()} - ${list.length} entries | Spend: ${formatMoney(periodSpend)})\n\n`;
-        list.slice(0, 35).forEach(t => {
-          const s = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
-          out += `#${t.id} ${t.ts} | ${t.accountName} | ${s}${formatMoney(t.amount)} | ${t.note}\n`;
-        });
-        return printBlock(out);
+        return renderHistoryView('all');
       }
 
       if (lower === 'stats') {
+        historyFilterBar.style.display = 'none';
         const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
         if (!deb.length) return printLine('Abhi koi personal kharch nahi hai.', 'dim');
         const tot = deb.reduce((s, t) => s + t.myShare, 0);
@@ -1114,10 +1178,9 @@
       }
 
       if (lower.startsWith('settle ')) {
-        const parts = text.split(/\s+/);
-        const name = capitalize(parts[1] || '');
-        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === name.toLowerCase());
-        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return printLine(`${name} ka koi udhar baaki nahi hai.`, 'dim');
+        const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
+        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
+        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return printLine(`${target} ka koi udhar baaki nahi hai.`, 'dim');
         const val = state.friends[fKey];
         const abs = Math.abs(val);
         const isCash = /\bcash\b/.test(lower);
@@ -1132,6 +1195,7 @@
         state.friends[fKey] = 0;
         state.transactions.unshift(txObj);
         await persistState('settle');
+        historyFilterBar.style.display = 'none';
         return appendTxRow(txObj);
       }
 
@@ -1146,10 +1210,10 @@
       }
 
       const amt = extractAmount(text);
-      if (!amt || amt <= 0) return printLine('Amount samajh nahi aaya. Example: "50 chai upi" ya "find sachin"', 'warn');
+      if (!amt || amt <= 0) return printLine('Amount samajh nahi aaya. Example: "50 chai upi" ya "353 manish recharge"', 'warn');
 
-      const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+)/) || lower.match(/^([a-zA-Z]+)\s+(?:ne|paid)\b/);
-      if (paidByM && !NON_FRIEND.has(paidByM[1].toLowerCase())) {
+      const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+(?:\s+ji)?)/) || lower.match(/^([a-zA-Z]+(?:\s+ji)?)\s+(?:ne|paid)\b/);
+      if (paidByM && !NON_FRIEND.has(paidByM[1].split(/\s+/)[0].toLowerCase())) {
         const payer = capitalize(paidByM[1]);
         const isBoth = /\b(both|dono|split)\b/.test(lower);
         const myShare = isBoth ? Math.round((amt / 2) * 100) / 100 : amt;
@@ -1157,6 +1221,7 @@
         const txObj = { id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text };
         state.transactions.unshift(txObj);
         await persistState('friend_paid');
+        historyFilterBar.style.display = 'none';
         return appendTxRow(txObj);
       }
 
@@ -1164,17 +1229,46 @@
       const isCash = /\bcash\b/.test(lower);
       const acc = isCash ? null : resolveUpiAccount(lower);
       const chan = isCash ? 'CASH' : acc.name;
+      const upiNamesSet = new Set(state.upiAccounts.map(a => a.name.toLowerCase()));
 
       let splitFriends = [];
+      let fullLoan = false;
       const withM = lower.match(/\b(?:with|and|ke sath)\s+([a-zA-Z\s,]+)/);
+
       if (!isCredit && withM) {
-        splitFriends = withM[1].split(/[\s,]+/).filter(w => w.length >= 2 && !NON_FRIEND.has(w)).map(capitalize);
+        splitFriends = withM[1]
+          .split(/[\s,]+/)
+          .filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w))
+          .map(capitalize);
+      } else if (!isCredit) {
+        const words = lower.replace(/[\d.,]+/g, ' ').trim().split(/[\s,]+/);
+        const directNames = [];
+        for (let i = 0; i < words.length; i++) {
+          const w = words[i];
+          if (/^[a-zA-Z]{2,}$/.test(w) && !NON_FRIEND.has(w) && !upiNamesSet.has(w) && w !== 'ji') {
+            if (words[i + 1] === 'ji') {
+              directNames.push(capitalize(w + ' ji'));
+              i++;
+            } else {
+              directNames.push(capitalize(w));
+            }
+          }
+        }
+        if (directNames.length > 0) {
+          splitFriends = [directNames[0]];
+          fullLoan = true;
+        }
       }
 
       let myShare = amt, perFriendShare = 0;
       if (!isCredit && splitFriends.length > 0) {
-        perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100;
-        myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100;
+        if (fullLoan) {
+          perFriendShare = amt;
+          myShare = 0;
+        } else {
+          perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100;
+          myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100;
+        }
         splitFriends.forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) + perFriendShare) * 100) / 100);
       }
 
@@ -1183,11 +1277,12 @@
 
       const txObj = {
         id: state.nextId++, ts: getTimestamp(), type: isCredit ? 'CREDIT' : 'DEBIT',
-        amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends,
+        amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends, fullLoan,
         accountName: chan, category: inferCategory(lower, isCredit), note: text
       };
       state.transactions.unshift(txObj);
       await persistState('tx');
+      historyFilterBar.style.display = 'none';
       appendTxRow(txObj);
     }
 
@@ -1216,7 +1311,7 @@
       } else if (state.transactions.length > 0) {
         renderRecentFeedRows();
       } else {
-        printLine('Cash Flow OS Ready. Tap BENTO / BRUTAL / TERM at top-right anytime to switch UI.', 'dim');
+        printLine('Cash Flow OS Ready. Try "353 manish recharge" or tap History for Date/Month filters.', 'dim');
       }
     })();
   </script>
