@@ -1,10 +1,13 @@
 package com.cashflow.os
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -116,13 +119,33 @@ class MainActivity : FragmentActivity() {
         @JavascriptInterface
         fun saveDailyBackup(jsonStr: String): String {
             return try {
-                val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                val folder = File(downloads, "CashFlowOS_Backups")
-                if (!folder.exists()) folder.mkdirs()
                 val dateTag = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-                val file = File(folder, "cashflow_backup_$dateTag.json")
-                file.writeText(jsonStr)
-                file.absolutePath
+                val fileName = "cashflow_backup_$dateTag.json"
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val resolver = contentResolver
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                        put(MediaStore.MediaColumns.MIME_TYPE, "application/json")
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/CashFlowOS_Backups")
+                    }
+                    val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                    if (uri != null) {
+                        resolver.openOutputStream(uri)?.use { out ->
+                            out.write(jsonStr.toByteArray())
+                        }
+                        "Downloads/CashFlowOS_Backups/$fileName"
+                    } else {
+                        "ERR: Could not create MediaStore entry"
+                    }
+                } else {
+                    val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val folder = File(downloads, "CashFlowOS_Backups")
+                    if (!folder.exists()) folder.mkdirs()
+                    val file = File(folder, fileName)
+                    file.writeText(jsonStr)
+                    file.absolutePath
+                }
             } catch (e: Exception) {
                 "ERR: ${e.message}"
             }
