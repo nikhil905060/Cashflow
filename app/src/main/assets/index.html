@@ -6,347 +6,381 @@
   <title>Cash Flow OS</title>
   <style>
     :root {
-      --bg: #F4F4F5;
+      /* iOS 18 LIGHT MODE TOKENS (DEFAULT) */
+      --bg: #F2F2F7;
       --surface: #FFFFFF;
-      --surface-alt: #E4E4E7;
-      --obsidian: #141518;
-      --fg: #111315;
-      --fg-dim: #71717A;
-      --credit: #10B981;
-      --debit: #EF4444;
-      --warn: #D97706;
-      --split: #7C3AED;
-      --owe: #EA580C;
-      --info: #0284C7;
-      --font-main: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+      --fill-tertiary: rgba(118, 118, 128, 0.12);
+      --glass-bg: rgba(242, 242, 247, 0.84);
+      --fg: #000000;
+      --fg-sec: rgba(60, 60, 67, 0.60);
+      --sep: rgba(60, 60, 67, 0.18);
+      --accent: #007AFF;
+      --accent-tint: rgba(0, 122, 255, 0.14);
+      --credit: #34C759;
+      --debit: #FF3B30;
+      --warn: #FF9500;
+      --split: #AF52DE;
+      --input-bg: rgba(118, 118, 128, 0.12);
+      --input-fg: #000000;
+      --output-bg: #FFFFFF;
+      --output-fg: #000000;
+      --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+      --radius-card: 16px;
+      --row-pad: 11px 16px;
     }
 
-    body[data-ui="neobrutal"] {
-      --bg: #FAF8F5;
-      --surface: #FFFFFF;
-      --surface-alt: #FFD426;
-      --fg: #111111;
-      --fg-dim: #555555;
-      --credit: #16A34A;
-      --debit: #DC2626;
+    body.dark-mode {
+      /* iOS 18 OLED DARK MODE TOKENS */
+      --bg: #000000;
+      --surface: #1C1C1E;
+      --fill-tertiary: #2C2C2E;
+      --glass-bg: rgba(28, 28, 30, 0.84);
+      --fg: #FFFFFF;
+      --fg-sec: rgba(235, 235, 245, 0.60);
+      --sep: rgba(84, 84, 88, 0.65);
+      --accent: #0A84FF;
+      --accent-tint: rgba(10, 132, 255, 0.20);
+      --credit: #30D158;
+      --debit: #FF453A;
+      --input-bg: #2C2C2E;
+      --input-fg: #FFFFFF;
+      --output-bg: #1C1C1E;
+      --output-fg: #FFFFFF;
     }
 
-    body[data-ui="terminal"] {
-      --bg: #040705;
-      --surface: #08100b;
-      --surface-alt: #0d1a12;
-      --fg: #00ff66;
-      --fg-dim: #00b347;
-      --credit: #00ffcc;
-      --debit: #ff5c5c;
-      --warn: #ffcc00;
-      --split: #c792ea;
-      --owe: #ff9e64;
-      --info: #56b6c2;
-      --font-main: 'JetBrains Mono', 'Courier New', monospace;
-    }
+    body.compact-mode { --row-pad: 7px 14px; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body {
       width: 100%; height: 100dvh; background: var(--bg); color: var(--fg);
-      font-family: var(--font-main); font-size: 14px; line-height: 1.4; overflow: hidden;
+      font-family: var(--font-main); font-size: 15px; line-height: 1.35; overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
+    .tab-num { font-variant-numeric: tabular-nums; }
+    svg.sf { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
 
-    body[data-ui="terminal"]::before {
-      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9000;
-      background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.28) 50%);
-      background-size: 100% 3px;
-    }
-
+    /* iOS 18 LOCK SCREEN */
     #lock-screen {
       position: fixed; inset: 0; z-index: 9999; background: var(--bg); color: var(--fg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 24px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px;
     }
     #lock-screen.unlocked { display: none; }
-
-    .lock-card {
-      width: 100%; max-width: 316px; background: var(--surface);
-      border-radius: 28px; padding: 24px 18px; text-align: center;
-    }
-    body[data-ui="neobrutal"] .lock-card {
-      border: 2px solid #111111; border-radius: 16px; box-shadow: 4px 4px 0px #111111;
-    }
-    body[data-ui="terminal"] .lock-card {
-      background: #08100b; border: 1px solid #00ff66; border-radius: 6px;
-    }
-
-    .lock-badge {
-      display: inline-block; background: #141518; color: #FFFFFF;
-      border-radius: 999px; padding: 4px 12px; font-size: 11px; font-weight: 800; margin-bottom: 10px;
-    }
-    body[data-ui="neobrutal"] .lock-badge { background: #FFD426; color: #111111; border: 2px solid #111111; }
-    body[data-ui="terminal"] .lock-badge { background: #00ff66; color: #040705; border-radius: 4px; }
-
-    .lock-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
-    .lock-sub { font-size: 12px; color: var(--fg-dim); margin-bottom: 16px; }
-    .pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 14px; }
-    .pin-dot { width: 14px; height: 14px; border: 2px solid currentColor; border-radius: 50%; }
-    .pin-dot.filled { background: currentColor; }
-    .lock-err { font-size: 12px; color: var(--debit); font-weight: 700; min-height: 18px; margin-bottom: 6px; }
-    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center; }
-    .k-btn {
-      width: 64px; height: 52px; background: #F4F4F5; color: #111315;
-      border: none; border-radius: 999px; font-size: 18px; font-weight: 800; cursor: pointer; font-family: inherit;
-    }
-    .k-btn:active { transform: scale(0.94); }
-    .k-btn.emerald { background: #10B981; color: #FFFFFF; }
-    .k-btn.dark { background: #141518; color: #FFFFFF; }
-    body[data-ui="neobrutal"] .k-btn {
-      width: 100%; height: 46px; background: #FFFFFF; border: 2px solid #111111;
-      border-radius: 10px; box-shadow: 3px 3px 0px #111111;
-    }
-    body[data-ui="neobrutal"] .k-btn.emerald { background: #22C55E; color: #111111; }
-    body[data-ui="neobrutal"] .k-btn.dark { background: #FFD426; color: #111111; }
-    body[data-ui="terminal"] .k-btn {
-      width: 100%; height: 44px; background: #0d1a12; color: #00ff66; border: 1px solid #193823; border-radius: 4px;
-    }
-        #app {
-      display: flex; flex-direction: column; height: 100dvh; max-width: 960px;
-      margin: 0 auto; padding: 12px 14px 10px;
-    }
-
-    #top-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 6px; margin-bottom: 10px; flex-shrink: 0;
-    }
-    .brand-left { display: flex; align-items: center; gap: 8px; }
-    .mini-logo {
-      width: 34px; height: 34px; background: #141518; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    body[data-ui="neobrutal"] .mini-logo { border-radius: 10px; border: 2px solid #111111; }
-    .brand-tag { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
-
-    .top-controls { display: flex; gap: 6px; align-items: center; }
-    .pill-btn {
-      height: 34px; padding: 0 13px; background: var(--surface); color: var(--fg);
-      border: none; border-radius: 999px; font-weight: 700; font-size: 11.5px;
-      cursor: pointer; font-family: inherit; display: inline-flex; align-items: center;
-    }
-    .pill-btn:active { transform: scale(0.95); }
-    .pill-btn.dark { background: #141518; color: #FFFFFF; }
-    body[data-ui="neobrutal"] .pill-btn {
-      border: 2px solid #111111; box-shadow: 2px 2px 0px #111111; font-weight: 800;
-    }
-    body[data-ui="neobrutal"] .pill-btn.accent { background: #FFD426; color: #111111; }
-    body[data-ui="terminal"] .pill-btn {
-      background: #08100b; color: #00ff66; border: 1px solid #00b347; border-radius: 4px; height: 28px;
-    }
-
-    #bento-hero {
-      background: #141518; color: #FFFFFF; border-radius: 28px;
-      padding: 15px 20px; margin-bottom: 10px; flex-shrink: 0;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    body:not([data-ui="bento"]) #bento-hero { display: none; }
-    .hero-lbl { font-size: 11.5px; color: #A1A1AA; font-weight: 600; }
-    .hero-num { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 2px; }
-    .hero-circle-btn {
-      width: 44px; height: 44px; border-radius: 50%; background: #27272A; color: #10B981;
-      border: none; font-size: 16px; font-weight: 800; cursor: pointer;
+    .lock-wrap { width: 100%; max-width: 300px; text-align: center; }
+    .lock-icon-ring {
+      width: 52px; height: 52px; margin: 0 auto 14px; border-radius: 50%;
+      background: var(--accent-tint); color: var(--accent);
       display: flex; align-items: center; justify-content: center;
     }
+    .lock-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .lock-sub { font-size: 13px; color: var(--fg-sec); margin-bottom: 20px; }
+    .pin-dots { display: flex; justify-content: center; gap: 16px; margin-bottom: 14px; }
+    .pin-dot { width: 13px; height: 13px; border: 1.5px solid var(--fg); border-radius: 50%; transition: background 0.15s; }
+    .pin-dot.filled { background: var(--fg); }
+    .lock-err { font-size: 13px; color: var(--debit); font-weight: 500; min-height: 20px; margin-bottom: 14px; }
+    .keypad { display: grid; grid-template-columns: repeat(3, 74px); gap: 14px 20px; justify-content: center; }
+    .k-btn {
+      width: 74px; height: 74px; border-radius: 50%; border: none;
+      background: var(--fill-tertiary); color: var(--fg); font-family: inherit;
+      font-size: 26px; font-weight: 400; cursor: pointer; font-variant-numeric: tabular-nums;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.15s;
+    }
+    .k-btn:active { transform: scale(0.94); opacity: 0.7; }
+    .k-btn.plain { background: transparent; color: var(--accent); font-size: 15px; font-weight: 600; }
 
-    #cards-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-      margin-bottom: 10px; flex-shrink: 0;
-    }
-    body[data-ui="terminal"] #cards-grid { display: none; }
+    /* MAIN APP SHELL */
+    #app { display: flex; flex-direction: column; height: 100dvh; max-width: 680px; margin: 0 auto; position: relative; }
 
-    .bento-card {
-      background: #FFFFFF; border-radius: 26px; padding: 13px 16px;
-      cursor: pointer; transition: transform 0.1s ease;
+    /* STICKY FROSTED TOP NAV */
+    #top-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 16px; background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 0.5px solid var(--sep); flex-shrink: 0; z-index: 20;
     }
-    .bento-card.alt { background: #E4E4E7; }
-    .bento-card:active { transform: scale(0.97); }
-    .bento-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .bento-circle-icon {
-      width: 32px; height: 32px; border-radius: 50%; background: #F4F4F5; color: #111315;
-      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;
+    .nav-btn-plain {
+      background: transparent; border: none; color: var(--accent); font-family: inherit;
+      font-size: 16px; font-weight: 500; cursor: pointer; min-width: 44px; min-height: 36px;
+      display: inline-flex; align-items: center; gap: 5px;
+      transition: transform 0.15s, opacity 0.15s;
     }
-    .bento-card.alt .bento-circle-icon { background: #FFFFFF; }
-    .bento-sub { font-size: 11px; color: #71717A; font-weight: 600; }
-    .bento-val { font-size: 18px; font-weight: 800; color: #111315; letter-spacing: -0.02em; }
+    .nav-btn-plain:active { transform: scale(0.96); opacity: 0.6; }
+    .nav-center-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+    .nav-circle-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      background: var(--accent-tint); color: var(--accent); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .nav-circle-btn:active { transform: scale(0.93); opacity: 0.75; }
 
-    .folder-card-wrap { display: flex; flex-direction: column; cursor: pointer; }
-    .folder-tab {
-      width: 52px; height: 8px; border: 2px solid #111111; border-bottom: none;
-      border-radius: 6px 6px 0 0;
+    /* SCROLLABLE BODY AREA */
+    #main-scroll {
+      flex: 1; display: flex; flex-direction: column; min-height: 0;
+      padding: 12px 16px 8px; gap: 12px; overflow: hidden;
     }
-    .folder-body {
-      background: #FFFFFF; border: 2px solid #111111;
-      border-radius: 0 12px 12px 12px; box-shadow: 4px 4px 0px #111111;
-      padding: 8px 10px; display: flex; align-items: center; gap: 8px;
-    }
-    .folder-icon { font-size: 15px; font-weight: 800; color: #111111; }
-    .folder-info { display: flex; flex-direction: column; min-width: 0; }
-    .folder-title { font-size: 13px; font-weight: 800; color: #111111; }
-    .folder-meta { font-size: 10.5px; color: #666666; font-weight: 600; }
 
+    /* HERO NET BALANCE + WALLET ROW */
+    .hero-card {
+      background: var(--surface); border-radius: var(--radius-card); padding: 14px 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04); flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .hero-lbl { font-size: 13px; color: var(--fg-sec); font-weight: 500; }
+    .hero-num { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-top: 2px; }
+    .hero-sub { font-size: 12px; color: var(--fg-sec); margin-top: 3px; }
+    .hero-pill {
+      background: var(--accent-tint); color: var(--accent); border: none;
+      border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: transform 0.15s;
+    }
+    .hero-pill:active { transform: scale(0.96); }
+
+    #cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
+    .wallet-tile {
+      background: var(--surface); border-radius: var(--radius-card); padding: 11px 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04); cursor: pointer;
+      display: flex; align-items: center; gap: 10px; transition: transform 0.15s;
+    }
+    .wallet-tile:active { transform: scale(0.97); opacity: 0.85; }
+    .w-icon {
+      width: 34px; height: 34px; border-radius: 10px; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .w-icon.upi { background: var(--accent-tint); color: var(--accent); }
+    .w-icon.cash { background: rgba(52, 199, 89, 0.15); color: var(--credit); }
+    .w-meta { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
+    .w-val { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+
+    /* iOS 18 SEGMENTED CONTROL */
+    .ios-seg {
+      display: flex; background: var(--fill-tertiary); border-radius: 9px; padding: 2px;
+      flex-shrink: 0;
+    }
+    .ios-seg button {
+      flex: 1; height: 30px; border: none; background: transparent; color: var(--fg);
+      font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 7px;
+      cursor: pointer; transition: background 0.18s, box-shadow 0.18s;
+    }
+    .ios-seg button.active {
+      background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+    body.dark-mode .ios-seg button.active { background: #636366; color: #FFFFFF; }
+        /* FEED CONTAINER (INSET GROUPED LIST) */
     #feed-card {
       flex: 1; display: flex; flex-direction: column; min-height: 0;
-      background: var(--surface); border-radius: 28px; padding: 13px 15px 10px;
+      background: var(--output-bg); color: var(--output-fg);
+      border-radius: var(--radius-card); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
       overflow: hidden;
     }
-    body[data-ui="neobrutal"] #feed-card {
-      border: 2px solid #111111; border-radius: 16px; box-shadow: 4px 4px 0px #111111;
-    }
-    body[data-ui="terminal"] #feed-card {
-      background: transparent; border-radius: 0; padding: 0;
-    }
-
-    #feed-card-header {
+    .feed-head {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 13.5px; font-weight: 800; color: var(--fg);
-      padding-bottom: 8px; margin-bottom: 4px; flex-shrink: 0;
+      padding: 11px 16px 8px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
     }
-    body[data-ui="terminal"] #feed-card-header { display: none; }
+    .feed-head-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; color: var(--fg-sec); }
+    .feed-head-meta { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
 
-    .filter-bar {
-      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px;
-      border-bottom: 1px solid #ECEAE4; flex-shrink: 0; scrollbar-width: none;
+    /* HISTORY SEARCH & PILLS BAR */
+    #history-tools {
+      display: none; flex-direction: column; gap: 8px;
+      padding: 10px 14px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
     }
-    .filter-bar::-webkit-scrollbar { display: none; }
+    .ios-search {
+      display: flex; align-items: center; gap: 8px; height: 36px;
+      background: var(--fill-tertiary); border-radius: 10px; padding: 0 10px;
+    }
+    .ios-search input {
+      flex: 1; border: none; outline: none; background: transparent;
+      color: var(--output-fg); font-family: inherit; font-size: 15px;
+    }
+    .ios-search input::placeholder { color: var(--fg-sec); }
+    .filter-pills { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+    .filter-pills::-webkit-scrollbar { display: none; }
     .f-pill {
-      padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 700;
-      background: #F4F4F5; color: #111315; border: none; cursor: pointer; white-space: nowrap;
+      height: 28px; padding: 0 12px; border-radius: 999px; border: none;
+      background: var(--fill-tertiary); color: var(--output-fg); font-family: inherit;
+      font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
     }
-    .f-pill.active { background: #141518; color: #FFFFFF; }
-    body[data-ui="neobrutal"] .f-pill { border: 1.5px solid #111111; background: #FFFFFF; }
-    body[data-ui="neobrutal"] .f-pill.active { background: #FFD426; color: #111111; }
-    body[data-ui="terminal"] .f-pill { background: #0d1a12; color: #00ff66; border: 1px solid #00ff66; border-radius: 4px; }
-
-    #output {
-      flex: 1; overflow-y: auto; padding-right: 2px;
-      -webkit-overflow-scrolling: touch;
+    .f-pill.active { background: var(--accent); color: #FFFFFF; }
+    #date-picker-input {
+      height: 28px; border: none; border-radius: 999px; background: var(--fill-tertiary);
+      color: var(--output-fg); padding: 0 10px; font-size: 12px; font-weight: 600; font-family: inherit;
     }
 
+    #output { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* INSET GROUPED ROWS WITH INDENTED 0.5PX DIVIDERS */
     .tx-row {
       display: flex; justify-content: space-between; align-items: center;
-      background: #F4F4F5; border-radius: 999px; padding: 9px 14px; margin-bottom: 8px;
+      padding: var(--row-pad); position: relative;
     }
-    body[data-ui="neobrutal"] .tx-row {
-      background: transparent; border-radius: 0; padding: 8px 2px; margin-bottom: 0;
-      border-bottom: 1px solid #ECEAE4;
+    .tx-row:not(:last-child)::after {
+      content: ""; position: absolute; left: 16px; right: 0; bottom: 0;
+      height: 0.5px; background: var(--sep);
     }
-    body[data-ui="terminal"] .tx-row {
-      background: transparent; border-radius: 0; padding: 6px 0; margin-bottom: 0;
-      border-bottom: 1px dashed #193823;
-    }
-
-    .tx-left { display: flex; flex-direction: column; min-width: 0; padding-right: 8px; }
-    .tx-title { font-size: 13px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tx-sub { font-size: 10.5px; color: var(--fg-dim); font-weight: 600; }
-
-    .tx-amt-pill {
-      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 800;
-      background: #FFFFFF; flex-shrink: 0;
-    }
-    body[data-ui="terminal"] .tx-amt-pill { background: transparent; padding: 0; }
+    .tx-left { display: flex; flex-direction: column; min-width: 0; padding-right: 10px; }
+    .tx-title { font-size: 15px; font-weight: 500; color: var(--output-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-sub { font-size: 12px; color: var(--fg-sec); margin-top: 2px; }
+    .tx-amt { font-size: 15px; font-weight: 600; flex-shrink: 0; }
     .credit { color: var(--credit); }
     .debit { color: var(--debit); }
-    .warn { color: var(--warn); }
     .split { color: var(--split); }
-    .owe { color: var(--owe); }
-    .info { color: var(--info); }
-    .dim { color: var(--fg-dim); }
-    .line { margin-bottom: 5px; white-space: pre-wrap; word-break: break-word; font-weight: 600; font-size: 13px; }
-    .cmd-echo { font-weight: 800; margin-top: 6px; }
+    .warn { color: var(--warn); }
+    .info { color: var(--accent); }
+    .dim { color: var(--fg-sec); }
 
+    .line { padding: 8px 16px; font-size: 13.5px; font-weight: 500; white-space: pre-wrap; word-break: break-word; }
     .box-block {
-      background: #F4F4F5; border-radius: 18px; padding: 12px; margin: 8px 0;
-      white-space: pre; overflow-x: auto; font-family: var(--font-mono); font-size: 11.5px; color: #111315;
+      margin: 10px 14px; padding: 12px; border-radius: 12px; background: var(--fill-tertiary);
+      font-family: var(--font-mono); font-size: 12px; white-space: pre; overflow-x: auto;
     }
-    body[data-ui="neobrutal"] .box-block {
-      background: #FAF8F5; border: 1.5px solid #111111; border-radius: 10px;
+    .settle-btn {
+      background: var(--accent-tint); color: var(--accent); border: none; border-radius: 999px;
+      padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
     }
-    body[data-ui="terminal"] .box-block {
-      background: transparent; border: none; padding: 4px 0; color: #00ff66;
-    }
+    .settle-btn:active { transform: scale(0.95); }
 
-    #chips-row {
-      display: flex; gap: 7px; overflow-x: auto; margin-top: 9px; padding-bottom: 2px;
+    /* OPTIONAL QUICK CHIPS BAR (OFF BY DEFAULT FOR CLEAN HOME, TOGGLE IN MENU) */
+    #quick-chips-bar {
+      display: none; gap: 6px; overflow-x: auto; padding: 6px 16px 0;
       scrollbar-width: none; flex-shrink: 0;
     }
-    #chips-row::-webkit-scrollbar { display: none; }
-    .chip {
-      background: #FFFFFF; color: #111315; border: none;
-      border-radius: 999px; height: 32px; padding: 0 14px;
-      font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0;
-    }
-    .chip.dark { background: #141518; color: #FFFFFF; }
-    .chip:active { transform: scale(0.95); }
-    body[data-ui="neobrutal"] .chip {
-      border: 2px solid #111111; box-shadow: 2px 2px 0px #111111; font-weight: 800;
-    }
-    body[data-ui="neobrutal"] .chip.dark { background: #FFD426; color: #111111; }
-    body[data-ui="terminal"] .chip {
-      background: #0d1a12; color: #00ff66; border: 1px solid #193823; border-radius: 4px; height: 28px;
+    #quick-chips-bar.visible { display: flex; }
+    #quick-chips-bar::-webkit-scrollbar { display: none; }
+    .q-chip {
+      height: 30px; padding: 0 12px; border-radius: 999px; border: none;
+      background: var(--surface); color: var(--fg); font-family: inherit;
+      font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
 
-    #bottom-input-area { margin-top: 8px; flex-shrink: 0; }
-    .nb-input-wrap { display: flex; gap: 8px; align-items: center; }
-    .nb-input-box {
-      flex: 1; display: flex; align-items: center; gap: 8px;
-      background: #141518; border-radius: 999px; padding: 0 8px 0 16px; height: 48px;
+    /* BOTTOM FROSTED INPUT DOCK */
+    #bottom-dock {
+      padding: 8px 14px 12px; background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 0.5px solid var(--sep); flex-shrink: 0;
     }
-    .nb-hash { font-weight: 800; font-size: 13px; color: #00ff66; white-space: nowrap; }
-    body:not([data-ui="terminal"]) .nb-hash { display: none; }
+    .dock-row { display: flex; align-items: center; gap: 8px; }
+    .input-pill {
+      flex: 1; display: flex; align-items: center; gap: 8px; height: 42px;
+      background: var(--input-bg); border-radius: 999px; padding: 0 6px 0 14px;
+    }
+    .term-prefix { display: none; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--credit); }
     #cmd-input {
       flex: 1; border: none; outline: none; background: transparent;
-      font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; min-width: 30px;
+      color: var(--input-fg); font-family: inherit; font-size: 15px; min-width: 30px;
     }
-    #cmd-input::placeholder { color: #A1A1AA; font-weight: 500; }
-
+    #cmd-input::placeholder { color: var(--input-fg); opacity: 0.48; }
     #mic-btn {
-      width: 34px; height: 34px; border-radius: 50%; background: #27272A; color: #FFFFFF;
-      border: none; font-size: 14px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: transparent; color: var(--input-fg); opacity: 0.72;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
-    #mic-btn.listening { background: #EF4444; }
-
+    #mic-btn.listening { background: var(--debit); color: #FFFFFF; opacity: 1; }
     #submit-btn {
-      width: 48px; height: 48px; background: #10B981; color: #FFFFFF;
-      border: none; border-radius: 50%; font-size: 22px; font-weight: 800;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: var(--accent); color: #FFFFFF; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    #submit-btn:active { transform: scale(0.94); }
+    #submit-btn:active { transform: scale(0.93); }
 
-    body[data-ui="neobrutal"] .nb-input-box {
-      background: #FFFFFF; border: 2px solid #111111; box-shadow: 4px 4px 0px #111111; height: 46px;
+    /* iOS 18 BOTTOM SHEET MENU */
+    #menu-backdrop {
+      position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, 0.42);
+      display: none; align-items: flex-end; justify-content: center;
     }
-    body[data-ui="neobrutal"] #cmd-input { color: #111111; }
-    body[data-ui="neobrutal"] #cmd-input::placeholder { color: #666666; }
-    body[data-ui="neobrutal"] #mic-btn { background: #FFD426; color: #111111; border: 1.5px solid #111111; }
-    body[data-ui="neobrutal"] #submit-btn {
-      width: 46px; height: 46px; background: #FFD426; color: #111111;
+    #menu-backdrop.open { display: flex; }
+    .ios-sheet {
+      width: 100%; max-width: 600px; max-height: 88dvh; background: var(--bg); color: var(--fg);
+      border-radius: 28px 28px 0 0; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sheet-handle { width: 36px; height: 5px; border-radius: 999px; background: rgba(120,120,128,0.35); margin: 8px auto 4px; flex-shrink: 0; }
+    .sheet-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 16px 12px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
+    }
+    .sheet-title { font-size: 17px; font-weight: 600; }
+    .sheet-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; -webkit-overflow-scrolling: touch; }
+    .sec-hdr {
+      font-size: 12.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em;
+      color: var(--fg-sec); margin: 14px 0 6px 14px;
+    }
+    .sec-hdr:first-child { margin-top: 2px; }
+    .ios-group { background: var(--surface); border-radius: 14px; overflow: hidden; }
+    .ios-cell {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 11px 16px; min-height: 46px; position: relative;
+    }
+    .ios-cell:not(:last-child)::after {
+      content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 0.5px; background: var(--sep);
+    }
+    .cell-lbl { font-size: 15px; font-weight: 400; }
+    .cell-sub { font-size: 12px; color: var(--fg-sec); }
+
+    /* EXACT iOS 18 TOGGLE SWITCH (51x31) */
+    .ios-switch { position: relative; width: 51px; height: 31px; flex-shrink: 0; }
+    .ios-switch input { opacity: 0; width: 0; height: 0; }
+    .ios-slider {
+      position: absolute; inset: 0; border-radius: 999px; cursor: pointer;
+      background: rgba(120, 120, 128, 0.16); transition: background 0.25s;
+    }
+    body.dark-mode .ios-slider { background: rgba(120, 120, 128, 0.32); }
+    .ios-slider::before {
+      content: ""; position: absolute; width: 27px; height: 27px; left: 2px; top: 2px;
+      border-radius: 50%; background: #FFFFFF;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15), 0 1px 1px rgba(0,0,0,0.16);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .ios-switch input:checked + .ios-slider { background: #34C759; }
+    .ios-switch input:checked + .ios-slider::before { transform: translateX(20px); }
+
+    .menu-input {
+      background: var(--fill-tertiary); border: none; border-radius: 10px; padding: 8px 11px;
+      color: var(--fg); font-family: inherit; font-size: 14px; outline: none; width: 100%;
+    }
+    .menu-btn {
+      height: 36px; padding: 0 14px; border-radius: 10px; border: none;
+      background: var(--accent); color: #FFFFFF; font-family: inherit;
+      font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    }
+    .menu-btn.tinted { background: var(--accent-tint); color: var(--accent); }
+    .menu-btn.danger { background: rgba(255, 59, 48, 0.14); color: var(--debit); }
+    .prog-track { width: 100%; height: 7px; border-radius: 999px; background: var(--fill-tertiary); overflow: hidden; margin-top: 6px; }
+    .prog-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.25s; }
+    .color-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 11px 16px; }
+    .cp-chip {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+      border-radius: 999px; background: var(--fill-tertiary); font-size: 12.5px; font-weight: 500;
+    }
+    .cp-chip input[type="color"] { width: 20px; height: 20px; border: none; background: transparent; cursor: pointer; }
+
+    /* THEME OVERRIDES (BENTO / BRUTAL / TERMINAL) */
+    body[data-theme="bento"] { --bg: #F4F4F5; --radius-card: 26px; --accent: #10B981; --accent-tint: rgba(16,185,129,0.14); }
+    body[data-theme="bento"] .hero-card { background: #141518; color: #FFFFFF; }
+    body[data-theme="bento"] .hero-lbl, body[data-theme="bento"] .hero-sub { color: #A1A1AA; }
+    body[data-theme="neobrutal"] { --bg: #FAF8F5; --accent: #111111; --accent-tint: #FFD426; --radius-card: 12px; }
+    body[data-theme="neobrutal"] .hero-card, body[data-theme="neobrutal"] .wallet-tile, body[data-theme="neobrutal"] #feed-card {
       border: 2px solid #111111; box-shadow: 4px 4px 0px #111111;
     }
-
-    body[data-ui="terminal"] .nb-input-box {
-      background: transparent; border-radius: 0; padding: 0; height: 36px;
+    body[data-theme="terminal"] {
+      --bg: #040705; --surface: #08100b; --fill-tertiary: #0d1a12; --glass-bg: rgba(4,7,5,0.92);
+      --fg: #00ff66; --fg-sec: #00b347; --sep: #193823; --accent: #00ff66; --accent-tint: #0d1a12;
+      --radius-card: 6px;
     }
-    body[data-ui="terminal"] #cmd-input { color: #00ff66; font-family: var(--font-mono); }
-    body[data-ui="terminal"] #mic-btn { background: #0d1a12; border: 1px solid #00ff66; color: #00ff66; }
-    body[data-ui="terminal"] #submit-btn {
-      width: auto; padding: 0 12px; height: 34px; background: #00ff66; color: #040705;
-      border-radius: 4px; font-size: 12px; font-family: var(--font-mono);
-    }
+    body[data-theme="terminal"] .term-prefix { display: inline; }
+    body[data-theme="terminal"] #submit-btn { color: #040705; }
   </style>
-</head>
-<body data-ui="bento">
+</head><body data-theme="ios18">
+  <!-- LOCK SCREEN -->
   <div id="lock-screen">
-    <div class="lock-card">
-      <div class="lock-badge">LOCKED</div>
+    <div class="lock-wrap">
+      <div class="lock-icon-ring">
+        <svg class="sf" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      </div>
       <div class="lock-title" id="lock-heading">Unlock Cash Flow</div>
-      <div class="lock-sub" id="lock-sub">Enter PIN or Use Fingerprint</div>
+      <div class="lock-sub" id="lock-sub">Enter PIN or use Fingerprint</div>
       <div class="pin-dots" id="pin-dots">
         <span class="pin-dot"></span><span class="pin-dot"></span>
         <span class="pin-dot"></span><span class="pin-dot"></span>
@@ -362,97 +396,223 @@
         <button type="button" class="k-btn" data-key="7">7</button>
         <button type="button" class="k-btn" data-key="8">8</button>
         <button type="button" class="k-btn" data-key="9">9</button>
-        <button type="button" class="k-btn emerald" id="btn-biometric">FP</button>
+        <button type="button" class="k-btn plain" id="btn-biometric" title="Fingerprint">
+          <svg class="sf" style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12 11a1 1 0 0 1 1 1v4"/><path d="M9 12a3 3 0 0 1 6 0v3"/><path d="M6.5 11.5a5.5 5.5 0 0 1 11 0V15"/><path d="M4 11a8 8 0 0 1 16 0v2"/></svg>
+        </button>
         <button type="button" class="k-btn" data-key="0">0</button>
-        <button type="button" class="k-btn dark" id="pin-back">⌫</button>
+        <button type="button" class="k-btn plain" id="pin-back" title="Delete">
+          <svg class="sf" style="width:22px;height:22px" viewBox="0 0 24 24"><path d="M21 6H9l-6 6 6 6h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/><line x1="17" y1="9" x2="11" y2="15"/><line x1="11" y1="9" x2="17" y2="15"/></svg>
+        </button>
       </div>
     </div>
   </div>
 
+  <!-- iOS 18 BOTTOM SHEET MENU (ALL EXTRA FEATURES) -->
+  <div id="menu-backdrop">
+    <div class="ios-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-nav">
+        <button type="button" class="nav-btn-plain" id="reset-cust-btn" style="color:var(--debit);font-size:15px;">Reset</button>
+        <span class="sheet-title">Menu &amp; Settings</span>
+        <button type="button" class="nav-btn-plain" id="close-menu-btn" style="justify-content:flex-end;font-weight:600;">Done</button>
+      </div>
+
+      <div class="sheet-body">
+        <div class="sec-hdr">Monthly Budget &amp; Category Stats</div>
+        <div class="ios-group">
+          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="number" id="budget-input" class="menu-input" placeholder="Set monthly budget (e.g. 5000)" />
+              <button type="button" class="menu-btn" id="save-budget-btn">Set</button>
+            </div>
+            <div id="budget-visual" style="margin-top:8px;"></div>
+          </div>
+          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
+            <div class="cell-lbl" style="font-weight:600;margin-bottom:4px;">Category Breakdown</div>
+            <div id="stats-visual" class="cell-sub">No expenses yet.</div>
+          </div>
+        </div>
+
+        <div class="sec-hdr">Appearance &amp; Theme</div>
+        <div class="ios-group">
+          <div class="ios-cell">
+            <span class="cell-lbl">OLED Dark Mode</span>
+            <label class="ios-switch"><input type="checkbox" id="toggle-dark"><span class="ios-slider"></span></label>
+          </div>
+          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
+            <span class="cell-lbl" style="margin-bottom:6px;">UI Style</span>
+            <div class="ios-seg" id="theme-seg">
+              <button type="button" class="active" data-set-theme="ios18">iOS 18</button>
+              <button type="button" data-set-theme="bento">Bento</button>
+              <button type="button" data-set-theme="neobrutal">Brutal</button>
+              <button type="button" data-set-theme="terminal">Term</button>
+            </div>
+          </div>
+          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
+            <span class="cell-lbl" style="margin-bottom:6px;">Font Style</span>
+            <div class="ios-seg" id="font-options">
+              <button type="button" class="active" data-font='-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif'>SF Pro</button>
+              <button type="button" data-font='"SF Mono", "JetBrains Mono", ui-monospace, monospace'>Mono</button>
+              <button type="button" data-font='Georgia, "Times New Roman", serif'>Serif</button>
+              <button type="button" data-font='"Trebuchet MS", "Arial Rounded MT Bold", sans-serif'>Round</button>
+            </div>
+          </div>
+          <div class="ios-cell">
+            <span class="cell-lbl">Compact Rows</span>
+            <label class="ios-switch"><input type="checkbox" id="toggle-compact"><span class="ios-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="sec-hdr">Input &amp; Output Colors</div>
+        <div class="ios-group">
+          <div class="color-row">
+            <label class="cp-chip">Input BG <input type="color" id="pick-in-bg" value="#E5E5EA"></label>
+            <label class="cp-chip">Input Text <input type="color" id="pick-in-fg" value="#000000"></label>
+            <label class="cp-chip">Output BG <input type="color" id="pick-out-bg" value="#FFFFFF"></label>
+            <label class="cp-chip">Output Text <input type="color" id="pick-out-fg" value="#000000"></label>
+            <label class="cp-chip">Credit (+) <input type="color" id="pick-credit" value="#34C759"></label>
+            <label class="cp-chip">Debit (-) <input type="color" id="pick-debit" value="#FF3B30"></label>
+          </div>
+        </div>
+
+        <div class="sec-hdr">Wallet &amp; Quick Tools</div>
+        <div class="ios-group">
+          <div class="ios-cell">
+            <span class="cell-lbl">Default Account</span>
+            <select id="default-acc-select" class="menu-input" style="width:auto;min-width:110px;"></select>
+          </div>
+          <div class="ios-cell">
+            <span class="cell-lbl">Show Quick Chips Bar</span>
+            <label class="ios-switch"><input type="checkbox" id="toggle-chips"><span class="ios-slider"></span></label>
+          </div>
+          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
+            <span class="cell-sub" style="margin-bottom:6px;">Custom Chips (comma separated)</span>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="custom-chips-input" class="menu-input" placeholder="20 chai, 50 auto, bal, dues" />
+              <button type="button" class="menu-btn tinted" id="save-chips-btn">Save</button>
+            </div>
+          </div>
+          <div class="ios-cell">
+            <div style="display:flex;gap:8px;width:100%;">
+              <button type="button" class="menu-btn tinted" style="flex:1;" id="btn-menu-edit">Edit Last</button>
+              <button type="button" class="menu-btn tinted" style="flex:1;" id="btn-menu-undo">Undo Last</button>
+              <button type="button" class="menu-btn danger" style="flex:1;" id="btn-menu-setup">Re-Setup</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-hdr">Security &amp; Backup</div>
+        <div class="ios-group">
+          <div class="ios-cell">
+            <span class="cell-lbl">Instant Lock on Minimize</span>
+            <label class="ios-switch"><input type="checkbox" id="toggle-autolock" checked><span class="ios-slider"></span></label>
+          </div>
+          <div class="ios-cell">
+            <input type="password" id="new-pin-input" maxlength="4" inputmode="numeric" class="menu-input" placeholder="New 4-digit PIN" />
+            <button type="button" class="menu-btn tinted" id="save-pin-btn">Set PIN</button>
+          </div>
+          <div class="ios-cell">
+            <div style="display:flex;gap:8px;width:100%;">
+              <button type="button" class="menu-btn" style="flex:1;" id="btn-backup-json">Save JSON Backup</button>
+              <button type="button" class="menu-btn tinted" style="flex:1;" id="btn-export-csv">Export CSV</button>
+            </div>
+          </div>
+          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="restore-json-input" class="menu-input" placeholder="Paste backup JSON here..." />
+              <button type="button" class="menu-btn tinted" id="btn-restore-json">Restore</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLEAN iOS 18 HOME INTERFACE -->
   <div id="app">
-    <div id="top-bar">
-      <div class="brand-left">
-        <div class="mini-logo">
-          <svg viewBox="0 0 64 64" width="22" height="22">
-            <rect x="6" y="6" width="52" height="52" rx="12" fill="#E6E4DF"/>
-            <rect x="10" y="10" width="44" height="14" rx="4" fill="#2997D8"/>
-            <rect x="10" y="17" width="44" height="14" rx="4" fill="#F5B027"/>
-            <rect x="10" y="24" width="44" height="14" rx="4" fill="#48B84B"/>
-            <rect x="10" y="31" width="44" height="16" rx="4" fill="#EB6E5C"/>
-            <path d="M6,38 H22 C25,38 27,45 32,45 C37,45 39,38 42,38 H58 V50 C58,54.4 54.4,58 50,58 H14 C9.6,58 6,54.4 6,50 Z" fill="#E6E4DF"/>
-          </svg>
+    <div id="top-nav">
+      <button type="button" class="nav-btn-plain" id="mask-toggle">Hide</button>
+      <span class="nav-center-title">Cash Flow</span>
+      <button type="button" class="nav-circle-btn" id="open-menu-btn" aria-label="Menu">
+        <svg class="sf" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor"/></svg>
+      </button>
+    </div>
+
+    <div id="main-scroll">
+      <div class="hero-card">
+        <div>
+          <div class="hero-lbl">Total Net Balance</div>
+          <div class="hero-num tab-num" id="hero-net-val">₹0</div>
+          <div class="hero-sub tab-num" id="hero-budget-sub">Tap Menu to set monthly budget</div>
         </div>
-        <span class="brand-tag">Cash Flow OS</span>
+        <button type="button" class="hero-pill" id="hero-bal-btn">Details</button>
       </div>
-      <div class="top-controls">
-        <button type="button" class="pill-btn" id="mask-toggle">HIDE</button>
-        <button type="button" class="pill-btn accent" id="ui-toggle">BENTO</button>
-        <button type="button" class="pill-btn dark" id="bal-badge">₹0</button>
+
+      <div id="cards-grid"></div>
+
+      <div class="ios-seg" id="seg-tabs">
+        <button type="button" class="active" data-tab="recent">Recent</button>
+        <button type="button" data-tab="history">History</button>
+        <button type="button" data-tab="udhar">Udhar</button>
+      </div>
+
+      <div id="feed-card">
+        <div class="feed-head">
+          <span class="feed-head-title" id="feed-title-lbl">Recent Activity</span>
+          <span class="feed-head-meta tab-num" id="entry-count-lbl">0 entries</span>
+        </div>
+
+        <div id="history-tools">
+          <div class="ios-search">
+            <svg class="sf" style="width:15px;height:15px;color:var(--fg-sec);" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search chai, manish, sbi..." autocomplete="off" />
+          </div>
+          <div class="filter-pills">
+            <button type="button" class="f-pill active" data-hfilter="all">All</button>
+            <button type="button" class="f-pill" data-hfilter="today">Today</button>
+            <button type="button" class="f-pill" data-hfilter="month">This Month</button>
+            <input type="date" id="date-picker-input" />
+          </div>
+        </div>
+
+        <div id="output" aria-live="polite"></div>
       </div>
     </div>
 
-    <div id="bento-hero">
-      <div>
-        <div class="hero-lbl">Total Net Balance</div>
-        <div class="hero-num" id="hero-net-val">₹0</div>
-      </div>
-      <button type="button" class="hero-circle-btn" data-cmd="dues" title="Friend Udhar">⇄</button>
-    </div>
+    <div id="quick-chips-bar"></div>
 
-    <div id="cards-grid"></div>
-
-    <div id="feed-card">
-      <div id="feed-card-header">
-        <span id="feed-title-lbl">Recent Activity</span>
-        <span style="font-size:11px; color:var(--fg-dim); font-weight:700;" id="entry-count-lbl">0 entries</span>
-      </div>
-      <div class="filter-bar" id="history-filter-bar" style="display:none;">
-        <button type="button" class="f-pill active" data-hfilter="all">All</button>
-        <button type="button" class="f-pill" data-hfilter="today">Today</button>
-        <button type="button" class="f-pill" data-hfilter="month">This Month</button>
-        <input type="date" id="date-picker-input" style="border:none; background:#F4F4F5; border-radius:999px; padding:3px 10px; font-size:11px; font-weight:700;" />
-      </div>
-      <div id="output" aria-live="polite"></div>
-    </div>
-
-    <div id="chips-row">
-      <button type="button" class="chip" data-cmd="bal">Balance</button>
-      <button type="button" class="chip" data-cmd="dues">Udhar</button>
-      <button type="button" class="chip" data-cmd="ls">History</button>
-      <button type="button" class="chip" data-cmd="edit">Edit Last</button>
-      <button type="button" class="chip" data-insert="find ">Search</button>
-      <button type="button" class="chip" data-insert=" with ">+with</button>
-      <button type="button" class="chip" data-insert=" paid by ">+paid by</button>
-      <button type="button" class="chip dark" data-cmd="clear">Clear</button>
-    </div>
-
-    <div id="bottom-input-area">
-      <div class="nb-input-wrap">
-        <div class="nb-input-box">
-          <span class="nb-hash" id="prompt-text">user@cashflow:~$</span>
+    <div id="bottom-dock">
+      <div class="dock-row">
+        <div class="input-pill">
+          <span class="term-prefix" id="prompt-text">$</span>
           <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-            placeholder="50 chai upi | 353 manish recharge" />
-          <button type="button" id="mic-btn" title="Voice Input">🎤</button>
+            placeholder="50 chai | 353 manish recharge" />
+          <button type="button" id="mic-btn" title="Voice Input">
+            <svg class="sf" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          </button>
         </div>
-        <button type="button" id="submit-btn" aria-label="Send">+</button>
+        <button type="button" id="submit-btn" aria-label="Send">
+          <svg class="sf" style="width:20px;height:20px;stroke-width:2.3;" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </button>
       </div>
     </div>
-  </div>
-
-  <script>
+          </div>
+    <script>
     const outputEl = document.getElementById('output');
     const cmdInput = document.getElementById('cmd-input');
     const submitBtn = document.getElementById('submit-btn');
     const micBtn = document.getElementById('mic-btn');
-    const uiToggle = document.getElementById('ui-toggle');
     const maskToggle = document.getElementById('mask-toggle');
-    const balBadge = document.getElementById('bal-badge');
     const heroNetVal = document.getElementById('hero-net-val');
+    const heroBudgetSub = document.getElementById('hero-budget-sub');
     const feedTitleLbl = document.getElementById('feed-title-lbl');
     const entryCountLbl = document.getElementById('entry-count-lbl');
     const cardsGrid = document.getElementById('cards-grid');
-    const historyFilterBar = document.getElementById('history-filter-bar');
+    const historyTools = document.getElementById('history-tools');
+    const searchInput = document.getElementById('search-input');
     const datePickerInput = document.getElementById('date-picker-input');
+    const quickChipsBar = document.getElementById('quick-chips-bar');
+    const menuBackdrop = document.getElementById('menu-backdrop');
 
     const lockScreen = document.getElementById('lock-screen');
     const lockHeading = document.getElementById('lock-heading');
@@ -460,61 +620,134 @@
     const lockErr = document.getElementById('lock-err');
     const pinDots = document.querySelectorAll('#pin-dots .pin-dot');
 
+    // STORAGE KEYS (100% COMPATIBLE WITH OLD DATA)
     const L1_PRIMARY_KEY = 'cashflow_os_v5_primary';
     const L1_BACKUP_KEY  = 'cashflow_os_v5_backup';
     const IDB_DB_NAME    = 'CASHFLOW_OS_IDB_V5';
     const IDB_STORE_NAME = 'ledger_snapshots';
-    const UI_PREF_KEY    = 'cashflow_os_ui_mode_v3';
+    const PREF_KEY       = 'cashflow_os_ios18_prefs_v1';
     const MASK_PREF_KEY  = 'cashflow_os_masked_v1';
     const PIN_KEY        = 'cashflow_os_pin_v1';
     const LAST_BKP_KEY   = 'cashflow_os_last_auto_backup';
 
-    let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
+    const DEFAULT_PREFS = {
+      theme: 'ios18',
+      darkMode: false,
+      compact: false,
+      autoLock: true,
+      showChips: false,
+      chips: '20 chai, 50 auto, bal, dues',
+      defaultAccount: '',
+      monthlyBudget: 0,
+      font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif',
+      customColors: false,
+      inBg: '#E5E5EA',
+      inFg: '#000000',
+      outBg: '#FFFFFF',
+      outFg: '#000000',
+      credit: '#34C759',
+      debit: '#FF3B30'
+    };
 
-    function getSavedPin() {
-      try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; }
+    let prefs = { ...DEFAULT_PREFS };
+    try {
+      const saved = JSON.parse(localStorage.getItem(PREF_KEY) || 'null');
+      if (saved) prefs = { ...DEFAULT_PREFS, ...saved };
+    } catch (e) {}
+
+    let activeTab = 'recent';
+    let histFilter = 'all';
+    let isMasked = false;
+    try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
+
+    function savePrefs() {
+      try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {}
     }
-    function updatePinDots() {
-      pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length));
+
+    function applyPrefs() {
+      document.body.setAttribute('data-theme', prefs.theme);
+      document.body.classList.toggle('dark-mode', Boolean(prefs.darkMode));
+      document.body.classList.toggle('compact-mode', Boolean(prefs.compact));
+      const r = document.documentElement.style;
+      r.setProperty('--font-main', prefs.font);
+
+      if (prefs.customColors) {
+        r.setProperty('--input-bg', prefs.inBg);
+        r.setProperty('--input-fg', prefs.inFg);
+        r.setProperty('--output-bg', prefs.outBg);
+        r.setProperty('--output-fg', prefs.outFg);
+        r.setProperty('--credit', prefs.credit);
+        r.setProperty('--debit', prefs.debit);
+      } else {
+        ['--input-bg', '--input-fg', '--output-bg', '--output-fg', '--credit', '--debit'].forEach(k => r.removeProperty(k));
+      }
+
+      document.getElementById('toggle-dark').checked = Boolean(prefs.darkMode);
+      document.getElementById('toggle-compact').checked = Boolean(prefs.compact);
+      document.getElementById('toggle-autolock').checked = Boolean(prefs.autoLock);
+      document.getElementById('toggle-chips').checked = Boolean(prefs.showChips);
+      document.getElementById('budget-input').value = prefs.monthlyBudget || '';
+      document.getElementById('custom-chips-input').value = prefs.chips;
+
+      document.getElementById('pick-in-bg').value = prefs.inBg;
+      document.getElementById('pick-in-fg').value = prefs.inFg;
+      document.getElementById('pick-out-bg').value = prefs.outBg;
+      document.getElementById('pick-out-fg').value = prefs.outFg;
+      document.getElementById('pick-credit').value = prefs.credit;
+      document.getElementById('pick-debit').value = prefs.debit;
+
+      document.querySelectorAll('#theme-seg button').forEach(b => b.classList.toggle('active', b.getAttribute('data-set-theme') === prefs.theme));
+      document.querySelectorAll('#font-options button').forEach(b => b.classList.toggle('active', b.getAttribute('data-font') === prefs.font));
+      renderQuickChips();
     }
-    function unlockApp() {
-      pinBuffer = ''; tempFirstPin = ''; updatePinDots();
-      lockScreen.classList.add('unlocked');
+
+    function renderQuickChips() {
+      quickChipsBar.classList.toggle('visible', Boolean(prefs.showChips));
+      if (!prefs.showChips) return;
+      const items = prefs.chips.split(',').map(s => s.trim()).filter(Boolean);
+      quickChipsBar.innerHTML = items.map(t => `<button type="button" class="q-chip" data-q="${t.replace(/"/g, '&quot;')}">${t}</button>`).join('');
+      quickChipsBar.querySelectorAll('.q-chip').forEach(b => {
+        b.addEventListener('click', () => runCommand(b.getAttribute('data-q')));
+      });
     }
+
+    // --- LOCK SCREEN ---
+    let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
+    function getSavedPin() { try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; } }
+    function updatePinDots() { pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length)); }
+    function unlockApp() { pinBuffer = ''; tempFirstPin = ''; updatePinDots(); lockScreen.classList.add('unlocked'); }
     window.onNativeUnlock = unlockApp;
 
     function triggerBiometricPrompt() {
       try {
         if (window.AndroidNative && typeof window.AndroidNative.triggerBiometric === 'function') {
           window.AndroidNative.triggerBiometric();
-        } else {
-          lockErr.textContent = 'Fingerprint available in Android APK';
         }
       } catch (e) {}
     }
 
-    function engageLock() {
+    function engageLock(force = false) {
+      if (!force && !prefs.autoLock && getSavedPin()) return;
       pinBuffer = ''; tempFirstPin = ''; lockErr.textContent = '';
       if (!getSavedPin()) {
         isSettingPin = true;
         lockHeading.textContent = 'Create 4-Digit PIN';
-        lockSub.textContent = 'Set backup PIN for Cash Flow OS';
+        lockSub.textContent = 'Backup PIN for Cash Flow OS';
       } else {
         isSettingPin = false;
         lockHeading.textContent = 'Unlock Cash Flow';
-        lockSub.textContent = 'Enter PIN or tap FP for Fingerprint';
+        lockSub.textContent = 'Enter PIN or use Fingerprint';
       }
       updatePinDots();
       lockScreen.classList.remove('unlocked');
       cmdInput.blur();
-      if (!isSettingPin) setTimeout(triggerBiometricPrompt, 200);
+      if (!isSettingPin) setTimeout(triggerBiometricPrompt, 180);
     }
 
     document.querySelectorAll('[data-key]').forEach(b => b.addEventListener('click', () => {
       if (pinBuffer.length >= 4) return;
       pinBuffer += b.getAttribute('data-key');
-      lockErr.textContent = '';
-      updatePinDots();
+      lockErr.textContent = ''; updatePinDots();
       if (pinBuffer.length === 4) {
         setTimeout(() => {
           if (isSettingPin) {
@@ -533,227 +766,112 @@
           } else {
             lockErr.textContent = 'Wrong PIN'; pinBuffer = ''; updatePinDots();
           }
-        }, 80);
+        }, 70);
       }
     }));
-
     document.getElementById('btn-biometric').addEventListener('click', triggerBiometricPrompt);
-    document.getElementById('pin-back').addEventListener('click', () => {
-      pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots();
-    });
+    document.getElementById('pin-back').addEventListener('click', () => { pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots(); });
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(false); });
+    window.addEventListener('pagehide', () => engageLock(false));
 
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(); });
-    window.addEventListener('pagehide', engageLock);
-    engageLock();
-
-    window.onVoiceResult = function(spokenText) {
-      micBtn.classList.remove('listening');
-      cmdInput.value = spokenText;
-      cmdInput.focus();
-    };
-    window.onVoiceError = function() {
-      micBtn.classList.remove('listening');
-      printLine('[VOICE] Mic sun nahi paya, dubara try karein.', 'warn');
-    };
-
+    // --- VOICE INPUT ---
+    window.onVoiceResult = function(t) { micBtn.classList.remove('listening'); cmdInput.value = t; cmdInput.focus(); };
+    window.onVoiceError = function() { micBtn.classList.remove('listening'); printLine('Voice input retry karein.', 'warn'); };
     micBtn.addEventListener('click', () => {
       micBtn.classList.add('listening');
       if (window.AndroidNative && typeof window.AndroidNative.startVoiceInput === 'function') {
         window.AndroidNative.startVoiceInput();
       } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const rec = new SR();
-        rec.lang = 'en-IN';
+        const rec = new SR(); rec.lang = 'en-IN';
         rec.onresult = (e) => window.onVoiceResult(e.results[0][0].transcript);
         rec.onerror = () => window.onVoiceError();
         rec.start();
-      } else {
-        micBtn.classList.remove('listening');
-        printLine('[VOICE] Voice input is device par supported nahi hai.', 'warn');
-      }
+      } else { micBtn.classList.remove('listening'); }
     });
 
-    let isMasked = false;
-    try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
-    maskToggle.textContent = isMasked ? 'SHOW' : 'HIDE';
-    maskToggle.addEventListener('click', () => {
-      isMasked = !isMasked;
-      try { localStorage.setItem(MASK_PREF_KEY, isMasked ? '1' : '0'); } catch (e) {}
-      maskToggle.textContent = isMasked ? 'SHOW' : 'HIDE';
-      renderCards();
-    });
-
-    const uiModes = [
-      { id: 'bento', label: 'BENTO', btn: '+' },
-      { id: 'neobrutal', label: 'BRUTAL', btn: '+' },
-      { id: 'terminal', label: 'TERM', btn: 'EXEC' }
-    ];
-    let uiIdx = 0;
-
-    function applyUiMode(modeId) {
-      const idx = uiModes.findIndex(m => m.id === modeId);
-      if (idx !== -1) uiIdx = idx;
-      const cur = uiModes[uiIdx];
-      document.body.setAttribute('data-ui', cur.id);
-      uiToggle.textContent = cur.label;
-      submitBtn.textContent = cur.btn;
-      try { localStorage.setItem(UI_PREF_KEY, cur.id); } catch (e) {}
-      renderCards();
-    }
-
-    uiToggle.addEventListener('click', () => {
-      uiIdx = (uiIdx + 1) % uiModes.length;
-      applyUiMode(uiModes[uiIdx].id);
-    });
-
-    try {
-      const savedUi = localStorage.getItem(UI_PREF_KEY);
-      if (savedUi) applyUiMode(savedUi);
-    } catch (e) {}
-        function fnv1aHash(str) {
+    // --- DUAL-LAYER STORAGE ENGINE ---
+    function fnv1aHash(str) {
       let h = 0x811c9dc5;
-      for (let i = 0; i < str.length; i++) {
-        h ^= str.charCodeAt(i);
-        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-      }
+      for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; }
       return ('00000000' + h.toString(16)).slice(-8);
     }
-
-    function createDefaultState() {
-      return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 };
-    }
-
+    function createDefaultState() { return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 }; }
     function normalizeState(raw) {
       if (!raw || typeof raw !== 'object') return createDefaultState();
-      const upiAccounts = Array.isArray(raw.upiAccounts)
-        ? raw.upiAccounts.map((a, idx) => ({
-            id: a.id || `upi_${idx + 1}`,
-            name: String(a.name || `UPI_${idx + 1}`).trim(),
-            balance: Number(a.balance) || 0
-          }))
-        : [];
+      const upiAccounts = Array.isArray(raw.upiAccounts) ? raw.upiAccounts.map((a, i) => ({ id: a.id || `upi_${i+1}`, name: String(a.name || `UPI_${i+1}`).trim(), balance: Number(a.balance) || 0 })) : [];
       return {
-        setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0),
-        upiAccounts,
-        cashBalance: Number(raw.cashBalance) || 0,
-        transactions: Array.isArray(raw.transactions) ? raw.transactions : [],
-        friends: raw.friends && typeof raw.friends === 'object' ? raw.friends : {},
-        nextId: Number(raw.nextId) || 1
+        setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0), upiAccounts,
+        cashBalance: Number(raw.cashBalance) || 0, transactions: Array.isArray(raw.transactions) ? raw.transactions : [],
+        friends: raw.friends && typeof raw.friends === 'object' ? raw.friends : {}, nextId: Number(raw.nextId) || 1
       };
     }
-
     function computeStateChecksum(st) {
-      return fnv1aHash(JSON.stringify({
-        setupComplete: st.setupComplete, upiAccounts: st.upiAccounts,
-        cashBalance: Number(st.cashBalance.toFixed(2)), transactions: st.transactions,
-        friends: st.friends, nextId: st.nextId
-      }));
+      return fnv1aHash(JSON.stringify({ setupComplete: st.setupComplete, upiAccounts: st.upiAccounts, cashBalance: Number(st.cashBalance.toFixed(2)), transactions: st.transactions, friends: st.friends, nextId: st.nextId }));
     }
-
     function wrapEnvelope(stateObj, rev, source = 'local') {
-      const normalized = normalizeState(stateObj);
-      return { schema: 5, rev, updatedAt: Date.now(), source, checksum: computeStateChecksum(normalized), payload: normalized };
+      const n = normalizeState(stateObj);
+      return { schema: 5, rev, updatedAt: Date.now(), source, checksum: computeStateChecksum(n), payload: n };
     }
-
-    function verifyEnvelope(env) {
-      if (!env || typeof env !== 'object' || !env.payload) return false;
-      return computeStateChecksum(normalizeState(env.payload)) === env.checksum;
-    }
+    function verifyEnvelope(env) { return Boolean(env && env.payload && computeStateChecksum(normalizeState(env.payload)) === env.checksum); }
 
     class StorageEngine {
-      constructor() {
-        this.db = null; this.currentRev = 0; this.lastChecksum = '';
-        this.l1Healthy = false; this.l2Healthy = false;
-        this.idbReadyPromise = this._openIDB();
-      }
+      constructor() { this.db = null; this.currentRev = 0; this.idbReady = this._openIDB(); }
       _openIDB() {
-        return new Promise((resolve) => {
-          if (!('indexedDB' in window)) return resolve(null);
+        return new Promise((res) => {
+          if (!('indexedDB' in window)) return res(null);
           try {
             const req = indexedDB.open(IDB_DB_NAME, 1);
-            req.onupgradeneeded = (e) => {
-              if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME))
-                e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' });
-            };
-            req.onsuccess = (e) => { this.db = e.target.result; this.l2Healthy = true; resolve(this.db); };
-            req.onerror = () => resolve(null);
-          } catch (e) { resolve(null); }
+            req.onupgradeneeded = (e) => { if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME)) e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' }); };
+            req.onsuccess = (e) => { this.db = e.target.result; res(this.db); };
+            req.onerror = () => res(null);
+          } catch (e) { res(null); }
         });
       }
-      readL1Envelope() {
+      readL1() {
         const list = [];
-        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => {
-          try {
-            const raw = localStorage.getItem(k);
-            if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) { list.push(p); this.l1Healthy = true; } }
-          } catch (e) {}
-        });
+        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => { try { const r = localStorage.getItem(k); if (r) { const p = JSON.parse(r); if (verifyEnvelope(p)) list.push(p); } } catch (e) {} });
         return list.sort((a, b) => b.rev - a.rev)[0] || null;
       }
-      writeL1Envelope(env) {
-        try {
-          const prev = localStorage.getItem(L1_PRIMARY_KEY);
-          if (prev) localStorage.setItem(L1_BACKUP_KEY, prev);
-          localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env));
-          this.l1Healthy = true;
-        } catch (e) {}
+      writeL1(env) {
+        try { const prev = localStorage.getItem(L1_PRIMARY_KEY); if (prev) localStorage.setItem(L1_BACKUP_KEY, prev); localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env)); } catch (e) {}
       }
-      async readL2Envelope() {
-        await this.idbReadyPromise;
-        if (!this.db) return null;
-        return new Promise((resolve) => {
+      async readL2() {
+        await this.idbReady; if (!this.db) return null;
+        return new Promise((res) => {
           try {
             const req = this.db.transaction(IDB_STORE_NAME, 'readonly').objectStore(IDB_STORE_NAME).getAll();
-            req.onsuccess = () => {
-              const valid = (req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev);
-              resolve(valid[0] || null);
-            };
-            req.onerror = () => resolve(null);
-          } catch (e) { resolve(null); }
+            req.onsuccess = () => res((req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev)[0] || null);
+            req.onerror = () => res(null);
+          } catch (e) { res(null); }
         });
       }
-      async writeL2Envelope(env) {
-        await this.idbReadyPromise;
-        if (!this.db) return;
-        return new Promise((resolve) => {
-          try {
-            const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite');
-            tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env });
-            tx.oncomplete = () => { this.l2Healthy = true; resolve(); };
-            tx.onerror = () => resolve();
-          } catch (e) { resolve(); }
+      async writeL2(env) {
+        await this.idbReady; if (!this.db) return;
+        return new Promise((res) => {
+          try { const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite'); tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env }); tx.oncomplete = () => res(); tx.onerror = () => res(); } catch (e) { res(); }
         });
       }
       async loadAndHeal() {
-        const l1 = this.readL1Envelope();
-        const l2 = await this.readL2Envelope();
+        const l1 = this.readL1(), l2 = await this.readL2();
         let chosen = (l1 && l2) ? (l1.rev >= l2.rev ? l1 : l2) : (l1 || l2);
         if (!chosen) chosen = wrapEnvelope(createDefaultState(), 1, 'genesis');
-        this.writeL1Envelope(chosen);
-        await this.writeL2Envelope(chosen);
-        this.currentRev = chosen.rev;
-        this.lastChecksum = chosen.checksum;
-        return normalizeState(chosen.payload);
+        this.writeL1(chosen); await this.writeL2(chosen);
+        this.currentRev = chosen.rev; return normalizeState(chosen.payload);
       }
       async commit(stateObj, source = 'mutator') {
         const env = wrapEnvelope(stateObj, this.currentRev + 1, source);
-        this.currentRev = env.rev;
-        this.lastChecksum = env.checksum;
-        this.writeL1Envelope(env);
-        await this.writeL2Envelope(env);
-        return env;
+        this.currentRev = env.rev; this.writeL1(env); await this.writeL2(env); return env;
       }
     }
-
-    const storageEngine = new StorageEngine();
+          const storageEngine = new StorageEngine();
     let state = createDefaultState();
     let wizard = { active: false, step: null, totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
 
     function runDailyAutoBackup(force = false) {
       try {
         const today = new Date().toISOString().slice(0, 10);
-        const last = localStorage.getItem(LAST_BKP_KEY);
-        if (!force && last === today) return null;
+        if (!force && localStorage.getItem(LAST_BKP_KEY) === today) return null;
         const jsonStr = JSON.stringify(state);
         localStorage.setItem('cashflow_os_daily_snapshot_' + today, jsonStr);
         localStorage.setItem(LAST_BKP_KEY, today);
@@ -764,134 +882,98 @@
       } catch (e) { return null; }
     }
 
-    function getTotalUpiBalance() {
-      return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0);
+    function getTotalUpi() { return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0); }
+    function displayBal(v) { return isMasked ? '₹••••' : `₹${Number(v).toLocaleString('en-IN')}`; }
+    function formatMoney(n, allowMask = false) {
+      if (allowMask && isMasked) return '₹••••';
+      return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-
-    function displayBal(val) {
-      return isMasked ? '₹••••' : `₹${Number(val).toLocaleString('en-IN')}`;
+    function capitalize(s) { return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' '); }
+    function getTimestamp() {
+      const now = new Date();
+      return now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) + ' ' +
+             now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+    function getThisMonthSpend() {
+      const mStr = new Date().toLocaleDateString('en-IN', { month: 'short' }).toLowerCase();
+      return state.transactions
+        .filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.ts.toLowerCase().includes(mStr))
+        .reduce((s, t) => s + (t.myShare || 0), 0);
     }
 
     function renderCards() {
-      const totalUpi = getTotalUpiBalance();
-      const totalNet = totalUpi + state.cashBalance;
-      const formattedTotal = displayBal(totalNet);
-      balBadge.textContent = formattedTotal;
-      heroNetVal.textContent = formattedTotal;
-      entryCountLbl.textContent = `${state.transactions.length} entries`;
-
-      if (!state.setupComplete) {
-        cardsGrid.innerHTML = '';
-        return;
+      const totalUpi = getTotalUpi();
+      heroNetVal.textContent = displayBal(totalUpi + state.cashBalance);
+      const mSpend = getThisMonthSpend();
+      if (prefs.monthlyBudget > 0) {
+        const rem = Math.max(0, prefs.monthlyBudget - mSpend);
+        heroBudgetSub.textContent = isMasked ? 'Budget: ••••' : `Month Spend ₹${Math.round(mSpend)} • Left ₹${Math.round(rem)}`;
+      } else {
+        heroBudgetSub.textContent = isMasked ? 'Month Spend: ••••' : `This Month Spend: ₹${Math.round(mSpend)}`;
       }
 
-      const mode = uiModes[uiIdx].id;
-      if (mode === 'bento') {
-        cardsGrid.innerHTML = `
-          <div class="bento-card" data-card-cmd="bal">
-            <div class="bento-top">
-              <div class="bento-circle-icon">⚡</div>
-              <span class="bento-sub">${state.upiAccounts.length} UPI</span>
-            </div>
-            <div class="bento-val">${displayBal(totalUpi)}</div>
-          </div>
-          <div class="bento-card alt" data-card-cmd="bal">
-            <div class="bento-top">
-              <div class="bento-circle-icon">₹</div>
-              <span class="bento-sub">Cash</span>
-            </div>
-            <div class="bento-val">${displayBal(state.cashBalance)}</div>
-          </div>
-        `;
-      } else if (mode === 'neobrutal') {
-        let rec = 0, pay = 0;
-        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
-        const nbCards = [
-          { color: '#22C55E', icon: '⚡', title: `UPI ${displayBal(totalUpi)}`, meta: `${state.upiAccounts.length} linked`, cmd: 'bal' },
-          { color: '#FCD34D', icon: '₹',  title: `Cash ${displayBal(state.cashBalance)}`, meta: 'In wallet', cmd: 'bal' },
-          { color: '#FB7185', icon: '⇄',  title: 'Friend Udhar', meta: isMasked ? '••••' : `Lena ₹${rec} • Dena ₹${pay}`, cmd: 'dues' },
-          { color: '#818CF8', icon: '☰',  title: 'History & Stats', meta: `${state.transactions.length} entries`, cmd: 'ls' }
-        ];
-        cardsGrid.innerHTML = nbCards.map(c => `
-          <div class="folder-card-wrap" data-card-cmd="${c.cmd}">
-            <div class="folder-tab" style="background:${c.color}"></div>
-            <div class="folder-body">
-              <span class="folder-icon">${c.icon}</span>
-              <div class="folder-info">
-                <div class="folder-title">${c.title}</div>
-                <div class="folder-meta">${c.meta}</div>
-              </div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      cardsGrid.querySelectorAll('[data-card-cmd]').forEach(el => {
-        el.addEventListener('click', () => runCommand(el.getAttribute('data-card-cmd')));
-      });
+      if (!state.setupComplete) { cardsGrid.innerHTML = ''; return; }
+      cardsGrid.innerHTML = `
+        <div class="wallet-tile" data-card-cmd="bal">
+          <div class="w-icon upi"><svg class="sf" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <div><div class="w-meta">${state.upiAccounts.length} UPI</div><div class="w-val tab-num">${displayBal(totalUpi)}</div></div>
+        </div>
+        <div class="wallet-tile" data-card-cmd="bal">
+          <div class="w-icon cash"><svg class="sf" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div><div class="w-meta">Cash</div><div class="w-val tab-num">${displayBal(state.cashBalance)}</div></div>
+        </div>`;
+      cardsGrid.querySelectorAll('[data-card-cmd]').forEach(el => el.addEventListener('click', () => runCommand(el.getAttribute('data-card-cmd'))));
     }
 
-    function renderHistoryView(filterType = 'all', customQuery = '') {
-      historyFilterBar.style.display = 'flex';
-      feedTitleLbl.textContent = 'Transaction History';
-      outputEl.innerHTML = '';
-
-      const now = new Date();
-      const todayStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).toLowerCase();
-      const monthStr = now.toLocaleDateString('en-IN', { month: 'short' }).toLowerCase();
-
-      let list = state.transactions;
-      if (filterType === 'today') {
-        list = list.filter(t => t.ts.toLowerCase().includes(todayStr));
-      } else if (filterType === 'month') {
-        list = list.filter(t => t.ts.toLowerCase().includes(monthStr));
-      } else if (filterType === 'custom' && customQuery) {
-        list = list.filter(t => t.ts.toLowerCase().includes(customQuery.toLowerCase()));
+    function renderMenuInsights() {
+      // Populate default account dropdown
+      const sel = document.getElementById('default-acc-select');
+      const opts = state.upiAccounts.map(a => `<option value="${a.name}">${a.name}</option>`).join('') + `<option value="CASH">Cash</option>`;
+      sel.innerHTML = opts;
+      if (prefs.defaultAccount && Array.from(sel.options).some(o => o.value === prefs.defaultAccount)) {
+        sel.value = prefs.defaultAccount;
       }
 
-      const periodSpend = list.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID')).reduce((s, t) => s + (t.myShare || 0), 0);
-      entryCountLbl.textContent = `${list.length} • Spend ₹${periodSpend}`;
-
-      if (!list.length) {
-        return printLine(`Is date/month mein koi transaction nahi mila.`, 'dim');
+      // Budget progress
+      const bVis = document.getElementById('budget-visual');
+      const mSpend = getThisMonthSpend();
+      if (prefs.monthlyBudget > 0) {
+        const pct = Math.min(100, Math.round((mSpend / prefs.monthlyBudget) * 100));
+        const rem = Math.max(0, prefs.monthlyBudget - mSpend);
+        const now = new Date();
+        const daysLeft = Math.max(1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1);
+        const daily = Math.round(rem / daysLeft);
+        bVis.innerHTML = `
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;" class="tab-num">
+            <span>Spent ₹${Math.round(mSpend)} (${pct}%)</span>
+            <span>₹${daily}/day left</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${pct > 90 ? 'var(--debit)' : 'var(--credit)'}"></div></div>`;
+      } else {
+        bVis.innerHTML = `<div class="cell-sub">Set a limit to track monthly spend &amp; daily allowance.</div>`;
       }
-      list.forEach(t => appendTxRow(t));
-    }
 
-    document.querySelectorAll('[data-hfilter]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-hfilter]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderHistoryView(btn.getAttribute('data-hfilter'));
-      });
-    });
-
-    datePickerInput.addEventListener('change', (e) => {
-      if (!e.target.value) return;
-      const d = new Date(e.target.value + 'T00:00:00');
-      const formatted = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
-      document.querySelectorAll('[data-hfilter]').forEach(b => b.classList.remove('active'));
-      renderHistoryView('custom', formatted);
-    });
-
-    function renderRecentFeedRows() {
-      historyFilterBar.style.display = 'none';
-      feedTitleLbl.textContent = 'Recent Activity';
-      entryCountLbl.textContent = `${state.transactions.length} entries`;
-      if (!state.transactions.length) return;
-      outputEl.innerHTML = '';
-      state.transactions.slice(0, 15).forEach(t => appendTxRow(t));
+      // Category breakdown bars
+      const sVis = document.getElementById('stats-visual');
+      const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
+      if (!deb.length) { sVis.textContent = 'No personal expenses logged yet.'; return; }
+      const tot = deb.reduce((s, t) => s + t.myShare, 0);
+      const map = {};
+      deb.forEach(t => { const c = t.category || 'General'; map[c] = (map[c] || 0) + t.myShare; });
+      sVis.innerHTML = Object.entries(map).sort((a, b) => b[1] - a[1]).map(([c, v]) => {
+        const p = Math.round((v / tot) * 100);
+        return `<div style="margin-top:7px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;" class="tab-num"><span>${c}</span><span>₹${Math.round(v)} (${p}%)</span></div>
+          <div class="prog-track"><div class="prog-fill" style="width:${p}%"></div></div>
+        </div>`;
+      }).join('');
     }
 
     function appendTxRow(t) {
-      const isPositive = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
+      const isPos = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
       let label = t.type === 'CREDIT' ? 'Credited' : (t.type === 'SETTLE_IN' ? 'Settled In' : (t.type === 'FRIEND_PAID' ? `${t.payer} Paid` : 'Debited'));
-      if (t.splitFriends && t.splitFriends.length > 0) {
-        label = t.fullLoan ? `Udhar → ${t.splitFriends.join(', ')}` : `Split w/ ${t.splitFriends.join(', ')}`;
-      }
-      const sign = isPositive ? '+' : '-';
-      const amtCls = isPositive ? 'credit' : (t.splitFriends && t.splitFriends.length > 0 ? 'split' : 'debit');
-
+      if (t.splitFriends && t.splitFriends.length > 0) label = t.fullLoan ? `Udhar -> ${t.splitFriends.join(', ')}` : `Split w/ ${t.splitFriends.join(', ')}`;
+      const cls = isPos ? 'credit' : (t.splitFriends && t.splitFriends.length > 0 ? 'split' : 'debit');
       const row = document.createElement('div');
       row.className = 'tx-row';
       row.innerHTML = `
@@ -899,46 +981,85 @@
           <div class="tx-title">${label} • ${t.note}</div>
           <div class="tx-sub">#${t.id} • ${t.ts} • ${t.accountName} • ${t.category || 'General'}</div>
         </div>
-        <div class="tx-amt-pill ${amtCls}">${sign}₹${Number(t.amount).toLocaleString('en-IN')}</div>
-      `;
+        <div class="tx-amt tab-num ${cls}">${isPos ? '+' : '-'}₹${Number(t.amount).toLocaleString('en-IN')}</div>`;
       outputEl.appendChild(row);
-      outputEl.scrollTop = outputEl.scrollHeight;
+    }
+
+    function renderActiveTab() {
+      document.querySelectorAll('#seg-tabs button').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === activeTab));
+      outputEl.innerHTML = '';
+      if (activeTab === 'recent') {
+        historyTools.style.display = 'none';
+        feedTitleLbl.textContent = 'Recent Activity';
+        entryCountLbl.textContent = `${state.transactions.length} entries`;
+        if (!state.transactions.length) return printLine('No entries yet. Try "50 chai" or "353 manish recharge".', 'dim');
+        state.transactions.slice(0, 15).forEach(appendTxRow);
+      } else if (activeTab === 'history') {
+        historyTools.style.display = 'flex';
+        feedTitleLbl.textContent = 'History';
+        renderHistoryList();
+      } else if (activeTab === 'udhar') {
+        historyTools.style.display = 'none';
+        feedTitleLbl.textContent = 'Friend Udhar';
+        const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
+        entryCountLbl.textContent = `${list.length} active`;
+        if (!list.length) return printLine('Sabka hisab clear hai. Koi udhar baaki nahi.', 'dim');
+        list.forEach(([name, val]) => {
+          const row = document.createElement('div');
+          row.className = 'tx-row';
+          const isLena = val > 0;
+          row.innerHTML = `
+            <div class="tx-left">
+              <div class="tx-title">${name}</div>
+              <div class="tx-sub tab-num ${isLena ? 'credit' : 'debit'}">${isLena ? 'Lena Hai +' : 'Dena Hai -'}${formatMoney(Math.abs(val), true)}</div>
+            </div>
+            <button type="button" class="settle-btn" data-settle="${name}">Settle</button>`;
+          outputEl.appendChild(row);
+        });
+        outputEl.querySelectorAll('[data-settle]').forEach(b => {
+          b.addEventListener('click', () => runCommand('settle ' + b.getAttribute('data-settle')));
+        });
+      }
+    }
+
+    function renderHistoryList(customDate = '') {
+      outputEl.innerHTML = '';
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const now = new Date();
+      const todayStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).toLowerCase();
+      const monthStr = now.toLocaleDateString('en-IN', { month: 'short' }).toLowerCase();
+
+      let list = state.transactions;
+      if (histFilter === 'today') list = list.filter(t => t.ts.toLowerCase().includes(todayStr));
+      else if (histFilter === 'month') list = list.filter(t => t.ts.toLowerCase().includes(monthStr));
+      else if (histFilter === 'date' && customDate) list = list.filter(t => t.ts.toLowerCase().includes(customDate.toLowerCase()));
+
+      if (q) {
+        list = list.filter(t =>
+          t.note.toLowerCase().includes(q) || (t.category && t.category.toLowerCase().includes(q)) ||
+          (t.accountName && t.accountName.toLowerCase().includes(q)) || (t.payer && t.payer.toLowerCase().includes(q)) ||
+          (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
+        );
+      }
+      const spend = list.filter(t => t.type === 'DEBIT' || t.type === 'FRIEND_PAID').reduce((s, t) => s + (t.myShare || 0), 0);
+      entryCountLbl.textContent = `${list.length} • Spend ₹${Math.round(spend)}`;
+      if (!list.length) return printLine('Is filter me koi transaction nahi mila.', 'dim');
+      list.forEach(appendTxRow);
+    }
+
+    function printLine(text, cls = '') {
+      const d = document.createElement('div'); d.className = `line ${cls}`; d.textContent = text;
+      outputEl.appendChild(d); outputEl.scrollTop = outputEl.scrollHeight;
+    }
+    function printBlock(text, cls = '') {
+      const d = document.createElement('div'); d.className = `box-block ${cls}`; d.textContent = text;
+      outputEl.appendChild(d); outputEl.scrollTop = outputEl.scrollHeight;
     }
 
     async function persistState(reason = 'cmd') {
       await storageEngine.commit(state, reason);
       renderCards();
       runDailyAutoBackup(true);
-    }
-
-    function printLine(text, cls = '', gap = false) {
-      const div = document.createElement('div');
-      div.className = `line ${cls}`;
-      if (gap) div.style.marginTop = '8px';
-      div.textContent = text;
-      outputEl.appendChild(div);
-      outputEl.scrollTop = outputEl.scrollHeight;
-    }
-
-    function printBlock(text, cls = '') {
-      const div = document.createElement('div');
-      div.className = `box-block ${cls}`;
-      div.textContent = text;
-      outputEl.appendChild(div);
-      outputEl.scrollTop = outputEl.scrollHeight;
-    }
-
-    function formatMoney(n, allowMask = false) {
-      if (allowMask && isMasked) return '₹••••';
-      return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-    function capitalize(s) {
-      return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
-    }
-    function getTimestamp() {
-      const now = new Date();
-      return now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) + ' ' +
-             now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
     }
 
     function revertTransactionByIndex(idx) {
@@ -949,9 +1070,7 @@
         (tx.splitFriends || []).forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) - tx.perFriendShare) * 100) / 100);
       } else if (tx.type === 'FRIEND_PAID') {
         state.friends[tx.payer] = Math.round(((state.friends[tx.payer] || 0) + tx.myShare) * 100) / 100;
-      } else if (tx.type === 'CREDIT') {
-        if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
-      } else if (tx.type === 'SETTLE_IN') {
+      } else if (tx.type === 'CREDIT' || tx.type === 'SETTLE_IN') {
         if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
       } else if (tx.type === 'SETTLE_OUT') {
         if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
@@ -962,25 +1081,24 @@
 
     function startSetupWizard(isReconfig = false) {
       wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
+      outputEl.innerHTML = ''; historyTools.style.display = 'none';
+      feedTitleLbl.textContent = isReconfig ? 'Wallet Re-Setup' : 'Welcome Setup';
       cmdInput.placeholder = 'Kitne UPI accounts hain? (1, 2, 3)...';
-      printLine(isReconfig ? 'WALLET RE-SETUP' : 'WELCOME TO CASH FLOW OS', 'warn', true);
-      printLine('Apke pass abhi kitne UPI / Bank accounts hain? (1, 2, ya 3 likhein)', 'info');
+      printLine('Apke pass kitne UPI / Bank accounts hain? (1, 2, ya 3 likhein)', 'info');
     }
 
     async function handleWizardInput(raw) {
       const text = raw.trim();
       if (wizard.step === 'COUNT') {
         const count = parseInt(text.replace(/[^\d]/g, ''), 10);
-        if (!count || count < 1 || count > 10) return printLine('1 se 10 ke beech sankhya likhein.', 'debit');
+        if (!count || count < 1 || count > 10) return printLine('1 se 10 ke beech number likhein.', 'debit');
         wizard.totalAccounts = count; wizard.currentIdx = 0; wizard.collectedAccounts = [];
         if (count === 1) {
           wizard.step = 'ACC_BAL'; wizard.tempName = 'UPI';
-          printLine('1 UPI Account selected. Isme abhi kitna balance hai? (e.g. 2135)', 'info', true);
-          cmdInput.placeholder = 'Enter UPI balance...';
+          printLine('UPI account me abhi kitna balance hai? (e.g. 2135)', 'info');
         } else {
           wizard.step = 'ACC_NAME';
-          printLine('Account #1 ka naam likhein (jaise SBI, HDFC, Paytm):', 'info', true);
-          cmdInput.placeholder = 'Account #1 name...';
+          printLine('Account #1 ka naam likhein (jaise SBI, Union, Paytm):', 'info');
         }
         return;
       }
@@ -988,8 +1106,7 @@
         const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
         if (!name) return printLine('Sahi naam likhein.', 'debit');
         wizard.tempName = name; wizard.step = 'ACC_BAL';
-        printLine(`${name} mein abhi kitna balance hai?`, 'info', true);
-        cmdInput.placeholder = `Balance in ${name}...`;
+        printLine(`${name} me abhi kitna balance hai?`, 'info');
         return;
       }
       if (wizard.step === 'ACC_BAL') {
@@ -999,23 +1116,20 @@
         wizard.currentIdx++;
         if (wizard.currentIdx < wizard.totalAccounts) {
           wizard.step = 'ACC_NAME';
-          printLine(`Account #${wizard.currentIdx + 1} ka naam likhein:`, 'info', true);
-          cmdInput.placeholder = `Account #${wizard.currentIdx + 1} name...`;
+          printLine(`Account #${wizard.currentIdx + 1} ka naam likhein:`, 'info');
         } else {
           wizard.step = 'CASH';
-          printLine('Abhi haath mein kitna CASH (नकद) pada hai? (e.g. 0 ya 500)', 'info', true);
-          cmdInput.placeholder = 'Cash in hand...';
+          printLine('Haath me abhi kitna Cash pada hai? (e.g. 0 ya 500)', 'info');
         }
         return;
       }
       if (wizard.step === 'CASH') {
         const cash = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
         if (isNaN(cash) || cash < 0) return printLine('Sahi Cash amount likhein.', 'debit');
-        state.upiAccounts = wizard.collectedAccounts;
-        state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
-        cmdInput.placeholder = '50 chai upi | 353 manish recharge';
+        state.upiAccounts = wizard.collectedAccounts; state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
+        cmdInput.placeholder = '50 chai | 353 manish recharge';
         await persistState('setup');
-        printLine('Setup Complete! Ab aap apna daily hisab likh sakte hain.', 'credit', true);
+        activeTab = 'recent'; renderActiveTab();
       }
     }
 
@@ -1028,20 +1142,17 @@
       'credit','credited','received','salary','stipend','income','added','refund','cashback','mila','mile','aaye'
     ]);
 
-    function resolveUpiAccount(lower) {
-      if (!state.upiAccounts.length) return { id: 'upi_1', name: 'UPI', balance: 0 };
-      if (state.upiAccounts.length === 1) return state.upiAccounts[0];
+    function resolvePaymentChannel(lower) {
+      if (/\bcash\b/.test(lower)) return { isCash: true, acc: null, name: 'CASH' };
       for (const acc of state.upiAccounts) {
-        if (new RegExp(`\\b${acc.name.toLowerCase()}\\b`, 'i').test(lower)) return acc;
+        if (new RegExp(`\\b${acc.name.toLowerCase()}\\b`, 'i').test(lower)) return { isCash: false, acc, name: acc.name };
       }
-      return state.upiAccounts[0];
+      if (prefs.defaultAccount === 'CASH') return { isCash: true, acc: null, name: 'CASH' };
+      const defAcc = state.upiAccounts.find(a => a.name === prefs.defaultAccount) || state.upiAccounts[0] || { id: 'upi_1', name: 'UPI', balance: 0 };
+      return { isCash: false, acc: defAcc, name: defAcc.name };
     }
 
-    function extractAmount(text) {
-      const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
-      return m ? parseFloat(m[1]) : null;
-    }
-
+    function extractAmount(text) { const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/); return m ? parseFloat(m[1]) : null; }
     function inferCategory(lower, isCredit) {
       if (isCredit) return 'Income';
       if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|paneer|grocery|sabzi)\b/.test(lower)) return 'Food';
@@ -1052,268 +1163,242 @@
     }
 
     async function runCommand(raw) {
-      const text = raw.trim();
-      if (!text) return;
-
-      if (wizard.active) {
-        printLine(`> ${text}`, 'cmd-echo');
-                return handleWizardInput(text);
-      }
+      const text = raw.trim(); if (!text) return;
+      if (wizard.active) { printLine(`> ${text}`); return handleWizardInput(text); }
       const lower = text.toLowerCase();
 
       if (lower === 'setup') return startSetupWizard(true);
-      if (lower === 'lock') return engageLock();
-      if (lower === 'clear') { historyFilterBar.style.display = 'none'; outputEl.innerHTML = ''; return; }
-
-      if (lower.startsWith('pin ')) {
-        const newPin = text.split(/\s+/)[1] || '';
-        if (!/^\d{4}$/.test(newPin)) return printLine('Usage: pin 1234 (4 digits only)', 'debit');
-        try { localStorage.setItem(PIN_KEY, newPin); } catch (e) {}
-        return printLine('[OK] App Lock PIN updated.', 'credit');
-      }
+      if (lower === 'lock') return engageLock(true);
+      if (lower === 'clear') { outputEl.innerHTML = ''; return; }
+      if (lower === 'dues' || lower === 'udhar') { activeTab = 'udhar'; return renderActiveTab(); }
+      if (lower === 'ls' || lower === 'history') { activeTab = 'history'; return renderActiveTab(); }
 
       if (lower === 'backup') {
         const path = runDailyAutoBackup(true);
         const jsonStr = JSON.stringify(state);
         try { await navigator.clipboard.writeText(jsonStr); } catch (e) {}
-        return printLine(`[BACKUP OK] Copied & saved to ${path || 'storage'}.`, 'credit');
+        return printLine(`Backup copied & saved to ${path || 'storage'}.`, 'credit');
       }
 
       if (lower.startsWith('restore ')) {
         try {
           state = normalizeState(JSON.parse(text.slice(8).trim()));
           await persistState('restore');
-          renderRecentFeedRows();
-          return printLine(`[RESTORED] ${state.transactions.length} entries loaded.`, 'credit');
-        } catch (e) {
-          return printLine('[ERR] Invalid backup JSON.', 'debit');
-        }
+          activeTab = 'recent'; renderActiveTab();
+          return printLine(`Restored ${state.transactions.length} entries.`, 'credit');
+        } catch (e) { return printLine('Invalid backup JSON.', 'debit'); }
       }
 
       if (lower === 'edit' || lower.startsWith('edit ')) {
-        if (!state.transactions.length) return printLine('Edit karne ke liye koi entry nahi hai.', 'dim');
+        if (!state.transactions.length) return printLine('Edit ke liye koi entry nahi hai.', 'dim');
         const arg = lower.split(/\s+/)[1];
         const idx = arg ? state.transactions.findIndex(t => t.id === parseInt(arg, 10)) : 0;
         if (idx === -1) return printLine(`ID #${arg} nahi mila.`, 'debit');
-        const reverted = revertTransactionByIndex(idx);
-        await persistState('edit_revert');
-        renderRecentFeedRows();
-        cmdInput.value = reverted.note;
-        cmdInput.focus();
-        return printLine(`[EDITING #${reverted.id}] Purana balance adjust kar diya. Neeche text sudhar kar + dabayein.`, 'warn');
+        const rev = revertTransactionByIndex(idx);
+        await persistState('edit'); activeTab = 'recent'; renderActiveTab();
+        cmdInput.value = rev.note; cmdInput.focus();
+        return printLine(`Editing #${rev.id}: sudhar kar send karein.`, 'warn');
       }
 
       if (lower === 'undo') {
-        if (!state.transactions.length) return printLine('Undo karne ke liye koi entry nahi hai.', 'dim');
-        const reverted = revertTransactionByIndex(0);
-        await persistState('undo');
-        renderRecentFeedRows();
-        return printLine(`[UNDO #${reverted.id}] "${reverted.note}" hata diya aur balance wapas kar diya.`, 'warn');
-      }
-
-      if (lower.startsWith('find ') || lower.startsWith('search ')) {
-        historyFilterBar.style.display = 'none';
-        const q = lower.replace(/^(?:find|search)\s+/, '').trim();
-        if (!q) return printLine('Usage: find chai | find manish', 'warn');
-        const matches = state.transactions.filter(t =>
-          t.note.toLowerCase().includes(q) ||
-          (t.category && t.category.toLowerCase().includes(q)) ||
-          (t.accountName && t.accountName.toLowerCase().includes(q)) ||
-          (t.payer && t.payer.toLowerCase().includes(q)) ||
-          (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
-        );
-        if (!matches.length) return printLine(`"${q}" se milti koi entry nahi mili.`, 'dim');
-        const total = matches.reduce((s, t) => s + t.amount, 0);
-        let out = `SEARCH: "${q.toUpperCase()}" (${matches.length} entries | Total: ${formatMoney(total)})\n\n`;
-        matches.slice(0, 30).forEach(t => {
-          const s = t.type === 'CREDIT' || t.type === 'SETTLE_IN' ? '+' : '-';
-          out += `#${t.id} ${t.ts} | ${t.accountName} | ${s}${formatMoney(t.amount)} | ${t.note}\n`;
-        });
-        return printBlock(out, 'info');
-      }
-
-      if (lower === 'bal' || lower === 'balance' || /\b(kitna|bacha|balance|mauke|moke)\b/.test(lower) && !extractAmount(text)) {
-        historyFilterBar.style.display = 'none';
-        let rec = 0, pay = 0;
-        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
-        let out = `BALANCE SHEET\n\n`;
-        state.upiAccounts.forEach(a => out += `  ${a.name.padEnd(12)} : ${formatMoney(a.balance, true)}\n`);
-        out += `  Cash         : ${formatMoney(state.cashBalance, true)}\n`;
-        out += `  Lena Hai (+) : ${formatMoney(rec, true)}\n`;
-        out += `  Dena Hai (-) : ${formatMoney(pay, true)}\n`;
-        out += `  Net Worth    : ${formatMoney(getTotalUpiBalance() + state.cashBalance + rec - pay, true)}`;
-        return printBlock(out);
-      }
-
-      if (lower === 'dues' || lower === 'udhar') {
-        historyFilterBar.style.display = 'none';
-        const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
-        if (!list.length) return printLine('Kisi dost ke saath udhar baaki nahi hai.', 'dim');
-        let out = `FRIEND UDHAR LEDGER\n\n`;
-        list.forEach(([n, v]) => out += `  ${n.padEnd(12)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v, true) : 'DENA HAI -' + formatMoney(Math.abs(v), true)}\n`);
-        return printBlock(out, 'split');
-      }
-
-      if (lower === 'ls' || lower.startsWith('ls ') || lower === 'history') {
-        const filterStr = lower.replace(/^(?:ls|history)\s*/, '').trim();
-        document.querySelectorAll('[data-hfilter]').forEach(b => b.classList.toggle('active', b.getAttribute('data-hfilter') === 'all'));
-        if (filterStr && filterStr !== 'all') {
-          return renderHistoryView('custom', filterStr);
-        }
-        return renderHistoryView('all');
-      }
-
-      if (lower === 'stats') {
-        historyFilterBar.style.display = 'none';
-        const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
-        if (!deb.length) return printLine('Abhi koi personal kharch nahi hai.', 'dim');
-        const tot = deb.reduce((s, t) => s + t.myShare, 0);
-        const map = {};
-        deb.forEach(t => map[t.category] = (map[t.category] || 0) + t.myShare);
-        let out = `YOUR EXPENSES (${formatMoney(tot)})\n\n`;
-        Object.entries(map).sort((a, b) => b[1] - a[1]).forEach(([c, v]) => {
-          out += `  ${c.padEnd(12)} : ${formatMoney(v)} (${Math.round((v / tot) * 100)}%)\n`;
-        });
-        return printBlock(out);
-      }
-
-      if (lower.startsWith('settle ')) {
-        const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
-        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
-        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return printLine(`${target} ka koi udhar baaki nahi hai.`, 'dim');
-        const val = state.friends[fKey];
-        const abs = Math.abs(val);
-        const isCash = /\bcash\b/.test(lower);
-        const acc = isCash ? null : resolveUpiAccount(lower);
-        const txObj = {
-          id: state.nextId++, ts: getTimestamp(), type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
-          amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name,
-          category: 'Settlement', note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
-        };
-        if (val > 0) { if (isCash) state.cashBalance += abs; else acc.balance += abs; }
-        else { if (isCash) state.cashBalance -= abs; else acc.balance -= abs; }
-        state.friends[fKey] = 0;
-        state.transactions.unshift(txObj);
-        await persistState('settle');
-        historyFilterBar.style.display = 'none';
-        return appendTxRow(txObj);
+        if (!state.transactions.length) return printLine('Undo ke liye koi entry nahi hai.', 'dim');
+        const rev = revertTransactionByIndex(0);
+        await persistState('undo'); activeTab = 'recent'; renderActiveTab();
+        return printLine(`Undid #${rev.id} (${rev.note}).`, 'warn');
       }
 
       if (lower.startsWith('rm ')) {
         const id = parseInt(lower.split(/\s+/)[1], 10);
         const idx = state.transactions.findIndex(t => t.id === id);
         if (idx === -1) return printLine(`ID #${id} nahi mila.`, 'debit');
-        revertTransactionByIndex(idx);
-        await persistState('rm');
-        renderRecentFeedRows();
-        return printLine(`[DELETED] #${id} hata diya aur balance adjust kar diya.`, 'warn');
+        revertTransactionByIndex(idx); await persistState('rm');
+        activeTab = 'recent'; renderActiveTab();
+        return printLine(`Deleted #${id}.`, 'warn');
+      }
+
+      if (lower.startsWith('find ') || lower.startsWith('search ')) {
+        activeTab = 'history'; histFilter = 'all';
+        searchInput.value = text.replace(/^(?:find|search)\s+/i, '').trim();
+        return renderActiveTab();
+      }
+
+      if (lower === 'bal' || lower === 'balance') {
+        historyTools.style.display = 'none'; outputEl.innerHTML = ''; feedTitleLbl.textContent = 'Balance Sheet';
+        let rec = 0, pay = 0;
+        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
+        let out = '';
+                state.upiAccounts.forEach(a => out += `${a.name.padEnd(12)} : ${formatMoney(a.balance, true)}\n`);
+        out += `Cash         : ${formatMoney(state.cashBalance, true)}\nLena Hai (+) : ${formatMoney(rec, true)}\nDena Hai (-) : ${formatMoney(pay, true)}\nNet Worth    : ${formatMoney(getTotalUpi() + state.cashBalance + rec - pay, true)}`;
+        return printBlock(out);
+      }
+
+      if (lower.startsWith('settle ')) {
+        const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
+        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
+        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return printLine(`${target} ka udhar nahi hai.`, 'dim');
+        const val = state.friends[fKey], abs = Math.abs(val);
+        const ch = resolvePaymentChannel(lower);
+        const txObj = {
+          id: state.nextId++, ts: getTimestamp(), type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
+          amount: abs, myShare: 0, accountName: ch.name, category: 'Settlement',
+          note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
+        };
+        if (val > 0) { if (ch.isCash) state.cashBalance += abs; else ch.acc.balance += abs; }
+        else { if (ch.isCash) state.cashBalance -= abs; else ch.acc.balance -= abs; }
+        state.friends[fKey] = 0; state.transactions.unshift(txObj);
+        await persistState('settle');
+        return renderActiveTab();
       }
 
       const amt = extractAmount(text);
-      if (!amt || amt <= 0) return printLine('Amount samajh nahi aaya. Example: "50 chai upi" ya "353 manish recharge"', 'warn');
+      if (!amt || amt <= 0) return printLine('Amount nahi mila. Example: "50 chai" ya "353 manish recharge"', 'warn');
 
       const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+(?:\s+ji)?)/) || lower.match(/^([a-zA-Z]+(?:\s+ji)?)\s+(?:ne|paid)\b/);
       if (paidByM && !NON_FRIEND.has(paidByM[1].split(/\s+/)[0].toLowerCase())) {
         const payer = capitalize(paidByM[1]);
-        const isBoth = /\b(both|dono|split)\b/.test(lower);
-        const myShare = isBoth ? Math.round((amt / 2) * 100) / 100 : amt;
+        const myShare = /\b(both|dono|split)\b/.test(lower) ? Math.round((amt / 2) * 100) / 100 : amt;
         state.friends[payer] = Math.round(((state.friends[payer] || 0) - myShare) * 100) / 100;
-        const txObj = { id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text };
-        state.transactions.unshift(txObj);
-        await persistState('friend_paid');
-        historyFilterBar.style.display = 'none';
-        return appendTxRow(txObj);
+        state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text });
+        await persistState('friend_paid'); activeTab = 'recent'; return renderActiveTab();
       }
 
       const isCredit = text.startsWith('+') || /\b(credit|credited|received|salary|stipend|income|added|refund|cashback|mila|mile|aaye)\b/.test(lower);
-      const isCash = /\bcash\b/.test(lower);
-      const acc = isCash ? null : resolveUpiAccount(lower);
-      const chan = isCash ? 'CASH' : acc.name;
+      const ch = resolvePaymentChannel(lower);
       const upiNamesSet = new Set(state.upiAccounts.map(a => a.name.toLowerCase()));
 
-      let splitFriends = [];
-      let fullLoan = false;
+      let splitFriends = [], fullLoan = false;
       const withM = lower.match(/\b(?:with|and|ke sath)\s+([a-zA-Z\s,]+)/);
-
       if (!isCredit && withM) {
-        splitFriends = withM[1]
-          .split(/[\s,]+/)
-          .filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w))
-          .map(capitalize);
+        splitFriends = withM[1].split(/[\s,]+/).filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w)).map(capitalize);
       } else if (!isCredit) {
         const words = lower.replace(/[\d.,]+/g, ' ').trim().split(/[\s,]+/);
         const directNames = [];
         for (let i = 0; i < words.length; i++) {
           const w = words[i];
           if (/^[a-zA-Z]{2,}$/.test(w) && !NON_FRIEND.has(w) && !upiNamesSet.has(w) && w !== 'ji') {
-            if (words[i + 1] === 'ji') {
-              directNames.push(capitalize(w + ' ji'));
-              i++;
-            } else {
-              directNames.push(capitalize(w));
-            }
+            if (words[i + 1] === 'ji') { directNames.push(capitalize(w + ' ji')); i++; }
+            else directNames.push(capitalize(w));
           }
         }
-        if (directNames.length > 0) {
-          splitFriends = [directNames[0]];
-          fullLoan = true;
-        }
+        if (directNames.length > 0) { splitFriends = [directNames[0]]; fullLoan = true; }
       }
 
       let myShare = amt, perFriendShare = 0;
       if (!isCredit && splitFriends.length > 0) {
-        if (fullLoan) {
-          perFriendShare = amt;
-          myShare = 0;
-        } else {
-          perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100;
-          myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100;
-        }
+        if (fullLoan) { perFriendShare = amt; myShare = 0; }
+        else { perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100; myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100; }
         splitFriends.forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) + perFriendShare) * 100) / 100);
       }
 
-      if (isCredit) { if (isCash) state.cashBalance += amt; else acc.balance += amt; }
-      else { if (isCash) state.cashBalance -= amt; else acc.balance -= amt; }
+      if (isCredit) { if (ch.isCash) state.cashBalance += amt; else ch.acc.balance += amt; }
+      else { if (ch.isCash) state.cashBalance -= amt; else ch.acc.balance -= amt; }
 
-      const txObj = {
+      state.transactions.unshift({
         id: state.nextId++, ts: getTimestamp(), type: isCredit ? 'CREDIT' : 'DEBIT',
         amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends, fullLoan,
-        accountName: chan, category: inferCategory(lower, isCredit), note: text
-      };
-      state.transactions.unshift(txObj);
-      await persistState('tx');
-      historyFilterBar.style.display = 'none';
-      appendTxRow(txObj);
+        accountName: ch.name, category: inferCategory(lower, isCredit), note: text
+      });
+      await persistState('tx'); activeTab = 'recent'; renderActiveTab();
     }
 
-    submitBtn.addEventListener('click', () => {
-      const v = cmdInput.value;
-      if (v.trim()) runCommand(v);
-      cmdInput.value = '';
-      cmdInput.focus();
-    });
-    cmdInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); }
+    // --- EVENT WIRING ---
+    maskToggle.textContent = isMasked ? 'Show' : 'Hide';
+    maskToggle.addEventListener('click', () => {
+      isMasked = !isMasked; try { localStorage.setItem(MASK_PREF_KEY, isMasked ? '1' : '0'); } catch (e) {}
+      maskToggle.textContent = isMasked ? 'Show' : 'Hide'; renderCards(); if (activeTab === 'udhar') renderActiveTab();
     });
 
-    document.querySelectorAll('[data-cmd]').forEach(b => b.addEventListener('click', () => runCommand(b.getAttribute('data-cmd'))));
-    document.querySelectorAll('[data-insert]').forEach(b => b.addEventListener('click', () => {
-      cmdInput.value = cmdInput.value.replace(/\s+$/, '') + b.getAttribute('data-insert');
-      cmdInput.focus();
+    document.getElementById('hero-bal-btn').addEventListener('click', () => runCommand('bal'));
+    document.querySelectorAll('#seg-tabs button').forEach(b => b.addEventListener('click', () => { activeTab = b.getAttribute('data-tab'); renderActiveTab(); }));
+    searchInput.addEventListener('input', () => renderHistoryList());
+    document.querySelectorAll('[data-hfilter]').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('[data-hfilter]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active'); histFilter = b.getAttribute('data-hfilter'); renderHistoryList();
     }));
+    datePickerInput.addEventListener('change', (e) => {
+      if (!e.target.value) return;
+      const d = new Date(e.target.value + 'T00:00:00');
+      document.querySelectorAll('[data-hfilter]').forEach(x => x.classList.remove('active'));
+      histFilter = 'date'; renderHistoryList(d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }));
+    });
+
+    // Menu Sheet Controls
+    document.getElementById('open-menu-btn').addEventListener('click', () => { renderMenuInsights(); menuBackdrop.classList.add('open'); });
+    document.getElementById('close-menu-btn').addEventListener('click', () => menuBackdrop.classList.remove('open'));
+    menuBackdrop.addEventListener('click', (e) => { if (e.target === menuBackdrop) menuBackdrop.classList.remove('open'); });
+
+    document.getElementById('save-budget-btn').addEventListener('click', () => {
+      prefs.monthlyBudget = Math.max(0, Number(document.getElementById('budget-input').value) || 0);
+      savePrefs(); renderCards(); renderMenuInsights();
+    });
+    document.getElementById('toggle-dark').addEventListener('change', (e) => { prefs.darkMode = e.target.checked; prefs.customColors = false; savePrefs(); applyPrefs(); });
+    document.getElementById('toggle-compact').addEventListener('change', (e) => { prefs.compact = e.target.checked; savePrefs(); applyPrefs(); });
+    document.getElementById('toggle-autolock').addEventListener('change', (e) => { prefs.autoLock = e.target.checked; savePrefs(); });
+    document.getElementById('toggle-chips').addEventListener('change', (e) => { prefs.showChips = e.target.checked; savePrefs(); applyPrefs(); });
+    document.getElementById('save-chips-btn').addEventListener('click', () => { prefs.chips = document.getElementById('custom-chips-input').value; savePrefs(); applyPrefs(); });
+    document.getElementById('default-acc-select').addEventListener('change', (e) => { prefs.defaultAccount = e.target.value; savePrefs(); });
+
+    document.querySelectorAll('#theme-seg button').forEach(b => b.addEventListener('click', () => {
+      prefs.theme = b.getAttribute('data-set-theme'); prefs.customColors = false;
+      if (prefs.theme === 'terminal') prefs.darkMode = true;
+      savePrefs(); applyPrefs();
+    }));
+    document.querySelectorAll('#font-options button').forEach(b => b.addEventListener('click', () => {
+      prefs.font = b.getAttribute('data-font'); savePrefs(); applyPrefs();
+    }));
+
+    [['pick-in-bg','inBg'],['pick-in-fg','inFg'],['pick-out-bg','outBg'],['pick-out-fg','outFg'],['pick-credit','credit'],['pick-debit','debit']].forEach(([id, key]) => {
+      document.getElementById(id).addEventListener('input', (e) => { prefs[key] = e.target.value; prefs.customColors = true; savePrefs(); applyPrefs(); });
+    });
+
+    document.getElementById('reset-cust-btn').addEventListener('click', () => {
+      prefs = { ...DEFAULT_PREFS, monthlyBudget: prefs.monthlyBudget, defaultAccount: prefs.defaultAccount };
+      savePrefs(); applyPrefs();
+    });
+
+    document.getElementById('save-pin-btn').addEventListener('click', () => {
+      const p = document.getElementById('new-pin-input').value.trim();
+      if (!/^\d{4}$/.test(p)) return alert('Enter exactly 4 digits');
+      try { localStorage.setItem(PIN_KEY, p); } catch (e) {}
+      document.getElementById('new-pin-input').value = '';
+      menuBackdrop.classList.remove('open');
+      printLine('App PIN updated.', 'credit');
+    });
+
+    document.getElementById('btn-backup-json').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('backup'); });
+    document.getElementById('btn-export-csv').addEventListener('click', async () => {
+      const rows = [['ID','Date','Type','Account','Category','Amount','MyShare','Note']];
+      state.transactions.forEach(t => rows.push([t.id, t.ts, t.type, t.accountName, t.category || 'General', t.amount, t.myShare || 0, `"${String(t.note).replace(/"/g,'""')}"`]));
+      const csv = rows.map(r => r.join(',')).join('\n');
+      try { await navigator.clipboard.writeText(csv); } catch (e) {}
+      menuBackdrop.classList.remove('open');
+      printLine(`CSV copied to clipboard (${state.transactions.length} rows). Paste in Sheets/Excel.`, 'credit');
+    });
+    document.getElementById('btn-restore-json').addEventListener('click', () => {
+      const val = document.getElementById('restore-json-input').value.trim();
+      if (!val) return;
+      document.getElementById('restore-json-input').value = '';
+      menuBackdrop.classList.remove('open');
+      runCommand('restore ' + val);
+    });
+    document.getElementById('btn-menu-edit').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('edit'); });
+    document.getElementById('btn-menu-undo').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('undo'); });
+    document.getElementById('btn-menu-setup').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('setup'); });
+
+    submitBtn.addEventListener('click', () => { const v = cmdInput.value; if (v.trim()) runCommand(v); cmdInput.value = ''; cmdInput.focus(); });
+    cmdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); } });
+
+    applyPrefs();
+    engageLock(true);
 
     (async function boot() {
       state = await storageEngine.loadAndHeal();
       renderCards();
       runDailyAutoBackup(false);
-      if (!state.setupComplete) {
-        startSetupWizard(false);
-      } else if (state.transactions.length > 0) {
-        renderRecentFeedRows();
-      } else {
-        printLine('Cash Flow OS Ready. Try "353 manish recharge" or tap History for Date/Month filters.', 'dim');
-      }
+      if (!state.setupComplete) startSetupWizard(false);
+      else renderActiveTab();
     })();
   </script>
 </body>
 </html>
+
