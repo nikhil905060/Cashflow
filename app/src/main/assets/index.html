@@ -6,613 +6,703 @@
   <title>Cash Flow OS</title>
   <style>
     :root {
-      /* iOS 18 LIGHT MODE TOKENS (DEFAULT) */
       --bg: #F2F2F7;
       --surface: #FFFFFF;
       --fill-tertiary: rgba(118, 118, 128, 0.12);
-      --glass-bg: rgba(242, 242, 247, 0.84);
+      --fill-quaternary: rgba(118, 118, 128, 0.08);
       --fg: #000000;
       --fg-sec: rgba(60, 60, 67, 0.60);
       --sep: rgba(60, 60, 67, 0.18);
-      --accent: #007AFF;
-      --accent-tint: rgba(0, 122, 255, 0.14);
-      --credit: #34C759;
-      --debit: #FF3B30;
-      --warn: #FF9500;
-      --split: #AF52DE;
+      --blue: #007AFF;
+      --blue-tint: rgba(0, 122, 255, 0.14);
+      --green: #34C759;
+      --red: #FF3B30;
+      --orange: #FF9500;
+      --purple: #AF52DE;
+      --glass-bg: rgba(242, 242, 247, 0.84);
+      --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --seg-active: #FFFFFF;
       --input-bg: rgba(118, 118, 128, 0.12);
       --input-fg: #000000;
       --output-bg: #FFFFFF;
       --output-fg: #000000;
       --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
-      --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
-      --radius-card: 16px;
-      --row-pad: 11px 16px;
+      --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
     }
 
-    body.dark-mode {
-      /* iOS 18 OLED DARK MODE TOKENS */
+    body[data-theme="dark"] {
       --bg: #000000;
       --surface: #1C1C1E;
       --fill-tertiary: #2C2C2E;
-      --glass-bg: rgba(28, 28, 30, 0.84);
+      --fill-quaternary: #1C1C1E;
       --fg: #FFFFFF;
       --fg-sec: rgba(235, 235, 245, 0.60);
       --sep: rgba(84, 84, 88, 0.65);
-      --accent: #0A84FF;
-      --accent-tint: rgba(10, 132, 255, 0.20);
-      --credit: #30D158;
-      --debit: #FF453A;
+      --blue: #0A84FF;
+      --blue-tint: rgba(10, 132, 255, 0.20);
+      --green: #30D158;
+      --red: #FF453A;
+      --orange: #FF9F0A;
+      --purple: #BF5AF2;
+      --glass-bg: rgba(28, 28, 30, 0.84);
+      --card-shadow: none;
+      --seg-active: #636366;
       --input-bg: #2C2C2E;
       --input-fg: #FFFFFF;
       --output-bg: #1C1C1E;
       --output-fg: #FFFFFF;
     }
 
-    body.compact-mode { --row-pad: 7px 14px; }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body {
       width: 100%; height: 100dvh; background: var(--bg); color: var(--fg);
-      font-family: var(--font-main); font-size: 15px; line-height: 1.35; overflow: hidden;
+      font-family: var(--font-main); font-size: 15px; line-height: 1.4; overflow: hidden;
       -webkit-font-smoothing: antialiased;
     }
-    .tab-num { font-variant-numeric: tabular-nums; }
-    svg.sf { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
+
+    .tabular { font-variant-numeric: tabular-nums; }
+
+    button, .tap-item {
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.15s ease;
+    }
+    button:active, .tap-item:active { transform: scale(0.97); opacity: 0.78; }
 
     /* iOS 18 LOCK SCREEN */
     #lock-screen {
       position: fixed; inset: 0; z-index: 9999; background: var(--bg); color: var(--fg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px;
     }
     #lock-screen.unlocked { display: none; }
-    .lock-wrap { width: 100%; max-width: 300px; text-align: center; }
-    .lock-icon-ring {
-      width: 52px; height: 52px; margin: 0 auto 14px; border-radius: 50%;
-      background: var(--accent-tint); color: var(--accent);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .lock-title { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
-    .lock-sub { font-size: 13px; color: var(--fg-sec); margin-bottom: 20px; }
-    .pin-dots { display: flex; justify-content: center; gap: 16px; margin-bottom: 14px; }
-    .pin-dot { width: 13px; height: 13px; border: 1.5px solid var(--fg); border-radius: 50%; transition: background 0.15s; }
-    .pin-dot.filled { background: var(--fg); }
-    .lock-err { font-size: 13px; color: var(--debit); font-weight: 500; min-height: 20px; margin-bottom: 14px; }
-    .keypad { display: grid; grid-template-columns: repeat(3, 74px); gap: 14px 20px; justify-content: center; }
-    .k-btn {
-      width: 74px; height: 74px; border-radius: 50%; border: none;
-      background: var(--fill-tertiary); color: var(--fg); font-family: inherit;
-      font-size: 26px; font-weight: 400; cursor: pointer; font-variant-numeric: tabular-nums;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.15s;
-    }
-    .k-btn:active { transform: scale(0.94); opacity: 0.7; }
-    .k-btn.plain { background: transparent; color: var(--accent); font-size: 15px; font-weight: 600; }
 
-    /* MAIN APP SHELL */
-    #app { display: flex; flex-direction: column; height: 100dvh; max-width: 680px; margin: 0 auto; position: relative; }
+    .lock-wrap { width: 100%; max-width: 300px; text-align: center; }
+    .lock-icon-badge {
+      width: 56px; height: 56px; border-radius: 16px; background: var(--blue-tint); color: var(--blue);
+      display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px;
+    }
+    .lock-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+    .lock-sub { font-size: 14px; color: var(--fg-sec); margin-bottom: 22px; }
+    .pin-dots { display: flex; justify-content: center; gap: 16px; margin-bottom: 12px; }
+    .pin-dot {
+      width: 13px; height: 13px; border-radius: 50%;
+      border: 1.5px solid var(--fg-sec); transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .pin-dot.filled { background: var(--fg); border-color: var(--fg); }
+    .lock-err { font-size: 13px; color: var(--red); font-weight: 500; min-height: 20px; margin-bottom: 12px; }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; justify-items: center; }
+    .k-btn {
+      width: 72px; height: 72px; border-radius: 50%; border: none;
+      background: var(--fill-tertiary); color: var(--fg);
+      font-size: 28px; font-weight: 400; font-family: inherit;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .k-btn.tinted { background: var(--blue-tint); color: var(--blue); }
+    .k-btn.plain { background: transparent; color: var(--fg); }
+
+    /* MAIN SHELL */
+    #app {
+      display: flex; flex-direction: column; height: 100dvh; max-width: 720px; margin: 0 auto;
+    }
 
     /* STICKY FROSTED TOP NAV */
     #top-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 16px; background: var(--glass-bg);
-      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-bottom: 0.5px solid var(--sep); flex-shrink: 0; z-index: 20;
+      position: sticky; top: 0; z-index: 20;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 0.5px solid var(--sep);
+      padding: 10px 16px 10px; flex-shrink: 0;
     }
-    .nav-btn-plain {
-      background: transparent; border: none; color: var(--accent); font-family: inherit;
-      font-size: 16px; font-weight: 500; cursor: pointer; min-width: 44px; min-height: 36px;
-      display: inline-flex; align-items: center; gap: 5px;
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .nav-btn-plain:active { transform: scale(0.96); opacity: 0.6; }
-    .nav-center-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
-    .nav-circle-btn {
+    .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .nav-left { display: flex; align-items: center; gap: 10px; }
+    .nav-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+
+    .ios-circle-btn {
       width: 36px; height: 36px; border-radius: 50%; border: none;
-      background: var(--accent-tint); color: var(--accent); cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: var(--fill-tertiary); color: var(--blue);
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    .nav-circle-btn:active { transform: scale(0.93); opacity: 0.75; }
+    .ios-pill-tinted {
+      height: 32px; padding: 0 12px; border-radius: 999px; border: none;
+      background: var(--blue-tint); color: var(--blue);
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    }
 
-    /* SCROLLABLE BODY AREA */
+    /* SCROLLABLE BODY */
     #main-scroll {
-      flex: 1; display: flex; flex-direction: column; min-height: 0;
-      padding: 12px 16px 8px; gap: 12px; overflow: hidden;
+      flex: 1; overflow-y: auto; padding: 14px 16px 12px;
+      -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 14px;
     }
 
-    /* HERO NET BALANCE + WALLET ROW */
-    .hero-card {
-      background: var(--surface); border-radius: var(--radius-card); padding: 14px 16px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04); flex-shrink: 0;
-      display: flex; justify-content: space-between; align-items: center;
+    /* HERO BALANCE CARD */
+    .ios-balance-card {
+      background: var(--surface); border-radius: 16px; padding: 16px;
+      box-shadow: var(--card-shadow); flex-shrink: 0;
     }
-    .hero-lbl { font-size: 13px; color: var(--fg-sec); font-weight: 500; }
-    .hero-num { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-top: 2px; }
-    .hero-sub { font-size: 12px; color: var(--fg-sec); margin-top: 3px; }
-    .hero-pill {
-      background: var(--accent-tint); color: var(--accent); border: none;
-      border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: inherit; transition: transform 0.15s;
-    }
-    .hero-pill:active { transform: scale(0.96); }
+    .bal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .bal-label { font-size: 13px; font-weight: 500; color: var(--fg-sec); text-transform: uppercase; letter-spacing: 0.02em; }
+    .bal-hero-num { font-size: 34px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-top: 2px; }
 
-    #cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
+    .wallet-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+      padding-top: 12px; border-top: 0.5px solid var(--sep);
+    }
     .wallet-tile {
-      background: var(--surface); border-radius: var(--radius-card); padding: 11px 14px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04); cursor: pointer;
-      display: flex; align-items: center; gap: 10px; transition: transform 0.15s;
+      background: var(--fill-quaternary); border-radius: 12px; padding: 10px;
+      cursor: pointer; display: flex; flex-direction: column; gap: 2px;
     }
-    .wallet-tile:active { transform: scale(0.97); opacity: 0.85; }
-    .w-icon {
-      width: 34px; height: 34px; border-radius: 10px; display: flex;
-      align-items: center; justify-content: center; flex-shrink: 0;
+    .wt-lbl { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
+    .wt-val { font-size: 16px; font-weight: 600; color: var(--fg); }
+    .wt-sub { font-size: 11px; color: var(--fg-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* SEGMENTED CONTROL & DATE BAR */
+    .controls-stack { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+    .seg-control {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      background: var(--fill-tertiary); border-radius: 9px; padding: 2px; gap: 2px;
     }
-    .w-icon.upi { background: var(--accent-tint); color: var(--accent); }
-    .w-icon.cash { background: rgba(52, 199, 89, 0.15); color: var(--credit); }
-    .w-meta { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
-    .w-val { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+    .seg-btn {
+      height: 30px; border: none; background: transparent; color: var(--fg);
+      border-radius: 7px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer;
+    }
+    .seg-btn.active {
+      background: var(--seg-active); font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
 
-    /* iOS 18 SEGMENTED CONTROL */
-    .ios-seg {
-      display: flex; background: var(--fill-tertiary); border-radius: 9px; padding: 2px;
-      flex-shrink: 0;
+    .date-filter-row {
+      display: none; align-items: center; justify-content: space-between; gap: 8px;
+      background: var(--surface); border-radius: 12px; padding: 8px 12px;
+      box-shadow: var(--card-shadow);
     }
-    .ios-seg button {
-      flex: 1; height: 30px; border: none; background: transparent; color: var(--fg);
-      font-family: inherit; font-size: 13px; font-weight: 600; border-radius: 7px;
-      cursor: pointer; transition: background 0.18s, box-shadow 0.18s;
+    .date-filter-row.show { display: flex; }
+    .ios-date-input {
+      border: none; background: var(--fill-tertiary); color: var(--fg);
+      border-radius: 8px; padding: 6px 10px; font-size: 13px; font-weight: 500; font-family: inherit;
     }
-    .ios-seg button.active {
-      background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+
+    /* SECTION HEADER & INSET GROUPED FEED */
+    .sec-head-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 4px 6px 16px;
     }
-    body.dark-mode .ios-seg button.active { background: #636366; color: #FFFFFF; }
-        /* FEED CONTAINER (INSET GROUPED LIST) */
+    .sec-title { font-size: 13px; font-weight: 500; color: var(--fg-sec); text-transform: uppercase; letter-spacing: 0.02em; }
+    .sec-meta { font-size: 12px; font-weight: 500; color: var(--fg-sec); }
+
     #feed-card {
-      flex: 1; display: flex; flex-direction: column; min-height: 0;
       background: var(--output-bg); color: var(--output-fg);
-      border-radius: var(--radius-card); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-      overflow: hidden;
+      border-radius: 16px; box-shadow: var(--card-shadow); overflow: hidden;
     }
-    .feed-head {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 11px 16px 8px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
-    }
-    .feed-head-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; color: var(--fg-sec); }
-    .feed-head-meta { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
+    #output { width: 100%; }
 
-    /* HISTORY SEARCH & PILLS BAR */
-    #history-tools {
-      display: none; flex-direction: column; gap: 8px;
-      padding: 10px 14px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
-    }
-    .ios-search {
-      display: flex; align-items: center; gap: 8px; height: 36px;
-      background: var(--fill-tertiary); border-radius: 10px; padding: 0 10px;
-    }
-    .ios-search input {
-      flex: 1; border: none; outline: none; background: transparent;
-      color: var(--output-fg); font-family: inherit; font-size: 15px;
-    }
-    .ios-search input::placeholder { color: var(--fg-sec); }
-    .filter-pills { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; align-items: center; }
-    .filter-pills::-webkit-scrollbar { display: none; }
-    .f-pill {
-      height: 28px; padding: 0 12px; border-radius: 999px; border: none;
-      background: var(--fill-tertiary); color: var(--output-fg); font-family: inherit;
-      font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
-    }
-    .f-pill.active { background: var(--accent); color: #FFFFFF; }
-    #date-picker-input {
-      height: 28px; border: none; border-radius: 999px; background: var(--fill-tertiary);
-      color: var(--output-fg); padding: 0 10px; font-size: 12px; font-weight: 600; font-family: inherit;
-    }
-
-    #output { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-    /* INSET GROUPED ROWS WITH INDENTED 0.5PX DIVIDERS */
     .tx-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: var(--row-pad); position: relative;
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; cursor: pointer; position: relative;
     }
-    .tx-row:not(:last-child)::after {
-      content: ""; position: absolute; left: 16px; right: 0; bottom: 0;
+    .tx-row + .tx-row::before {
+      content: ""; position: absolute; top: 0; left: 60px; right: 0;
       height: 0.5px; background: var(--sep);
     }
-    .tx-left { display: flex; flex-direction: column; min-width: 0; padding-right: 10px; }
-    .tx-title { font-size: 15px; font-weight: 500; color: var(--output-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .tx-sub { font-size: 12px; color: var(--fg-sec); margin-top: 2px; }
-    .tx-amt { font-size: 15px; font-weight: 600; flex-shrink: 0; }
-    .credit { color: var(--credit); }
-    .debit { color: var(--debit); }
-    .split { color: var(--split); }
-    .warn { color: var(--warn); }
-    .info { color: var(--accent); }
+    .tx-icon-wrap {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .tx-icon-wrap.debit { background: rgba(255, 59, 48, 0.13); color: var(--red); }
+    .tx-icon-wrap.credit { background: rgba(52, 199, 89, 0.14); color: var(--green); }
+    .tx-icon-wrap.udhar { background: rgba(175, 82, 222, 0.14); color: var(--purple); }
+    .tx-icon-wrap.owe { background: rgba(255, 149, 0, 0.15); color: var(--orange); }
+
+    .tx-body { flex: 1; min-width: 0; }
+    .tx-title { font-size: 16px; font-weight: 500; color: var(--output-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tx-sub { font-size: 12.5px; color: var(--fg-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+
+    .tx-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .tx-amt { font-size: 16px; font-weight: 600; text-align: right; }
+    .tx-chev { color: var(--fg-sec); opacity: 0.55; display: flex; align-items: center; }
+
+    .credit { color: var(--green); }
+    .debit { color: var(--red); }
+    .split { color: var(--purple); }
+    .owe { color: var(--orange); }
+    .warn { color: var(--orange); }
+    .info { color: var(--blue); }
     .dim { color: var(--fg-sec); }
 
-    .line { padding: 8px 16px; font-size: 13.5px; font-weight: 500; white-space: pre-wrap; word-break: break-word; }
+    .msg-line {
+      padding: 12px 16px; font-size: 14px; font-weight: 500;
+      border-bottom: 0.5px solid var(--sep); white-space: pre-wrap; word-break: break-word;
+    }
+    .msg-line:last-child { border-bottom: none; }
     .box-block {
-      margin: 10px 14px; padding: 12px; border-radius: 12px; background: var(--fill-tertiary);
-      font-family: var(--font-mono); font-size: 12px; white-space: pre; overflow-x: auto;
+      padding: 14px 16px; white-space: pre; overflow-x: auto;
+      font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5;
+      color: var(--output-fg); border-bottom: 0.5px solid var(--sep);
     }
-    .settle-btn {
-      background: var(--accent-tint); color: var(--accent); border: none; border-radius: 999px;
-      padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
-    }
-    .settle-btn:active { transform: scale(0.95); }
 
-    /* OPTIONAL QUICK CHIPS BAR (OFF BY DEFAULT FOR CLEAN HOME, TOGGLE IN MENU) */
-    #quick-chips-bar {
-      display: none; gap: 6px; overflow-x: auto; padding: 6px 16px 0;
-      scrollbar-width: none; flex-shrink: 0;
+    /* QUICK ACTION PILLS */
+    #chips-row {
+      display: flex; gap: 8px; overflow-x: auto; padding: 6px 16px 4px;
+      scrollbar-width: none; flex-shrink: 0; background: var(--glass-bg);
+      border-top: 0.5px solid var(--sep);
     }
-    #quick-chips-bar.visible { display: flex; }
-    #quick-chips-bar::-webkit-scrollbar { display: none; }
-    .q-chip {
+    #chips-row::-webkit-scrollbar { display: none; }
+    .ios-chip {
       height: 30px; padding: 0 12px; border-radius: 999px; border: none;
-      background: var(--surface); color: var(--fg); font-family: inherit;
-      font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      background: var(--fill-tertiary); color: var(--fg);
+      font-size: 12.5px; font-weight: 500; font-family: inherit;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
     }
+    .ios-chip.tinted { background: var(--blue-tint); color: var(--blue); font-weight: 600; }
 
-    /* BOTTOM FROSTED INPUT DOCK */
-    #bottom-dock {
-      padding: 8px 14px 12px; background: var(--glass-bg);
-      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-top: 0.5px solid var(--sep); flex-shrink: 0;
+    /* BACKDATE COMPOSER BAR */
+    #backdate-bar {
+      display: none; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 8px 16px; background: var(--glass-bg); border-top: 0.5px solid var(--sep);
+      flex-shrink: 0;
     }
-    .dock-row { display: flex; align-items: center; gap: 8px; }
-    .input-pill {
-      flex: 1; display: flex; align-items: center; gap: 8px; height: 42px;
-      background: var(--input-bg); border-radius: 999px; padding: 0 6px 0 14px;
+    #backdate-bar.show { display: flex; }
+    .bd-lbl { font-size: 12.5px; font-weight: 600; color: var(--blue); white-space: nowrap; }
+
+    /* BOTTOM FROSTED COMPOSER */
+    #bottom-composer {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: 8px 14px 12px; flex-shrink: 0;
     }
-    .term-prefix { display: none; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--credit); }
+    .composer-row { display: flex; align-items: center; gap: 8px; }
+    .ios-input-pill {
+      flex: 1; height: 42px; background: var(--input-bg); border-radius: 999px;
+      display: flex; align-items: center; padding: 0 6px 0 14px; gap: 6px;
+    }
     #cmd-input {
       flex: 1; border: none; outline: none; background: transparent;
-      color: var(--input-fg); font-family: inherit; font-size: 15px; min-width: 30px;
+      font-family: inherit; font-size: 16px; color: var(--input-fg); min-width: 40px;
     }
-    #cmd-input::placeholder { color: var(--input-fg); opacity: 0.48; }
-    #mic-btn {
-      width: 32px; height: 32px; border-radius: 50%; border: none;
-      background: transparent; color: var(--input-fg); opacity: 0.72;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    #mic-btn.listening { background: var(--debit); color: #FFFFFF; opacity: 1; }
-    #submit-btn {
-      width: 40px; height: 40px; border-radius: 50%; border: none;
-      background: var(--accent); color: #FFFFFF; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-    #submit-btn:active { transform: scale(0.93); }
+    #cmd-input::placeholder { color: var(--fg-sec); }
 
-    /* iOS 18 BOTTOM SHEET MENU */
-    #menu-backdrop {
-      position: fixed; inset: 0; z-index: 9500; background: rgba(0, 0, 0, 0.42);
+    .comp-icon-btn {
+      width: 34px; height: 34px; border-radius: 50%; border: none;
+      background: transparent; color: var(--fg-sec);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    }
+    .comp-icon-btn.active { background: var(--blue-tint); color: var(--blue); }
+    .comp-icon-btn.listening { background: var(--red); color: #FFFFFF; }
+
+    #submit-btn {
+      width: 42px; height: 42px; border-radius: 50%; border: none;
+      background: var(--blue); color: #FFFFFF;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    }
+
+    /* iOS 18 BOTTOM SHEETS (EDIT ENTRY & SETTINGS) */
+    .sheet-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.42); z-index: 9500;
       display: none; align-items: flex-end; justify-content: center;
     }
-    #menu-backdrop.open { display: flex; }
+    .sheet-backdrop.open { display: flex; }
     .ios-sheet {
-      width: 100%; max-width: 600px; max-height: 88dvh; background: var(--bg); color: var(--fg);
-      border-radius: 28px 28px 0 0; display: flex; flex-direction: column; overflow: hidden;
+      width: 100%; max-width: 540px; background: var(--bg); color: var(--fg);
+      border-radius: 28px 28px 0 0; max-height: 88dvh; display: flex; flex-direction: column;
+      overflow: hidden;
     }
-    .sheet-handle { width: 36px; height: 5px; border-radius: 999px; background: rgba(120,120,128,0.35); margin: 8px auto 4px; flex-shrink: 0; }
+    .sheet-grabber {
+      width: 36px; height: 5px; border-radius: 999px; background: rgba(128, 128, 128, 0.35);
+      margin: 8px auto 4px; flex-shrink: 0;
+    }
     .sheet-nav {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 16px 12px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
+      padding: 8px 16px 12px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
     }
-    .sheet-title { font-size: 17px; font-weight: 600; }
-    .sheet-body { flex: 1; overflow-y: auto; padding: 14px 16px 28px; -webkit-overflow-scrolling: touch; }
-    .sec-hdr {
-      font-size: 12.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em;
-      color: var(--fg-sec); margin: 14px 0 6px 14px;
+    .sheet-nav-title { font-size: 17px; font-weight: 600; }
+    .sheet-text-btn {
+      border: none; background: transparent; color: var(--blue);
+      font-size: 17px; font-weight: 400; font-family: inherit; cursor: pointer; padding: 4px;
     }
-    .sec-hdr:first-child { margin-top: 2px; }
-    .ios-group { background: var(--surface); border-radius: 14px; overflow: hidden; }
-    .ios-cell {
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      padding: 11px 16px; min-height: 46px; position: relative;
-    }
-    .ios-cell:not(:last-child)::after {
-      content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 0.5px; background: var(--sep);
-    }
-    .cell-lbl { font-size: 15px; font-weight: 400; }
-    .cell-sub { font-size: 12px; color: var(--fg-sec); }
+    .sheet-text-btn.bold { font-weight: 600; }
+    .sheet-body { overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
-    /* EXACT iOS 18 TOGGLE SWITCH (51x31) */
-    .ios-switch { position: relative; width: 51px; height: 31px; flex-shrink: 0; }
+    /* INSET GROUPED FORM ROWS INSIDE SHEETS */
+    .ios-group {
+      background: var(--surface); border-radius: 14px; overflow: hidden;
+    }
+    .ios-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      min-height: 46px; padding: 8px 16px; position: relative;
+    }
+    .ios-row + .ios-row::before {
+      content: ""; position: absolute; top: 0; left: 16px; right: 0;
+      height: 0.5px; background: var(--sep);
+    }
+    .ios-row-lbl { font-size: 15px; font-weight: 400; color: var(--fg); white-space: nowrap; }
+    .ios-field {
+      flex: 1; border: none; outline: none; background: transparent;
+      color: var(--fg); font-size: 15px; font-family: inherit; text-align: right; min-width: 80px;
+    }
+    .ios-select {
+      border: none; outline: none; background: transparent; color: var(--blue);
+      font-size: 15px; font-weight: 500; font-family: inherit; text-align: right;
+    }
+
+    /* AUTHENTIC iOS 18 TOGGLE SWITCH (51x31) */
+    .ios-switch {
+      position: relative; width: 51px; height: 31px; display: inline-block; flex-shrink: 0;
+    }
     .ios-switch input { opacity: 0; width: 0; height: 0; }
     .ios-slider {
       position: absolute; inset: 0; border-radius: 999px; cursor: pointer;
-      background: rgba(120, 120, 128, 0.16); transition: background 0.25s;
+      background: rgba(120, 120, 128, 0.24); transition: background 0.25s ease;
     }
-    body.dark-mode .ios-slider { background: rgba(120, 120, 128, 0.32); }
     .ios-slider::before {
       content: ""; position: absolute; width: 27px; height: 27px; left: 2px; top: 2px;
       border-radius: 50%; background: #FFFFFF;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15), 0 1px 1px rgba(0,0,0,0.16);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.16);
       transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .ios-switch input:checked + .ios-slider { background: #34C759; }
+    .ios-switch input:checked + .ios-slider { background: var(--green); }
     .ios-switch input:checked + .ios-slider::before { transform: translateX(20px); }
 
-    .menu-input {
-      background: var(--fill-tertiary); border: none; border-radius: 10px; padding: 8px 11px;
-      color: var(--fg); font-family: inherit; font-size: 14px; outline: none; width: 100%;
+    .ios-btn-destructive {
+      width: 100%; height: 48px; border-radius: 14px; border: none;
+      background: var(--surface); color: var(--red);
+      font-size: 17px; font-weight: 500; font-family: inherit; cursor: pointer;
     }
-    .menu-btn {
-      height: 36px; padding: 0 14px; border-radius: 10px; border: none;
-      background: var(--accent); color: #FFFFFF; font-family: inherit;
-      font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    .ios-btn-primary {
+      width: 100%; height: 48px; border-radius: 14px; border: none;
+      background: var(--blue); color: #FFFFFF;
+      font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer;
     }
-    .menu-btn.tinted { background: var(--accent-tint); color: var(--accent); }
-    .menu-btn.danger { background: rgba(255, 59, 48, 0.14); color: var(--debit); }
-    .prog-track { width: 100%; height: 7px; border-radius: 999px; background: var(--fill-tertiary); overflow: hidden; margin-top: 6px; }
-    .prog-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width 0.25s; }
-    .color-row { display: flex; flex-wrap: wrap; gap: 8px; padding: 11px 16px; }
-    .cp-chip {
-      display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
-      border-radius: 999px; background: var(--fill-tertiary); font-size: 12.5px; font-weight: 500;
-    }
-    .cp-chip input[type="color"] { width: 20px; height: 20px; border: none; background: transparent; cursor: pointer; }
 
-    /* THEME OVERRIDES (BENTO / BRUTAL / TERMINAL) */
-    body[data-theme="bento"] { --bg: #F4F4F5; --radius-card: 26px; --accent: #10B981; --accent-tint: rgba(16,185,129,0.14); }
-    body[data-theme="bento"] .hero-card { background: #141518; color: #FFFFFF; }
-    body[data-theme="bento"] .hero-lbl, body[data-theme="bento"] .hero-sub { color: #A1A1AA; }
-    body[data-theme="neobrutal"] { --bg: #FAF8F5; --accent: #111111; --accent-tint: #FFD426; --radius-card: 12px; }
-    body[data-theme="neobrutal"] .hero-card, body[data-theme="neobrutal"] .wallet-tile, body[data-theme="neobrutal"] #feed-card {
-      border: 2px solid #111111; box-shadow: 4px 4px 0px #111111;
+    .color-dot-input {
+      width: 28px; height: 28px; border: 1px solid var(--sep);
+      border-radius: 50%; background: transparent; cursor: pointer; overflow: hidden;
     }
-    body[data-theme="terminal"] {
-      --bg: #040705; --surface: #08100b; --fill-tertiary: #0d1a12; --glass-bg: rgba(4,7,5,0.92);
-      --fg: #00ff66; --fg-sec: #00b347; --sep: #193823; --accent: #00ff66; --accent-tint: #0d1a12;
-      --radius-card: 6px;
-    }
-    body[data-theme="terminal"] .term-prefix { display: inline; }
-    body[data-theme="terminal"] #submit-btn { color: #040705; }
   </style>
-</head><body data-theme="ios18">
-  <!-- LOCK SCREEN -->
+</head>
+<body data-theme="light">
+  <!-- iOS 18 LOCK SCREEN -->
   <div id="lock-screen">
     <div class="lock-wrap">
-      <div class="lock-icon-ring">
-        <svg class="sf" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <div class="lock-icon-badge">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="11" width="14" height="10" rx="3"></rect>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+        </svg>
       </div>
-      <div class="lock-title" id="lock-heading">Unlock Cash Flow</div>
-      <div class="lock-sub" id="lock-sub">Enter PIN or use Fingerprint</div>
+      <div class="lock-title" id="lock-heading">Cash Flow OS</div>
+      <div class="lock-sub" id="lock-sub">Enter Passcode or Use Fingerprint</div>
       <div class="pin-dots" id="pin-dots">
         <span class="pin-dot"></span><span class="pin-dot"></span>
         <span class="pin-dot"></span><span class="pin-dot"></span>
       </div>
       <div class="lock-err" id="lock-err"></div>
       <div class="keypad">
-        <button type="button" class="k-btn" data-key="1">1</button>
-        <button type="button" class="k-btn" data-key="2">2</button>
-        <button type="button" class="k-btn" data-key="3">3</button>
-        <button type="button" class="k-btn" data-key="4">4</button>
-        <button type="button" class="k-btn" data-key="5">5</button>
-        <button type="button" class="k-btn" data-key="6">6</button>
-        <button type="button" class="k-btn" data-key="7">7</button>
-        <button type="button" class="k-btn" data-key="8">8</button>
-        <button type="button" class="k-btn" data-key="9">9</button>
-        <button type="button" class="k-btn plain" id="btn-biometric" title="Fingerprint">
-          <svg class="sf" style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12 11a1 1 0 0 1 1 1v4"/><path d="M9 12a3 3 0 0 1 6 0v3"/><path d="M6.5 11.5a5.5 5.5 0 0 1 11 0V15"/><path d="M4 11a8 8 0 0 1 16 0v2"/></svg>
+        <button type="button" class="k-btn tabular" data-key="1">1</button>
+        <button type="button" class="k-btn tabular" data-key="2">2</button>
+        <button type="button" class="k-btn tabular" data-key="3">3</button>
+        <button type="button" class="k-btn tabular" data-key="4">4</button>
+        <button type="button" class="k-btn tabular" data-key="5">5</button>
+        <button type="button" class="k-btn tabular" data-key="6">6</button>
+        <button type="button" class="k-btn tabular" data-key="7">7</button>
+        <button type="button" class="k-btn tabular" data-key="8">8</button>
+        <button type="button" class="k-btn tabular" data-key="9">9</button>
+        <button type="button" class="k-btn tinted" id="btn-biometric" aria-label="Fingerprint">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 11c0 3.5-1.5 6.5-4 8"></path>
+            <path d="M15.5 11c0 4-1.5 7.5-4.5 9.5"></path>
+            <path d="M8.5 11a3.5 3.5 0 0 1 7 0"></path>
+            <path d="M5.5 11a6.5 6.5 0 0 1 13 0c0 2.5-.5 5-1.5 7"></path>
+            <path d="M2.5 11a9.5 9.5 0 0 1 19 0"></path>
+          </svg>
         </button>
-        <button type="button" class="k-btn" data-key="0">0</button>
-        <button type="button" class="k-btn plain" id="pin-back" title="Delete">
-          <svg class="sf" style="width:22px;height:22px" viewBox="0 0 24 24"><path d="M21 6H9l-6 6 6 6h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2z"/><line x1="17" y1="9" x2="11" y2="15"/><line x1="11" y1="9" x2="17" y2="15"/></svg>
+        <button type="button" class="k-btn tabular" data-key="0">0</button>
+        <button type="button" class="k-btn plain" id="pin-back" aria-label="Delete">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+            <line x1="18" y1="9" x2="12" y2="15"></line>
+            <line x1="12" y1="9" x2="18" y2="15"></line>
+          </svg>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- iOS 18 BOTTOM SHEET MENU (ALL EXTRA FEATURES) -->
-  <div id="menu-backdrop">
+  <!-- EDIT ANY TRANSACTION SHEET -->
+  <div class="sheet-backdrop" id="edit-backdrop">
     <div class="ios-sheet">
-      <div class="sheet-handle"></div>
+      <div class="sheet-grabber"></div>
       <div class="sheet-nav">
-        <button type="button" class="nav-btn-plain" id="reset-cust-btn" style="color:var(--debit);font-size:15px;">Reset</button>
-        <span class="sheet-title">Menu &amp; Settings</span>
-        <button type="button" class="nav-btn-plain" id="close-menu-btn" style="justify-content:flex-end;font-weight:600;">Done</button>
+        <button type="button" class="sheet-text-btn" id="edit-cancel-btn">Cancel</button>
+        <span class="sheet-nav-title" id="edit-sheet-title">Edit Entry</span>
+        <button type="button" class="sheet-text-btn bold" id="edit-save-btn">Save</button>
       </div>
-
       <div class="sheet-body">
-        <div class="sec-hdr">Monthly Budget &amp; Category Stats</div>
+        <input type="hidden" id="edit-tx-id" />
         <div class="ios-group">
-          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
-            <div style="display:flex;gap:8px;align-items:center;">
-              <input type="number" id="budget-input" class="menu-input" placeholder="Set monthly budget (e.g. 5000)" />
-              <button type="button" class="menu-btn" id="save-budget-btn">Set</button>
-            </div>
-            <div id="budget-visual" style="margin-top:8px;"></div>
+          <div class="ios-row">
+            <span class="ios-row-lbl">Type</span>
+            <select id="edit-type" class="ios-select">
+              <option value="DEBIT">Expense (Debit)</option>
+              <option value="CREDIT">Income (Credit)</option>
+              <option value="UDHAR_FULL">Udhar (Full Lena)</option>
+              <option value="UDHAR_SPLIT">Split (Equal Share)</option>
+              <option value="FRIEND_PAID">Friend Paid (Dena)</option>
+            </select>
           </div>
-          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
-            <div class="cell-lbl" style="font-weight:600;margin-bottom:4px;">Category Breakdown</div>
-            <div id="stats-visual" class="cell-sub">No expenses yet.</div>
+          <div class="ios-row">
+            <span class="ios-row-lbl">Amount (₹)</span>
+            <input type="number" step="0.01" id="edit-amount" class="ios-field tabular" placeholder="0.00" />
+          </div>
+          <div class="ios-row" id="edit-account-row">
+            <span class="ios-row-lbl">Account</span>
+            <select id="edit-account" class="ios-select"></select>
+          </div>
+          <div class="ios-row" id="edit-friend-row" style="display:none;">
+            <span class="ios-row-lbl">Friend Name</span>
+            <input type="text" id="edit-friend" class="ios-field" placeholder="e.g. Manish, Uncle Ji" />
+          </div>
+          <div class="ios-row">
+            <span class="ios-row-lbl">Category</span>
+            <select id="edit-category" class="ios-select">
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Bills">Bills</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Income">Income</option>
+              <option value="Settlement">Settlement</option>
+              <option value="General">General</option>
+            </select>
           </div>
         </div>
 
-        <div class="sec-hdr">Appearance &amp; Theme</div>
         <div class="ios-group">
-          <div class="ios-cell">
-            <span class="cell-lbl">OLED Dark Mode</span>
-            <label class="ios-switch"><input type="checkbox" id="toggle-dark"><span class="ios-slider"></span></label>
+          <div class="ios-row">
+            <span class="ios-row-lbl">Date &amp; Time</span>
+            <input type="datetime-local" id="edit-datetime" class="ios-field tabular" />
           </div>
-          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
-            <span class="cell-lbl" style="margin-bottom:6px;">UI Style</span>
-            <div class="ios-seg" id="theme-seg">
-              <button type="button" class="active" data-set-theme="ios18">iOS 18</button>
-              <button type="button" data-set-theme="bento">Bento</button>
-              <button type="button" data-set-theme="neobrutal">Brutal</button>
-              <button type="button" data-set-theme="terminal">Term</button>
-            </div>
-          </div>
-          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
-            <span class="cell-lbl" style="margin-bottom:6px;">Font Style</span>
-            <div class="ios-seg" id="font-options">
-              <button type="button" class="active" data-font='-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif'>SF Pro</button>
-              <button type="button" data-font='"SF Mono", "JetBrains Mono", ui-monospace, monospace'>Mono</button>
-              <button type="button" data-font='Georgia, "Times New Roman", serif'>Serif</button>
-              <button type="button" data-font='"Trebuchet MS", "Arial Rounded MT Bold", sans-serif'>Round</button>
-            </div>
-          </div>
-          <div class="ios-cell">
-            <span class="cell-lbl">Compact Rows</span>
-            <label class="ios-switch"><input type="checkbox" id="toggle-compact"><span class="ios-slider"></span></label>
+          <div class="ios-row">
+            <span class="ios-row-lbl">Note</span>
+            <input type="text" id="edit-note" class="ios-field" placeholder="Description" />
           </div>
         </div>
 
-        <div class="sec-hdr">Input &amp; Output Colors</div>
-        <div class="ios-group">
-          <div class="color-row">
-            <label class="cp-chip">Input BG <input type="color" id="pick-in-bg" value="#E5E5EA"></label>
-            <label class="cp-chip">Input Text <input type="color" id="pick-in-fg" value="#000000"></label>
-            <label class="cp-chip">Output BG <input type="color" id="pick-out-bg" value="#FFFFFF"></label>
-            <label class="cp-chip">Output Text <input type="color" id="pick-out-fg" value="#000000"></label>
-            <label class="cp-chip">Credit (+) <input type="color" id="pick-credit" value="#34C759"></label>
-            <label class="cp-chip">Debit (-) <input type="color" id="pick-debit" value="#FF3B30"></label>
-          </div>
-        </div>
-
-        <div class="sec-hdr">Wallet &amp; Quick Tools</div>
-        <div class="ios-group">
-          <div class="ios-cell">
-            <span class="cell-lbl">Default Account</span>
-            <select id="default-acc-select" class="menu-input" style="width:auto;min-width:110px;"></select>
-          </div>
-          <div class="ios-cell">
-            <span class="cell-lbl">Show Quick Chips Bar</span>
-            <label class="ios-switch"><input type="checkbox" id="toggle-chips"><span class="ios-slider"></span></label>
-          </div>
-          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
-            <span class="cell-sub" style="margin-bottom:6px;">Custom Chips (comma separated)</span>
-            <div style="display:flex;gap:8px;">
-              <input type="text" id="custom-chips-input" class="menu-input" placeholder="20 chai, 50 auto, bal, dues" />
-              <button type="button" class="menu-btn tinted" id="save-chips-btn">Save</button>
-            </div>
-          </div>
-          <div class="ios-cell">
-            <div style="display:flex;gap:8px;width:100%;">
-              <button type="button" class="menu-btn tinted" style="flex:1;" id="btn-menu-edit">Edit Last</button>
-              <button type="button" class="menu-btn tinted" style="flex:1;" id="btn-menu-undo">Undo Last</button>
-              <button type="button" class="menu-btn danger" style="flex:1;" id="btn-menu-setup">Re-Setup</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="sec-hdr">Security &amp; Backup</div>
-        <div class="ios-group">
-          <div class="ios-cell">
-            <span class="cell-lbl">Instant Lock on Minimize</span>
-            <label class="ios-switch"><input type="checkbox" id="toggle-autolock" checked><span class="ios-slider"></span></label>
-          </div>
-          <div class="ios-cell">
-            <input type="password" id="new-pin-input" maxlength="4" inputmode="numeric" class="menu-input" placeholder="New 4-digit PIN" />
-            <button type="button" class="menu-btn tinted" id="save-pin-btn">Set PIN</button>
-          </div>
-          <div class="ios-cell">
-            <div style="display:flex;gap:8px;width:100%;">
-              <button type="button" class="menu-btn" style="flex:1;" id="btn-backup-json">Save JSON Backup</button>
-              <button type="button" class="menu-btn tinted" style="flex:1;" id="btn-export-csv">Export CSV</button>
-            </div>
-          </div>
-          <div class="ios-cell" style="flex-direction:column;align-items:stretch;">
-            <div style="display:flex;gap:8px;">
-              <input type="text" id="restore-json-input" class="menu-input" placeholder="Paste backup JSON here..." />
-              <button type="button" class="menu-btn tinted" id="btn-restore-json">Restore</button>
-            </div>
-          </div>
-        </div>
+        <button type="button" class="ios-btn-destructive" id="edit-delete-btn">Delete Entry</button>
       </div>
     </div>
   </div>
 
-  <!-- CLEAN iOS 18 HOME INTERFACE -->
-  <div id="app">
-    <div id="top-nav">
-      <button type="button" class="nav-btn-plain" id="mask-toggle">Hide</button>
-      <span class="nav-center-title">Cash Flow</span>
-      <button type="button" class="nav-circle-btn" id="open-menu-btn" aria-label="Menu">
-        <svg class="sf" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="18" r="2" fill="currentColor"/></svg>
-      </button>
-    </div>
-
-    <div id="main-scroll">
-      <div class="hero-card">
+  <!-- iOS 18 SETTINGS & CUSTOMIZATION SHEET -->
+  <div class="sheet-backdrop" id="menu-backdrop">
+    <div class="ios-sheet">
+      <div class="sheet-grabber"></div>
+      <div class="sheet-nav">
+        <span style="width:50px;"></span>
+        <span class="sheet-nav-title">Settings</span>
+        <button type="button" class="sheet-text-btn bold" id="close-menu-btn">Done</button>
+      </div>
+      <div class="sheet-body">
         <div>
-          <div class="hero-lbl">Total Net Balance</div>
-          <div class="hero-num tab-num" id="hero-net-val">₹0</div>
-          <div class="hero-sub tab-num" id="hero-budget-sub">Tap Menu to set monthly budget</div>
-        </div>
-        <button type="button" class="hero-pill" id="hero-bal-btn">Details</button>
-      </div>
-
-      <div id="cards-grid"></div>
-
-      <div class="ios-seg" id="seg-tabs">
-        <button type="button" class="active" data-tab="recent">Recent</button>
-        <button type="button" data-tab="history">History</button>
-        <button type="button" data-tab="udhar">Udhar</button>
-      </div>
-
-      <div id="feed-card">
-        <div class="feed-head">
-          <span class="feed-head-title" id="feed-title-lbl">Recent Activity</span>
-          <span class="feed-head-meta tab-num" id="entry-count-lbl">0 entries</span>
-        </div>
-
-        <div id="history-tools">
-          <div class="ios-search">
-            <svg class="sf" style="width:15px;height:15px;color:var(--fg-sec);" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="search-input" placeholder="Search chai, manish, sbi..." autocomplete="off" />
-          </div>
-          <div class="filter-pills">
-            <button type="button" class="f-pill active" data-hfilter="all">All</button>
-            <button type="button" class="f-pill" data-hfilter="today">Today</button>
-            <button type="button" class="f-pill" data-hfilter="month">This Month</button>
-            <input type="date" id="date-picker-input" />
+          <div class="sec-title" style="padding: 0 0 6px 16px;">Appearance</div>
+          <div class="ios-group">
+            <div class="ios-row">
+              <span class="ios-row-lbl">OLED Dark Mode</span>
+              <label class="ios-switch">
+                <input type="checkbox" id="dark-mode-toggle" />
+                <span class="ios-slider"></span>
+              </label>
+            </div>
+            <div class="ios-row">
+              <span class="ios-row-lbl">Font Style</span>
+              <select id="font-select" class="ios-select">
+                <option value='-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif'>SF Pro (Default)</option>
+                <option value='ui-monospace, "SF Mono", Menlo, monospace'>SF Mono</option>
+                <option value='Georgia, "New York", serif'>New York Serif</option>
+                <option value='"Trebuchet MS", system-ui, sans-serif'>Rounded Sans</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <div id="output" aria-live="polite"></div>
+        <div>
+          <div class="sec-title" style="padding: 0 0 6px 16px;">Input &amp; Output Colors</div>
+          <div class="ios-group">
+            <div class="ios-row">
+              <span class="ios-row-lbl">Input Bar Fill &amp; Text</span>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="color" id="pick-in-bg" class="color-dot-input" title="Input Fill" />
+                <input type="color" id="pick-in-fg" class="color-dot-input" title="Input Text" />
+              </div>
+            </div>
+            <div class="ios-row">
+              <span class="ios-row-lbl">Feed Card &amp; Text</span>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="color" id="pick-out-bg" class="color-dot-input" title="Feed Card" />
+                <input type="color" id="pick-out-fg" class="color-dot-input" title="Feed Text" />
+              </div>
+            </div>
+            <div class="ios-row">
+              <span class="ios-row-lbl">Credit (+) &amp; Debit (-)</span>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="color" id="pick-credit" class="color-dot-input" title="Credit Color" />
+                <input type="color" id="pick-debit" class="color-dot-input" title="Debit Color" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sec-title" style="padding: 0 0 6px 16px;">Data &amp; Wallet</div>
+          <div class="ios-group">
+            <div class="ios-row tap-item" data-menu-cmd="backup" style="cursor:pointer;">
+              <span class="ios-row-lbl" style="color:var(--blue);">Save &amp; Copy JSON Backup</span>
+            </div>
+            <div class="ios-row tap-item" data-menu-cmd="stats" style="cursor:pointer;">
+              <span class="ios-row-lbl" style="color:var(--blue);">Expense Breakdown (Stats)</span>
+            </div>
+            <div class="ios-row tap-item" data-menu-cmd="setup" style="cursor:pointer;">
+              <span class="ios-row-lbl" style="color:var(--blue);">Re-Setup UPI &amp; Cash Accounts</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="ios-btn-destructive" id="reset-cust-btn">Reset Default iOS Colors</button>
       </div>
     </div>
+  </div>
 
-    <div id="quick-chips-bar"></div>
-
-    <div id="bottom-dock">
-      <div class="dock-row">
-        <div class="input-pill">
-          <span class="term-prefix" id="prompt-text">$</span>
-          <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-            placeholder="50 chai | 353 manish recharge" />
-          <button type="button" id="mic-btn" title="Voice Input">
-            <svg class="sf" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+  <!-- MAIN iOS 18 APP -->
+  <div id="app">
+    <header id="top-nav">
+      <div class="nav-row">
+        <div class="nav-left">
+          <h1 class="nav-title">Cash Flow</h1>
+        </div>
+        <div class="nav-actions">
+          <button type="button" class="ios-pill-tinted" id="mask-toggle">Hide</button>
+          <button type="button" class="ios-circle-btn" id="open-menu-btn" aria-label="Settings">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
           </button>
         </div>
-        <button type="button" id="submit-btn" aria-label="Send">
-          <svg class="sf" style="width:20px;height:20px;stroke-width:2.3;" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+      </div>
+    </header>
+
+    <main id="main-scroll">
+      <!-- SUMMARY WALLET CARD -->
+      <section class="ios-balance-card">
+        <div class="bal-top">
+          <div>
+            <div class="bal-label">Total Net Balance</div>
+            <div class="bal-hero-num tabular" id="hero-net-val">₹0</div>
+          </div>
+          <button type="button" class="ios-pill-tinted" id="open-past-entry-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Past Entry
+          </button>
+        </div>
+        <div class="wallet-grid" id="wallet-grid"></div>
+      </section>
+
+      <!-- iOS SEGMENTED HISTORY CONTROLS -->
+      <section class="controls-stack">
+        <div class="seg-control" id="seg-control">
+          <button type="button" class="seg-btn active" data-hfilter="all">All</button>
+          <button type="button" class="seg-btn" data-hfilter="today">Today</button>
+          <button type="button" class="seg-btn" data-hfilter="month">Month</button>
+          <button type="button" class="seg-btn" data-hfilter="date">Pick Date</button>
+        </div>
+        <div class="date-filter-row" id="date-filter-row">
+          <span style="font-size:13px; font-weight:500; color:var(--fg-sec);">Filter by Date</span>
+          <input type="date" id="date-picker-input" class="ios-date-input tabular" />
+        </div>
+      </section>
+
+      <!-- INSET GROUPED TRANSACTIONS FEED -->
+      <section>
+        <div class="sec-head-row">
+          <span class="sec-title" id="feed-title-lbl">Recent Activity</span>
+          <span class="sec-meta tabular" id="entry-count-lbl">0 entries</span>
+        </div>
+        <div id="feed-card">
+          <div id="output" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- QUICK ACTION PILLS -->
+    <div id="chips-row">
+      <button type="button" class="ios-chip" data-cmd="bal">Balance</button>
+      <button type="button" class="ios-chip" data-cmd="dues">Udhar</button>
+      <button type="button" class="ios-chip" data-cmd="stats">Stats</button>
+      <button type="button" class="ios-chip" data-insert="find ">Search</button>
+      <button type="button" class="ios-chip" data-insert=" with ">+with</button>
+      <button type="button" class="ios-chip" data-insert=" paid by ">+paid by</button>
+      <button type="button" class="ios-chip" data-cmd="undo">Undo</button>
+    </div>
+
+    <!-- BACKDATE ENTRY BAR (FOR MISSED ENTRIES) -->
+    <div id="backdate-bar">
+      <span class="bd-lbl">Entry Time:</span>
+      <input type="datetime-local" id="custom-entry-dt" class="ios-date-input tabular" style="flex:1;" />
+      <button type="button" class="ios-chip tinted" id="clear-backdate-btn">Now</button>
+    </div>
+
+    <!-- BOTTOM FROSTED COMPOSER -->
+    <footer id="bottom-composer">
+      <div class="composer-row">
+        <div class="ios-input-pill">
+          <input type="text" id="cmd-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+            placeholder="50 chai upi | 353 manish recharge" />
+          <button type="button" class="comp-icon-btn" id="backdate-toggle-btn" title="Set Past Date & Time">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+          </button>
+          <button type="button" class="comp-icon-btn" id="mic-btn" title="Voice Input">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+              <path d="M5 10a7 7 0 0 0 14 0"></path>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </button>
+        </div>
+        <button type="button" id="submit-btn" aria-label="Add Entry">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+          </svg>
         </button>
       </div>
-    </div>
-          </div>
-    <script>
+    </footer>
+            </div>
+              <script>
     const outputEl = document.getElementById('output');
     const cmdInput = document.getElementById('cmd-input');
     const submitBtn = document.getElementById('submit-btn');
     const micBtn = document.getElementById('mic-btn');
     const maskToggle = document.getElementById('mask-toggle');
     const heroNetVal = document.getElementById('hero-net-val');
-    const heroBudgetSub = document.getElementById('hero-budget-sub');
     const feedTitleLbl = document.getElementById('feed-title-lbl');
     const entryCountLbl = document.getElementById('entry-count-lbl');
-    const cardsGrid = document.getElementById('cards-grid');
-    const historyTools = document.getElementById('history-tools');
-    const searchInput = document.getElementById('search-input');
+    const walletGrid = document.getElementById('wallet-grid');
+    const dateFilterRow = document.getElementById('date-filter-row');
     const datePickerInput = document.getElementById('date-picker-input');
-    const quickChipsBar = document.getElementById('quick-chips-bar');
-    const menuBackdrop = document.getElementById('menu-backdrop');
+
+    const backdateBar = document.getElementById('backdate-bar');
+    const backdateToggleBtn = document.getElementById('backdate-toggle-btn');
+    const customEntryDt = document.getElementById('custom-entry-dt');
+    const clearBackdateBtn = document.getElementById('clear-backdate-btn');
 
     const lockScreen = document.getElementById('lock-screen');
     const lockHeading = document.getElementById('lock-heading');
@@ -620,26 +710,29 @@
     const lockErr = document.getElementById('lock-err');
     const pinDots = document.querySelectorAll('#pin-dots .pin-dot');
 
-    // STORAGE KEYS (100% COMPATIBLE WITH OLD DATA)
     const L1_PRIMARY_KEY = 'cashflow_os_v5_primary';
     const L1_BACKUP_KEY  = 'cashflow_os_v5_backup';
     const IDB_DB_NAME    = 'CASHFLOW_OS_IDB_V5';
     const IDB_STORE_NAME = 'ledger_snapshots';
-    const PREF_KEY       = 'cashflow_os_ios18_prefs_v1';
+    const CUST_PREF_KEY  = 'cashflow_os_ios18_pref_v1';
     const MASK_PREF_KEY  = 'cashflow_os_masked_v1';
     const PIN_KEY        = 'cashflow_os_pin_v1';
     const LAST_BKP_KEY   = 'cashflow_os_last_auto_backup';
 
-    const DEFAULT_PREFS = {
-      theme: 'ios18',
-      darkMode: false,
-      compact: false,
-      autoLock: true,
-      showChips: false,
-      chips: '20 chai, 50 auto, bal, dues',
-      defaultAccount: '',
-      monthlyBudget: 0,
-      font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif',
+    // --- iOS 18 SETTINGS & COLOR CUSTOMIZATION ---
+    const menuBackdrop = document.getElementById('menu-backdrop');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const fontSelect = document.getElementById('font-select');
+    const pickInBg = document.getElementById('pick-in-bg');
+    const pickInFg = document.getElementById('pick-in-fg');
+    const pickOutBg = document.getElementById('pick-out-bg');
+    const pickOutFg = document.getElementById('pick-out-fg');
+    const pickCredit = document.getElementById('pick-credit');
+    const pickDebit = document.getElementById('pick-debit');
+
+    const defaultPrefs = {
+      dark: false,
+      font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
       customColors: false,
       inBg: '#E5E5EA',
       inFg: '#000000',
@@ -649,25 +742,17 @@
       debit: '#FF3B30'
     };
 
-    let prefs = { ...DEFAULT_PREFS };
+    let prefs = { ...defaultPrefs };
     try {
-      const saved = JSON.parse(localStorage.getItem(PREF_KEY) || 'null');
-      if (saved) prefs = { ...DEFAULT_PREFS, ...saved };
+      const s = JSON.parse(localStorage.getItem(CUST_PREF_KEY) || 'null');
+      if (s) prefs = { ...defaultPrefs, ...s };
     } catch (e) {}
 
-    let activeTab = 'recent';
-    let histFilter = 'all';
-    let isMasked = false;
-    try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
+    function applyPrefs(save = true) {
+      document.body.setAttribute('data-theme', prefs.dark ? 'dark' : 'light');
+      darkModeToggle.checked = prefs.dark;
+      fontSelect.value = prefs.font;
 
-    function savePrefs() {
-      try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {}
-    }
-
-    function applyPrefs() {
-      document.body.setAttribute('data-theme', prefs.theme);
-      document.body.classList.toggle('dark-mode', Boolean(prefs.darkMode));
-      document.body.classList.toggle('compact-mode', Boolean(prefs.compact));
       const r = document.documentElement.style;
       r.setProperty('--font-main', prefs.font);
 
@@ -676,460 +761,787 @@
         r.setProperty('--input-fg', prefs.inFg);
         r.setProperty('--output-bg', prefs.outBg);
         r.setProperty('--output-fg', prefs.outFg);
-        r.setProperty('--credit', prefs.credit);
-        r.setProperty('--debit', prefs.debit);
+        r.setProperty('--green', prefs.credit);
+        r.setProperty('--red', prefs.debit);
       } else {
-        ['--input-bg', '--input-fg', '--output-bg', '--output-fg', '--credit', '--debit'].forEach(k => r.removeProperty(k));
+        r.removeProperty('--input-bg');
+        r.removeProperty('--input-fg');
+        r.removeProperty('--output-bg');
+        r.removeProperty('--output-fg');
+        r.removeProperty('--green');
+        r.removeProperty('--red');
       }
 
-      document.getElementById('toggle-dark').checked = Boolean(prefs.darkMode);
-      document.getElementById('toggle-compact').checked = Boolean(prefs.compact);
-      document.getElementById('toggle-autolock').checked = Boolean(prefs.autoLock);
-      document.getElementById('toggle-chips').checked = Boolean(prefs.showChips);
-      document.getElementById('budget-input').value = prefs.monthlyBudget || '';
-      document.getElementById('custom-chips-input').value = prefs.chips;
+      pickInBg.value = prefs.customColors ? prefs.inBg : (prefs.dark ? '#2C2C2E' : '#E5E5EA');
+      pickInFg.value = prefs.customColors ? prefs.inFg : (prefs.dark ? '#FFFFFF' : '#000000');
+      pickOutBg.value = prefs.customColors ? prefs.outBg : (prefs.dark ? '#1C1C1E' : '#FFFFFF');
+      pickOutFg.value = prefs.customColors ? prefs.outFg : (prefs.dark ? '#FFFFFF' : '#000000');
+      pickCredit.value = prefs.customColors ? prefs.credit : (prefs.dark ? '#30D158' : '#34C759');
+      pickDebit.value = prefs.customColors ? prefs.debit : (prefs.dark ? '#FF453A' : '#FF3B30');
 
-      document.getElementById('pick-in-bg').value = prefs.inBg;
-      document.getElementById('pick-in-fg').value = prefs.inFg;
-      document.getElementById('pick-out-bg').value = prefs.outBg;
-      document.getElementById('pick-out-fg').value = prefs.outFg;
-      document.getElementById('pick-credit').value = prefs.credit;
-      document.getElementById('pick-debit').value = prefs.debit;
-
-      document.querySelectorAll('#theme-seg button').forEach(b => b.classList.toggle('active', b.getAttribute('data-set-theme') === prefs.theme));
-      document.querySelectorAll('#font-options button').forEach(b => b.classList.toggle('active', b.getAttribute('data-font') === prefs.font));
-      renderQuickChips();
+      if (save) {
+        try { localStorage.setItem(CUST_PREF_KEY, JSON.stringify(prefs)); } catch (e) {}
+      }
     }
 
-    function renderQuickChips() {
-      quickChipsBar.classList.toggle('visible', Boolean(prefs.showChips));
-      if (!prefs.showChips) return;
-      const items = prefs.chips.split(',').map(s => s.trim()).filter(Boolean);
-      quickChipsBar.innerHTML = items.map(t => `<button type="button" class="q-chip" data-q="${t.replace(/"/g, '&quot;')}">${t}</button>`).join('');
-      quickChipsBar.querySelectorAll('.q-chip').forEach(b => {
-        b.addEventListener('click', () => runCommand(b.getAttribute('data-q')));
+    document.getElementById('open-menu-btn').addEventListener('click', () => menuBackdrop.classList.add('open'));
+    document.getElementById('close-menu-btn').addEventListener('click', () => menuBackdrop.classList.remove('open'));
+    menuBackdrop.addEventListener('click', (e) => { if (e.target === menuBackdrop) menuBackdrop.classList.remove('open'); });
+
+    darkModeToggle.addEventListener('change', (e) => {
+      prefs.dark = e.target.checked;
+      prefs.customColors = false;
+      applyPrefs(true);
+    });
+    fontSelect.addEventListener('change', (e) => { prefs.font = e.target.value; applyPrefs(true); });
+
+    function onColorChange() {
+      prefs.customColors = true;
+      prefs.inBg = pickInBg.value;
+      prefs.inFg = pickInFg.value;
+      prefs.outBg = pickOutBg.value;
+      prefs.outFg = pickOutFg.value;
+      prefs.credit = pickCredit.value;
+      prefs.debit = pickDebit.value;
+      applyPrefs(true);
+    }
+    [pickInBg, pickInFg, pickOutBg, pickOutFg, pickCredit, pickDebit].forEach(el => el.addEventListener('input', onColorChange));
+
+    document.getElementById('reset-cust-btn').addEventListener('click', () => {
+      prefs = { ...defaultPrefs, dark: prefs.dark };
+      applyPrefs(true);
+    });
+
+    document.querySelectorAll('[data-menu-cmd]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        menuBackdrop.classList.remove('open');
+        runCommand(btn.getAttribute('data-menu-cmd'));
       });
+    });
+
+    applyPrefs(false);
+
+    // --- BACKDATE BAR HELPERS ---
+    function toDateTimeLocalValue(dateObj) {
+      const d = dateObj instanceof Date && !isNaN(dateObj) ? dateObj : new Date();
+      const pad = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
-    // --- LOCK SCREEN ---
+    function toggleBackdateBar(forceOpen = null) {
+      const willOpen = forceOpen !== null ? forceOpen : !backdateBar.classList.contains('show');
+      backdateBar.classList.toggle('show', willOpen);
+      backdateToggleBtn.classList.toggle('active', willOpen);
+      if (willOpen) {
+        if (!customEntryDt.value) customEntryDt.value = toDateTimeLocalValue(new Date());
+        cmdInput.focus();
+      } else {
+        customEntryDt.value = '';
+      }
+    }
+
+    backdateToggleBtn.addEventListener('click', () => toggleBackdateBar());
+    document.getElementById('open-past-entry-btn').addEventListener('click', () => toggleBackdateBar(true));
+    clearBackdateBtn.addEventListener('click', () => toggleBackdateBar(false));
+
+    // --- BIOMETRIC & PIN LOCK ---
     let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
-    function getSavedPin() { try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; } }
-    function updatePinDots() { pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length)); }
-    function unlockApp() { pinBuffer = ''; tempFirstPin = ''; updatePinDots(); lockScreen.classList.add('unlocked'); }
+
+    function getSavedPin() {
+      try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; }
+    }
+    function updatePinDots() {
+      pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length));
+    }
+    function unlockApp() {
+      pinBuffer = ''; tempFirstPin = ''; updatePinDots();
+      lockScreen.classList.add('unlocked');
+    }
     window.onNativeUnlock = unlockApp;
 
     function triggerBiometricPrompt() {
       try {
         if (window.AndroidNative && typeof window.AndroidNative.triggerBiometric === 'function') {
           window.AndroidNative.triggerBiometric();
+        } else {
+          lockErr.textContent = 'Fingerprint available in Android APK';
         }
       } catch (e) {}
     }
 
-    function engageLock(force = false) {
-      if (!force && !prefs.autoLock && getSavedPin()) return;
+    function engageLock() {
       pinBuffer = ''; tempFirstPin = ''; lockErr.textContent = '';
       if (!getSavedPin()) {
         isSettingPin = true;
-        lockHeading.textContent = 'Create 4-Digit PIN';
-        lockSub.textContent = 'Backup PIN for Cash Flow OS';
+        lockHeading.textContent = 'Set Passcode';
+        lockSub.textContent = 'Create a 4-digit passcode';
       } else {
         isSettingPin = false;
-        lockHeading.textContent = 'Unlock Cash Flow';
-        lockSub.textContent = 'Enter PIN or use Fingerprint';
+        lockHeading.textContent = 'Cash Flow OS';
+        lockSub.textContent = 'Enter Passcode or Use Fingerprint';
       }
       updatePinDots();
       lockScreen.classList.remove('unlocked');
       cmdInput.blur();
-      if (!isSettingPin) setTimeout(triggerBiometricPrompt, 180);
+      if (!isSettingPin) setTimeout(triggerBiometricPrompt, 200);
     }
 
     document.querySelectorAll('[data-key]').forEach(b => b.addEventListener('click', () => {
       if (pinBuffer.length >= 4) return;
       pinBuffer += b.getAttribute('data-key');
-      lockErr.textContent = ''; updatePinDots();
+      lockErr.textContent = '';
+      updatePinDots();
       if (pinBuffer.length === 4) {
         setTimeout(() => {
           if (isSettingPin) {
             if (!tempFirstPin) {
               tempFirstPin = pinBuffer; pinBuffer = ''; updatePinDots();
-              lockHeading.textContent = 'Confirm PIN'; lockSub.textContent = 'Re-enter 4-digit PIN';
+              lockHeading.textContent = 'Confirm Passcode'; lockSub.textContent = 'Re-enter your 4-digit passcode';
             } else if (pinBuffer === tempFirstPin) {
               try { localStorage.setItem(PIN_KEY, pinBuffer); } catch (e) {}
               unlockApp();
             } else {
-              lockErr.textContent = 'PINs did not match'; tempFirstPin = ''; pinBuffer = ''; updatePinDots();
-              lockHeading.textContent = 'Create 4-Digit PIN';
+              lockErr.textContent = 'Passcodes did not match'; tempFirstPin = ''; pinBuffer = ''; updatePinDots();
+              lockHeading.textContent = 'Set Passcode';
             }
           } else if (pinBuffer === getSavedPin()) {
             unlockApp();
           } else {
-            lockErr.textContent = 'Wrong PIN'; pinBuffer = ''; updatePinDots();
+            lockErr.textContent = 'Incorrect Passcode'; pinBuffer = ''; updatePinDots();
           }
-        }, 70);
+        }, 80);
       }
     }));
+
     document.getElementById('btn-biometric').addEventListener('click', triggerBiometricPrompt);
-    document.getElementById('pin-back').addEventListener('click', () => { pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots(); });
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(false); });
-    window.addEventListener('pagehide', () => engageLock(false));
+    document.getElementById('pin-back').addEventListener('click', () => {
+      pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots();
+    });
+
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(); });
+    window.addEventListener('pagehide', engageLock);
+    engageLock();
 
     // --- VOICE INPUT ---
-    window.onVoiceResult = function(t) { micBtn.classList.remove('listening'); cmdInput.value = t; cmdInput.focus(); };
-    window.onVoiceError = function() { micBtn.classList.remove('listening'); printLine('Voice input retry karein.', 'warn'); };
+    window.onVoiceResult = function(spokenText) {
+      micBtn.classList.remove('listening');
+      cmdInput.value = spokenText;
+      cmdInput.focus();
+    };
+    window.onVoiceError = function() {
+      micBtn.classList.remove('listening');
+      showNotice('Voice input samajh nahi aaya, dubara try karein.', 'warn');
+    };
+
     micBtn.addEventListener('click', () => {
       micBtn.classList.add('listening');
       if (window.AndroidNative && typeof window.AndroidNative.startVoiceInput === 'function') {
         window.AndroidNative.startVoiceInput();
       } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const rec = new SR(); rec.lang = 'en-IN';
+        const rec = new SR();
+        rec.lang = 'en-IN';
         rec.onresult = (e) => window.onVoiceResult(e.results[0][0].transcript);
         rec.onerror = () => window.onVoiceError();
         rec.start();
-      } else { micBtn.classList.remove('listening'); }
+      } else {
+        micBtn.classList.remove('listening');
+        showNotice('Voice input is device par supported nahi hai.', 'warn');
+      }
+    });
+
+    // --- MASK TOGGLE ---
+    let isMasked = false;
+    try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
+    maskToggle.textContent = isMasked ? 'Show' : 'Hide';
+    maskToggle.addEventListener('click', () => {
+      isMasked = !isMasked;
+      try { localStorage.setItem(MASK_PREF_KEY, isMasked ? '1' : '0'); } catch (e) {}
+      maskToggle.textContent = isMasked ? 'Show' : 'Hide';
+      renderWalletCards();
     });
 
     // --- DUAL-LAYER STORAGE ENGINE ---
     function fnv1aHash(str) {
       let h = 0x811c9dc5;
-      for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; }
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+      }
       return ('00000000' + h.toString(16)).slice(-8);
     }
-    function createDefaultState() { return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 }; }
+
+    function createDefaultState() {
+      return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 };
+    }
+
+    function parseLegacyTsToMs(tsStr, fallbackId = 1) {
+      if (!tsStr) return Date.now() - fallbackId * 1000;
+      const m = String(tsStr).match(/(\d{1,2})\s+([A-Za-z]{3})(?:\s+(\d{2,4}))?\s+(\d{1,2}):(\d{2})/);
+      if (!m) return Date.now();
+      const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+      const mon = months[m[2].toLowerCase()];
+      if (mon === undefined) return Date.now();
+      let yr = new Date().getFullYear();
+      if (m[3]) yr = m[3].length === 2 ? 2000 + parseInt(m[3], 10) : parseInt(m[3], 10);
+      return new Date(yr, mon, parseInt(m[1], 10), parseInt(m[4], 10), parseInt(m[5], 10)).getTime();
+    }
+
+    function formatTsFromDate(d) {
+      const dt = d instanceof Date && !isNaN(d) ? d : new Date();
+      return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) + ' ' +
+             dt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
     function normalizeState(raw) {
       if (!raw || typeof raw !== 'object') return createDefaultState();
-      const upiAccounts = Array.isArray(raw.upiAccounts) ? raw.upiAccounts.map((a, i) => ({ id: a.id || `upi_${i+1}`, name: String(a.name || `UPI_${i+1}`).trim(), balance: Number(a.balance) || 0 })) : [];
+      const upiAccounts = Array.isArray(raw.upiAccounts)
+        ? raw.upiAccounts.map((a, idx) => ({
+            id: a.id || `upi_${idx + 1}`,
+            name: String(a.name || `UPI_${idx + 1}`).trim(),
+            balance: Number(a.balance) || 0
+          }))
+        : [];
+      const transactions = Array.isArray(raw.transactions)
+        ? raw.transactions.map(t => ({
+            ...t,
+            tsMs: Number(t.tsMs) || parseLegacyTsToMs(t.ts, t.id)
+          }))
+        : [];
+      transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
       return {
-        setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0), upiAccounts,
-        cashBalance: Number(raw.cashBalance) || 0, transactions: Array.isArray(raw.transactions) ? raw.transactions : [],
-        friends: raw.friends && typeof raw.friends === 'object' ? raw.friends : {}, nextId: Number(raw.nextId) || 1
+        setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0),
+        upiAccounts,
+        cashBalance: Number(raw.cashBalance) || 0,
+        transactions,
+        friends: raw.friends && typeof raw.friends === 'object' ? raw.friends : {},
+        nextId: Number(raw.nextId) || 1
       };
     }
+
     function computeStateChecksum(st) {
-      return fnv1aHash(JSON.stringify({ setupComplete: st.setupComplete, upiAccounts: st.upiAccounts, cashBalance: Number(st.cashBalance.toFixed(2)), transactions: st.transactions, friends: st.friends, nextId: st.nextId }));
+      return fnv1aHash(JSON.stringify({
+        setupComplete: st.setupComplete, upiAccounts: st.upiAccounts,
+        cashBalance: Number(st.cashBalance.toFixed(2)), transactions: st.transactions,
+        friends: st.friends, nextId: st.nextId
+      }));
     }
+
     function wrapEnvelope(stateObj, rev, source = 'local') {
-      const n = normalizeState(stateObj);
-      return { schema: 5, rev, updatedAt: Date.now(), source, checksum: computeStateChecksum(n), payload: n };
+      const normalized = normalizeState(stateObj);
+      return { schema: 5, rev, updatedAt: Date.now(), source, checksum: computeStateChecksum(normalized), payload: normalized };
     }
-    function verifyEnvelope(env) { return Boolean(env && env.payload && computeStateChecksum(normalizeState(env.payload)) === env.checksum); }
+
+    function verifyEnvelope(env) {
+      if (!env || typeof env !== 'object' || !env.payload) return false;
+      return computeStateChecksum(normalizeState(env.payload)) === env.checksum;
+    }
 
     class StorageEngine {
-      constructor() { this.db = null; this.currentRev = 0; this.idbReady = this._openIDB(); }
+      constructor() {
+        this.db = null; this.currentRev = 0;
+        this.idbReadyPromise = this._openIDB();
+      }
       _openIDB() {
-        return new Promise((res) => {
-          if (!('indexedDB' in window)) return res(null);
+        return new Promise((resolve) => {
+          if (!('indexedDB' in window)) return resolve(null);
           try {
             const req = indexedDB.open(IDB_DB_NAME, 1);
-            req.onupgradeneeded = (e) => { if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME)) e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' }); };
-            req.onsuccess = (e) => { this.db = e.target.result; res(this.db); };
-            req.onerror = () => res(null);
-          } catch (e) { res(null); }
+            req.onupgradeneeded = (e) => {
+              if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME))
+                e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' });
+            };
+            req.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
+            req.onerror = () => resolve(null);
+          } catch (e) { resolve(null); }
         });
       }
-      readL1() {
+      readL1Envelope() {
         const list = [];
-        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => { try { const r = localStorage.getItem(k); if (r) { const p = JSON.parse(r); if (verifyEnvelope(p)) list.push(p); } } catch (e) {} });
+        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => {
+          try {
+            const raw = localStorage.getItem(k);
+            if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) list.push(p); }
+          } catch (e) {}
+        });
         return list.sort((a, b) => b.rev - a.rev)[0] || null;
       }
-      writeL1(env) {
-        try { const prev = localStorage.getItem(L1_PRIMARY_KEY); if (prev) localStorage.setItem(L1_BACKUP_KEY, prev); localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env)); } catch (e) {}
+      writeL1Envelope(env) {
+        try {
+          const prev = localStorage.getItem(L1_PRIMARY_KEY);
+          if (prev) localStorage.setItem(L1_BACKUP_KEY, prev);
+          localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env));
+        } catch (e) {}
       }
-      async readL2() {
-        await this.idbReady; if (!this.db) return null;
-        return new Promise((res) => {
+      async readL2Envelope() {
+        await this.idbReadyPromise;
+        if (!this.db) return null;
+        return new Promise((resolve) => {
           try {
             const req = this.db.transaction(IDB_STORE_NAME, 'readonly').objectStore(IDB_STORE_NAME).getAll();
-            req.onsuccess = () => res((req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev)[0] || null);
-            req.onerror = () => res(null);
-          } catch (e) { res(null); }
+            req.onsuccess = () => {
+              const valid = (req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev);
+              resolve(valid[0] || null);
+            };
+            req.onerror = () => resolve(null);
+          } catch (e) { resolve(null); }
         });
       }
-      async writeL2(env) {
-        await this.idbReady; if (!this.db) return;
-        return new Promise((res) => {
-          try { const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite'); tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env }); tx.oncomplete = () => res(); tx.onerror = () => res(); } catch (e) { res(); }
+      async writeL2Envelope(env) {
+        await this.idbReadyPromise;
+        if (!this.db) return;
+        return new Promise((resolve) => {
+          try {
+            const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite');
+            tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+          } catch (e) { resolve(); }
         });
       }
       async loadAndHeal() {
-        const l1 = this.readL1(), l2 = await this.readL2();
+        const l1 = this.readL1Envelope();
+        const l2 = await this.readL2Envelope();
         let chosen = (l1 && l2) ? (l1.rev >= l2.rev ? l1 : l2) : (l1 || l2);
         if (!chosen) chosen = wrapEnvelope(createDefaultState(), 1, 'genesis');
-        this.writeL1(chosen); await this.writeL2(chosen);
-        this.currentRev = chosen.rev; return normalizeState(chosen.payload);
+        this.writeL1Envelope(chosen);
+        await this.writeL2Envelope(chosen);
+        this.currentRev = chosen.rev;
+        return normalizeState(chosen.payload);
       }
       async commit(stateObj, source = 'mutator') {
         const env = wrapEnvelope(stateObj, this.currentRev + 1, source);
-        this.currentRev = env.rev; this.writeL1(env); await this.writeL2(env); return env;
+        this.currentRev = env.rev;
+        this.writeL1Envelope(env);
+        await this.writeL2Envelope(env);
+        return env;
       }
     }
-          const storageEngine = new StorageEngine();
+
+    const storageEngine = new StorageEngine();
     let state = createDefaultState();
+    let activeFilter = 'all';
+    let activeDateQuery = '';
     let wizard = { active: false, step: null, totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
+
+    function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
 
     function runDailyAutoBackup(force = false) {
       try {
         const today = new Date().toISOString().slice(0, 10);
-        if (!force && localStorage.getItem(LAST_BKP_KEY) === today) return null;
+        const last = localStorage.getItem(LAST_BKP_KEY);
+        if (!force && last === today) return null;
         const jsonStr = JSON.stringify(state);
         localStorage.setItem('cashflow_os_daily_snapshot_' + today, jsonStr);
         localStorage.setItem(LAST_BKP_KEY, today);
         if (window.AndroidNative && typeof window.AndroidNative.saveDailyBackup === 'function') {
           return window.AndroidNative.saveDailyBackup(jsonStr);
         }
-        return 'Saved (' + today + ')';
+        return 'LocalStorage (' + today + ')';
       } catch (e) { return null; }
     }
 
-    function getTotalUpi() { return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0); }
-    function displayBal(v) { return isMasked ? '₹••••' : `₹${Number(v).toLocaleString('en-IN')}`; }
+    function getTotalUpiBalance() {
+      return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0);
+    }
+
+    function displayBal(val) {
+      return isMasked ? '₹••••' : `₹${Number(val).toLocaleString('en-IN')}`;
+    }
+
+    function renderWalletCards() {
+      const totalUpi = getTotalUpiBalance();
+      const totalNet = totalUpi + state.cashBalance;
+      heroNetVal.textContent = displayBal(totalNet);
+
+      if (!state.setupComplete) {
+        walletGrid.innerHTML = '';
+        return;
+      }
+      let rec = 0, pay = 0;
+      Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
+
+      walletGrid.innerHTML = `
+        <div class="wallet-tile tap-item" data-tile-cmd="bal">
+          <span class="wt-lbl">UPI (${state.upiAccounts.length})</span>
+          <span class="wt-val tabular">${displayBal(totalUpi)}</span>
+                    <span class="wt-sub">${state.upiAccounts.map(a => a.name).join(', ')}</span>
+        </div>
+        <div class="wallet-tile tap-item" data-tile-cmd="bal">
+          <span class="wt-lbl">Cash</span>
+          <span class="wt-val tabular">${displayBal(state.cashBalance)}</span>
+          <span class="wt-sub">In Wallet</span>
+        </div>
+        <div class="wallet-tile tap-item" data-tile-cmd="dues">
+          <span class="wt-lbl">Udhar</span>
+          <span class="wt-val tabular" style="color:${rec >= pay ? 'var(--green)' : 'var(--orange)'};">${displayBal(rec - pay)}</span>
+          <span class="wt-sub">${isMasked ? '••••' : `+${rec} / -${pay}`}</span>
+        </div>
+      `;
+      walletGrid.querySelectorAll('[data-tile-cmd]').forEach(el => {
+        el.addEventListener('click', () => runCommand(el.getAttribute('data-tile-cmd')));
+      });
+    }
+
+    // --- SEGMENTED HISTORY VIEW ---
+    function renderFeedView(filterType = activeFilter, customDateStr = activeDateQuery) {
+      activeFilter = filterType;
+      activeDateQuery = customDateStr;
+      outputEl.innerHTML = '';
+
+      const now = new Date();
+      const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+      const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+
+      let list = state.transactions;
+      if (filterType === 'today') {
+        feedTitleLbl.textContent = "Today's Entries";
+        list = list.filter(t => {
+          const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
+          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === todayKey;
+        });
+      } else if (filterType === 'month') {
+        feedTitleLbl.textContent = now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+        list = list.filter(t => {
+          const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
+          return `${d.getFullYear()}-${d.getMonth()}` === monthKey;
+        });
+      } else if (filterType === 'date' && customDateStr) {
+        const picked = new Date(customDateStr + 'T00:00:00');
+        feedTitleLbl.textContent = picked.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const targetKey = `${picked.getFullYear()}-${picked.getMonth()}-${picked.getDate()}`;
+        list = list.filter(t => {
+          const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
+          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === targetKey;
+        });
+      } else {
+        feedTitleLbl.textContent = 'Recent Activity';
+      }
+
+      const periodSpend = list
+        .filter(t => t.type === 'DEBIT' || t.type === 'FRIEND_PAID')
+        .reduce((s, t) => s + (t.myShare || 0), 0);
+      entryCountLbl.textContent = `${list.length} entries • Spend ₹${Math.round(periodSpend).toLocaleString('en-IN')}`;
+
+      if (!list.length) {
+        showNotice('Is filter mein koi transaction nahi mila. Kisi bhi entry ko edit karne ke liye us par tap karein.', 'dim');
+        return;
+      }
+      list.forEach(t => appendTxRow(t));
+    }
+
+    document.querySelectorAll('#seg-control .seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#seg-control .seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const mode = btn.getAttribute('data-hfilter');
+        if (mode === 'date') {
+          dateFilterRow.classList.add('show');
+          if (!datePickerInput.value) {
+            const d = new Date();
+            datePickerInput.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+          }
+          renderFeedView('date', datePickerInput.value);
+        } else {
+          dateFilterRow.classList.remove('show');
+          renderFeedView(mode, '');
+        }
+      });
+    });
+
+    datePickerInput.addEventListener('change', (e) => {
+      if (e.target.value) renderFeedView('date', e.target.value);
+    });
+
+    function appendTxRow(t) {
+      const isPositive = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
+      const isUdhar = t.splitFriends && t.splitFriends.length > 0;
+      const isFriendPaid = t.type === 'FRIEND_PAID';
+
+      let iconCls = isPositive ? 'credit' : (isUdhar ? 'udhar' : (isFriendPaid ? 'owe' : 'debit'));
+      let iconSvg = isPositive
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>'
+        : (isUdhar || isFriendPaid)
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>';
+
+      let titleText = t.note;
+      if (isUdhar) titleText = `${t.fullLoan ? 'Udhar' : 'Split'} • ${t.splitFriends.join(', ')} — ${t.note}`;
+      else if (isFriendPaid) titleText = `${t.payer} Paid — ${t.note}`;
+
+      const sign = isPositive ? '+' : '-';
+      const amtCls = isPositive ? 'credit' : (isUdhar ? 'split' : (isFriendPaid ? 'owe' : 'debit'));
+
+      const row = document.createElement('div');
+      row.className = 'tx-row tap-item';
+      row.innerHTML = `
+        <div class="tx-icon-wrap ${iconCls}">${iconSvg}</div>
+        <div class="tx-body">
+          <div class="tx-title">${escapeHtml(titleText)}</div>
+          <div class="tx-sub tabular">${escapeHtml(t.ts)} • ${escapeHtml(t.accountName)} • ${escapeHtml(t.category || 'General')}</div>
+        </div>
+        <div class="tx-right">
+          <span class="tx-amt tabular ${amtCls}">${sign}₹${Number(t.amount).toLocaleString('en-IN')}</span>
+          <span class="tx-chev">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </span>
+        </div>
+      `;
+      row.addEventListener('click', () => openEditModal(t.id));
+      outputEl.appendChild(row);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    function showNotice(text, cls = '') {
+      const div = document.createElement('div');
+      div.className = `msg-line ${cls}`;
+      div.textContent = text;
+      outputEl.appendChild(div);
+    }
+
+    function showBlock(text, cls = '') {
+      outputEl.innerHTML = '';
+      const div = document.createElement('div');
+      div.className = `box-block ${cls}`;
+      div.textContent = text;
+      outputEl.appendChild(div);
+    }
+
+    // --- EDIT ANY ENTRY MODAL ENGINE ---
+    const editBackdrop = document.getElementById('edit-backdrop');
+    const editTxIdEl = document.getElementById('edit-tx-id');
+    const editTypeEl = document.getElementById('edit-type');
+    const editAmtEl = document.getElementById('edit-amount');
+    const editAccEl = document.getElementById('edit-account');
+    const editAccRow = document.getElementById('edit-account-row');
+    const editFriendEl = document.getElementById('edit-friend');
+    const editFriendRow = document.getElementById('edit-friend-row');
+    const editCatEl = document.getElementById('edit-category');
+    const editDtEl = document.getElementById('edit-datetime');
+    const editNoteEl = document.getElementById('edit-note');
+
+    function syncEditModalFields() {
+      const v = editTypeEl.value;
+      const needsFriend = v === 'UDHAR_FULL' || v === 'UDHAR_SPLIT' || v === 'FRIEND_PAID';
+      editFriendRow.style.display = needsFriend ? 'flex' : 'none';
+      editAccRow.style.display = v === 'FRIEND_PAID' ? 'none' : 'flex';
+    }
+    editTypeEl.addEventListener('change', syncEditModalFields);
+
+    function openEditModal(txId) {
+      const tx = state.transactions.find(t => t.id === txId);
+      if (!tx) return;
+      editTxIdEl.value = tx.id;
+      document.getElementById('edit-sheet-title').textContent = `Edit Entry #${tx.id}`;
+
+      editAccEl.innerHTML = state.upiAccounts.map(a => `<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('') +
+                            `<option value="CASH">CASH</option>`;
+
+      if (tx.type === 'CREDIT') editTypeEl.value = 'CREDIT';
+      else if (tx.type === 'FRIEND_PAID') editTypeEl.value = 'FRIEND_PAID';
+      else if (tx.splitFriends && tx.splitFriends.length > 0) editTypeEl.value = tx.fullLoan ? 'UDHAR_FULL' : 'UDHAR_SPLIT';
+      else editTypeEl.value = 'DEBIT';
+
+      editAmtEl.value = tx.amount;
+      editAccEl.value = tx.accountName === 'CASH' ? 'CASH' : (state.upiAccounts.some(a => a.name === tx.accountName) ? tx.accountName : (state.upiAccounts[0]?.name || 'CASH'));
+      editFriendEl.value = tx.type === 'FRIEND_PAID' ? (tx.payer || '') : ((tx.splitFriends || []).join(', '));
+      editCatEl.value = tx.category || 'General';
+      editDtEl.value = toDateTimeLocalValue(new Date(tx.tsMs || parseLegacyTsToMs(tx.ts, tx.id)));
+      editNoteEl.value = tx.note || '';
+
+      syncEditModalFields();
+      editBackdrop.classList.add('open');
+    }
+
+    document.getElementById('edit-cancel-btn').addEventListener('click', () => editBackdrop.classList.remove('open'));
+    editBackdrop.addEventListener('click', (e) => { if (e.target === editBackdrop) editBackdrop.classList.remove('open'); });
+
+    function revertTxEffect(tx) {
+      const acc = state.upiAccounts.find(a => a.name.toLowerCase() === String(tx.accountName || '').toLowerCase()) || state.upiAccounts[0];
+      if (tx.type === 'DEBIT') {
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount);
+        else if (acc) acc.balance = round2(acc.balance + tx.amount);
+        (tx.splitFriends || []).forEach(f => {
+          state.friends[f] = round2((state.friends[f] || 0) - (tx.perFriendShare || 0));
+        });
+      } else if (tx.type === 'FRIEND_PAID') {
+        state.friends[tx.payer] = round2((state.friends[tx.payer] || 0) + (tx.myShare || 0));
+      } else if (tx.type === 'CREDIT') {
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance - tx.amount);
+        else if (acc) acc.balance = round2(acc.balance - tx.amount);
+      } else if (tx.type === 'SETTLE_IN') {
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance - tx.amount);
+        else if (acc) acc.balance = round2(acc.balance - tx.amount);
+        if (tx.settleFriend) state.friends[tx.settleFriend] = round2((state.friends[tx.settleFriend] || 0) + tx.amount);
+      } else if (tx.type === 'SETTLE_OUT') {
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount);
+        else if (acc) acc.balance = round2(acc.balance + tx.amount);
+        if (tx.settleFriend) state.friends[tx.settleFriend] = round2((state.friends[tx.settleFriend] || 0) - tx.amount);
+      }
+    }
+
+    document.getElementById('edit-save-btn').addEventListener('click', async () => {
+      const id = parseInt(editTxIdEl.value, 10);
+      const idx = state.transactions.findIndex(t => t.id === id);
+      if (idx === -1) return;
+
+      const amt = parseFloat(editAmtEl.value);
+      if (isNaN(amt) || amt <= 0) return alert('Valid amount likhein.');
+
+      const oldTx = state.transactions[idx];
+      revertTxEffect(oldTx);
+
+      const mode = editTypeEl.value;
+      const dtObj = editDtEl.value ? new Date(editDtEl.value) : new Date(oldTx.tsMs || Date.now());
+      const tsMs = isNaN(dtObj.getTime()) ? Date.now() : dtObj.getTime();
+      const ts = formatTsFromDate(new Date(tsMs));
+      const note = editNoteEl.value.trim() || oldTx.note;
+      const category = editCatEl.value || 'General';
+      const chosenAccName = editAccEl.value || 'CASH';
+      const isCash = chosenAccName === 'CASH';
+      const acc = isCash ? null : (state.upiAccounts.find(a => a.name === chosenAccName) || state.upiAccounts[0]);
+
+      let newTx = {
+        id: oldTx.id, ts, tsMs, amount: amt, category, note,
+        accountName: isCash ? 'CASH' : (acc ? acc.name : 'UPI'),
+        type: 'DEBIT', myShare: amt, perFriendShare: 0, splitFriends: [], fullLoan: false
+      };
+
+      const friendList = editFriendEl.value
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(capitalize);
+
+      if (mode === 'CREDIT') {
+        newTx.type = 'CREDIT';
+        newTx.myShare = 0;
+        if (isCash) state.cashBalance = round2(state.cashBalance + amt);
+        else if (acc) acc.balance = round2(acc.balance + amt);
+      } else if (mode === 'FRIEND_PAID') {
+        const payer = friendList[0] || 'Friend';
+        newTx.type = 'FRIEND_PAID';
+        newTx.payer = payer;
+        newTx.accountName = payer;
+        newTx.myShare = amt;
+        state.friends[payer] = round2((state.friends[payer] || 0) - amt);
+      } else if (mode === 'UDHAR_FULL' && friendList.length > 0) {
+        newTx.type = 'DEBIT';
+        newTx.splitFriends = friendList;
+        newTx.fullLoan = true;
+        newTx.perFriendShare = round2(amt / friendList.length);
+        newTx.myShare = 0;
+        if (isCash) state.cashBalance = round2(state.cashBalance - amt);
+        else if (acc) acc.balance = round2(acc.balance - amt);
+        friendList.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + newTx.perFriendShare));
+      } else if (mode === 'UDHAR_SPLIT' && friendList.length > 0) {
+        newTx.type = 'DEBIT';
+        newTx.splitFriends = friendList;
+        newTx.fullLoan = false;
+        newTx.perFriendShare = round2(amt / (friendList.length + 1));
+        newTx.myShare = round2(amt - newTx.perFriendShare * friendList.length);
+        if (isCash) state.cashBalance = round2(state.cashBalance - amt);
+        else if (acc) acc.balance = round2(acc.balance - amt);
+        friendList.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + newTx.perFriendShare));
+      } else {
+        newTx.type = 'DEBIT';
+        newTx.myShare = amt;
+        if (isCash) state.cashBalance = round2(state.cashBalance - amt);
+        else if (acc) acc.balance = round2(acc.balance - amt);
+      }
+
+      state.transactions[idx] = newTx;
+      state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
+      await persistState('edit_save');
+      editBackdrop.classList.remove('open');
+      renderFeedView();
+    });
+
+    document.getElementById('edit-delete-btn').addEventListener('click', async () => {
+      const id = parseInt(editTxIdEl.value, 10);
+      const idx = state.transactions.findIndex(t => t.id === id);
+      if (idx === -1) return;
+      revertTxEffect(state.transactions[idx]);
+      state.transactions.splice(idx, 1);
+      await persistState('delete_tx');
+      editBackdrop.classList.remove('open');
+      renderFeedView();
+    });
+                    // --- CORE PERSIST & COMMAND ENGINE ---
+    async function persistState(reason = 'cmd') {
+      await storageEngine.commit(state, reason);
+      renderWalletCards();
+      runDailyAutoBackup(true);
+    }
+
     function formatMoney(n, allowMask = false) {
       if (allowMask && isMasked) return '₹••••';
       return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    function capitalize(s) { return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' '); }
-    function getTimestamp() {
-      const now = new Date();
-      return now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) + ' ' +
-             now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
-    }
-    function getThisMonthSpend() {
-      const mStr = new Date().toLocaleDateString('en-IN', { month: 'short' }).toLowerCase();
-      return state.transactions
-        .filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.ts.toLowerCase().includes(mStr))
-        .reduce((s, t) => s + (t.myShare || 0), 0);
-    }
-
-    function renderCards() {
-      const totalUpi = getTotalUpi();
-      heroNetVal.textContent = displayBal(totalUpi + state.cashBalance);
-      const mSpend = getThisMonthSpend();
-      if (prefs.monthlyBudget > 0) {
-        const rem = Math.max(0, prefs.monthlyBudget - mSpend);
-        heroBudgetSub.textContent = isMasked ? 'Budget: ••••' : `Month Spend ₹${Math.round(mSpend)} • Left ₹${Math.round(rem)}`;
-      } else {
-        heroBudgetSub.textContent = isMasked ? 'Month Spend: ••••' : `This Month Spend: ₹${Math.round(mSpend)}`;
-      }
-
-      if (!state.setupComplete) { cardsGrid.innerHTML = ''; return; }
-      cardsGrid.innerHTML = `
-        <div class="wallet-tile" data-card-cmd="bal">
-          <div class="w-icon upi"><svg class="sf" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
-          <div><div class="w-meta">${state.upiAccounts.length} UPI</div><div class="w-val tab-num">${displayBal(totalUpi)}</div></div>
-        </div>
-        <div class="wallet-tile" data-card-cmd="bal">
-          <div class="w-icon cash"><svg class="sf" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></div>
-          <div><div class="w-meta">Cash</div><div class="w-val tab-num">${displayBal(state.cashBalance)}</div></div>
-        </div>`;
-      cardsGrid.querySelectorAll('[data-card-cmd]').forEach(el => el.addEventListener('click', () => runCommand(el.getAttribute('data-card-cmd'))));
-    }
-
-    function renderMenuInsights() {
-      // Populate default account dropdown
-      const sel = document.getElementById('default-acc-select');
-      const opts = state.upiAccounts.map(a => `<option value="${a.name}">${a.name}</option>`).join('') + `<option value="CASH">Cash</option>`;
-      sel.innerHTML = opts;
-      if (prefs.defaultAccount && Array.from(sel.options).some(o => o.value === prefs.defaultAccount)) {
-        sel.value = prefs.defaultAccount;
-      }
-
-      // Budget progress
-      const bVis = document.getElementById('budget-visual');
-      const mSpend = getThisMonthSpend();
-      if (prefs.monthlyBudget > 0) {
-        const pct = Math.min(100, Math.round((mSpend / prefs.monthlyBudget) * 100));
-        const rem = Math.max(0, prefs.monthlyBudget - mSpend);
-        const now = new Date();
-        const daysLeft = Math.max(1, new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1);
-        const daily = Math.round(rem / daysLeft);
-        bVis.innerHTML = `
-          <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;" class="tab-num">
-            <span>Spent ₹${Math.round(mSpend)} (${pct}%)</span>
-            <span>₹${daily}/day left</span>
-          </div>
-          <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${pct > 90 ? 'var(--debit)' : 'var(--credit)'}"></div></div>`;
-      } else {
-        bVis.innerHTML = `<div class="cell-sub">Set a limit to track monthly spend &amp; daily allowance.</div>`;
-      }
-
-      // Category breakdown bars
-      const sVis = document.getElementById('stats-visual');
-      const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
-      if (!deb.length) { sVis.textContent = 'No personal expenses logged yet.'; return; }
-      const tot = deb.reduce((s, t) => s + t.myShare, 0);
-      const map = {};
-      deb.forEach(t => { const c = t.category || 'General'; map[c] = (map[c] || 0) + t.myShare; });
-      sVis.innerHTML = Object.entries(map).sort((a, b) => b[1] - a[1]).map(([c, v]) => {
-        const p = Math.round((v / tot) * 100);
-        return `<div style="margin-top:7px;">
-          <div style="display:flex;justify-content:space-between;font-size:13px;" class="tab-num"><span>${c}</span><span>₹${Math.round(v)} (${p}%)</span></div>
-          <div class="prog-track"><div class="prog-fill" style="width:${p}%"></div></div>
-        </div>`;
-      }).join('');
-    }
-
-    function appendTxRow(t) {
-      const isPos = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
-      let label = t.type === 'CREDIT' ? 'Credited' : (t.type === 'SETTLE_IN' ? 'Settled In' : (t.type === 'FRIEND_PAID' ? `${t.payer} Paid` : 'Debited'));
-      if (t.splitFriends && t.splitFriends.length > 0) label = t.fullLoan ? `Udhar -> ${t.splitFriends.join(', ')}` : `Split w/ ${t.splitFriends.join(', ')}`;
-      const cls = isPos ? 'credit' : (t.splitFriends && t.splitFriends.length > 0 ? 'split' : 'debit');
-      const row = document.createElement('div');
-      row.className = 'tx-row';
-      row.innerHTML = `
-        <div class="tx-left">
-          <div class="tx-title">${label} • ${t.note}</div>
-          <div class="tx-sub">#${t.id} • ${t.ts} • ${t.accountName} • ${t.category || 'General'}</div>
-        </div>
-        <div class="tx-amt tab-num ${cls}">${isPos ? '+' : '-'}₹${Number(t.amount).toLocaleString('en-IN')}</div>`;
-      outputEl.appendChild(row);
-    }
-
-    function renderActiveTab() {
-      document.querySelectorAll('#seg-tabs button').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === activeTab));
-      outputEl.innerHTML = '';
-      if (activeTab === 'recent') {
-        historyTools.style.display = 'none';
-        feedTitleLbl.textContent = 'Recent Activity';
-        entryCountLbl.textContent = `${state.transactions.length} entries`;
-        if (!state.transactions.length) return printLine('No entries yet. Try "50 chai" or "353 manish recharge".', 'dim');
-        state.transactions.slice(0, 15).forEach(appendTxRow);
-      } else if (activeTab === 'history') {
-        historyTools.style.display = 'flex';
-        feedTitleLbl.textContent = 'History';
-        renderHistoryList();
-      } else if (activeTab === 'udhar') {
-        historyTools.style.display = 'none';
-        feedTitleLbl.textContent = 'Friend Udhar';
-        const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
-        entryCountLbl.textContent = `${list.length} active`;
-        if (!list.length) return printLine('Sabka hisab clear hai. Koi udhar baaki nahi.', 'dim');
-        list.forEach(([name, val]) => {
-          const row = document.createElement('div');
-          row.className = 'tx-row';
-          const isLena = val > 0;
-          row.innerHTML = `
-            <div class="tx-left">
-              <div class="tx-title">${name}</div>
-              <div class="tx-sub tab-num ${isLena ? 'credit' : 'debit'}">${isLena ? 'Lena Hai +' : 'Dena Hai -'}${formatMoney(Math.abs(val), true)}</div>
-            </div>
-            <button type="button" class="settle-btn" data-settle="${name}">Settle</button>`;
-          outputEl.appendChild(row);
-        });
-        outputEl.querySelectorAll('[data-settle]').forEach(b => {
-          b.addEventListener('click', () => runCommand('settle ' + b.getAttribute('data-settle')));
-        });
-      }
-    }
-
-    function renderHistoryList(customDate = '') {
-      outputEl.innerHTML = '';
-      const q = (searchInput.value || '').trim().toLowerCase();
-      const now = new Date();
-      const todayStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }).toLowerCase();
-      const monthStr = now.toLocaleDateString('en-IN', { month: 'short' }).toLowerCase();
-
-      let list = state.transactions;
-      if (histFilter === 'today') list = list.filter(t => t.ts.toLowerCase().includes(todayStr));
-      else if (histFilter === 'month') list = list.filter(t => t.ts.toLowerCase().includes(monthStr));
-      else if (histFilter === 'date' && customDate) list = list.filter(t => t.ts.toLowerCase().includes(customDate.toLowerCase()));
-
-      if (q) {
-        list = list.filter(t =>
-          t.note.toLowerCase().includes(q) || (t.category && t.category.toLowerCase().includes(q)) ||
-          (t.accountName && t.accountName.toLowerCase().includes(q)) || (t.payer && t.payer.toLowerCase().includes(q)) ||
-          (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
-        );
-      }
-      const spend = list.filter(t => t.type === 'DEBIT' || t.type === 'FRIEND_PAID').reduce((s, t) => s + (t.myShare || 0), 0);
-      entryCountLbl.textContent = `${list.length} • Spend ₹${Math.round(spend)}`;
-      if (!list.length) return printLine('Is filter me koi transaction nahi mila.', 'dim');
-      list.forEach(appendTxRow);
-    }
-
-    function printLine(text, cls = '') {
-      const d = document.createElement('div'); d.className = `line ${cls}`; d.textContent = text;
-      outputEl.appendChild(d); outputEl.scrollTop = outputEl.scrollHeight;
-    }
-    function printBlock(text, cls = '') {
-      const d = document.createElement('div'); d.className = `box-block ${cls}`; d.textContent = text;
-      outputEl.appendChild(d); outputEl.scrollTop = outputEl.scrollHeight;
-    }
-
-    async function persistState(reason = 'cmd') {
-      await storageEngine.commit(state, reason);
-      renderCards();
-      runDailyAutoBackup(true);
-    }
-
-    function revertTransactionByIndex(idx) {
-      const tx = state.transactions[idx];
-      const acc = state.upiAccounts.find(a => a.name === tx.accountName) || state.upiAccounts[0];
-      if (tx.type === 'DEBIT') {
-        if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
-        (tx.splitFriends || []).forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) - tx.perFriendShare) * 100) / 100);
-      } else if (tx.type === 'FRIEND_PAID') {
-        state.friends[tx.payer] = Math.round(((state.friends[tx.payer] || 0) + tx.myShare) * 100) / 100;
-      } else if (tx.type === 'CREDIT' || tx.type === 'SETTLE_IN') {
-        if (tx.accountName === 'CASH') state.cashBalance -= tx.amount; else if (acc) acc.balance -= tx.amount;
-      } else if (tx.type === 'SETTLE_OUT') {
-        if (tx.accountName === 'CASH') state.cashBalance += tx.amount; else if (acc) acc.balance += tx.amount;
-      }
-      state.transactions.splice(idx, 1);
-      return tx;
+    function capitalize(s) {
+      return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
     }
 
     function startSetupWizard(isReconfig = false) {
       wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
-      outputEl.innerHTML = ''; historyTools.style.display = 'none';
+      outputEl.innerHTML = '';
       feedTitleLbl.textContent = isReconfig ? 'Wallet Re-Setup' : 'Welcome Setup';
       cmdInput.placeholder = 'Kitne UPI accounts hain? (1, 2, 3)...';
-      printLine('Apke pass kitne UPI / Bank accounts hain? (1, 2, ya 3 likhein)', 'info');
+      showNotice('Apke pass kitne UPI / Bank accounts hain? (1, 2, ya 3 likh kar send karein)', 'info');
     }
 
     async function handleWizardInput(raw) {
       const text = raw.trim();
       if (wizard.step === 'COUNT') {
         const count = parseInt(text.replace(/[^\d]/g, ''), 10);
-        if (!count || count < 1 || count > 10) return printLine('1 se 10 ke beech number likhein.', 'debit');
+        if (!count || count < 1 || count > 10) return showNotice('1 se 10 ke beech number likhein.', 'debit');
         wizard.totalAccounts = count; wizard.currentIdx = 0; wizard.collectedAccounts = [];
         if (count === 1) {
           wizard.step = 'ACC_BAL'; wizard.tempName = 'UPI';
-          printLine('UPI account me abhi kitna balance hai? (e.g. 2135)', 'info');
+          showNotice('1 UPI Account selected. Isme abhi kitna balance hai? (e.g. 2135)', 'info');
+          cmdInput.placeholder = 'Enter UPI balance...';
         } else {
           wizard.step = 'ACC_NAME';
-          printLine('Account #1 ka naam likhein (jaise SBI, Union, Paytm):', 'info');
+          showNotice('Account #1 ka naam likhein (e.g. SBI, Union, Paytm):', 'info');
+          cmdInput.placeholder = 'Account #1 name...';
         }
         return;
       }
       if (wizard.step === 'ACC_NAME') {
         const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
-        if (!name) return printLine('Sahi naam likhein.', 'debit');
+        if (!name) return showNotice('Sahi naam likhein.', 'debit');
         wizard.tempName = name; wizard.step = 'ACC_BAL';
-        printLine(`${name} me abhi kitna balance hai?`, 'info');
+        showNotice(`${name} mein abhi kitna balance hai?`, 'info');
+        cmdInput.placeholder = `Balance in ${name}...`;
         return;
       }
       if (wizard.step === 'ACC_BAL') {
         const num = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(num) || num < 0) return printLine('Sahi amount likhein.', 'debit');
+        if (isNaN(num) || num < 0) return showNotice('Sahi amount likhein.', 'debit');
         wizard.collectedAccounts.push({ id: `upi_${wizard.currentIdx + 1}`, name: wizard.tempName, balance: num });
         wizard.currentIdx++;
         if (wizard.currentIdx < wizard.totalAccounts) {
           wizard.step = 'ACC_NAME';
-          printLine(`Account #${wizard.currentIdx + 1} ka naam likhein:`, 'info');
+          showNotice(`Account #${wizard.currentIdx + 1} ka naam likhein:`, 'info');
+          cmdInput.placeholder = `Account #${wizard.currentIdx + 1} name...`;
         } else {
           wizard.step = 'CASH';
-          printLine('Haath me abhi kitna Cash pada hai? (e.g. 0 ya 500)', 'info');
+          showNotice('Abhi haath mein kitna CASH pada hai? (e.g. 0 ya 500)', 'info');
+          cmdInput.placeholder = 'Cash in hand...';
         }
         return;
       }
       if (wizard.step === 'CASH') {
         const cash = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(cash) || cash < 0) return printLine('Sahi Cash amount likhein.', 'debit');
-        state.upiAccounts = wizard.collectedAccounts; state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
-        cmdInput.placeholder = '50 chai | 353 manish recharge';
+        if (isNaN(cash) || cash < 0) return showNotice('Sahi Cash amount likhein.', 'debit');
+        state.upiAccounts = wizard.collectedAccounts;
+        state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
+        cmdInput.placeholder = '50 chai upi | 353 manish recharge';
         await persistState('setup');
-        activeTab = 'recent'; renderActiveTab();
+        renderFeedView('all');
       }
     }
 
@@ -1142,17 +1554,20 @@
       'credit','credited','received','salary','stipend','income','added','refund','cashback','mila','mile','aaye'
     ]);
 
-    function resolvePaymentChannel(lower) {
-      if (/\bcash\b/.test(lower)) return { isCash: true, acc: null, name: 'CASH' };
+    function resolveUpiAccount(lower) {
+      if (!state.upiAccounts.length) return { id: 'upi_1', name: 'UPI', balance: 0 };
+      if (state.upiAccounts.length === 1) return state.upiAccounts[0];
       for (const acc of state.upiAccounts) {
-        if (new RegExp(`\\b${acc.name.toLowerCase()}\\b`, 'i').test(lower)) return { isCash: false, acc, name: acc.name };
+        if (new RegExp(`\\b${acc.name.toLowerCase()}\\b`, 'i').test(lower)) return acc;
       }
-      if (prefs.defaultAccount === 'CASH') return { isCash: true, acc: null, name: 'CASH' };
-      const defAcc = state.upiAccounts.find(a => a.name === prefs.defaultAccount) || state.upiAccounts[0] || { id: 'upi_1', name: 'UPI', balance: 0 };
-      return { isCash: false, acc: defAcc, name: defAcc.name };
+      return state.upiAccounts[0];
     }
 
-    function extractAmount(text) { const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/); return m ? parseFloat(m[1]) : null; }
+    function extractAmount(text) {
+      const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+      return m ? parseFloat(m[1]) : null;
+    }
+
     function inferCategory(lower, isCredit) {
       if (isCredit) return 'Income';
       if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|paneer|grocery|sabzi)\b/.test(lower)) return 'Food';
@@ -1163,242 +1578,262 @@
     }
 
     async function runCommand(raw) {
-      const text = raw.trim(); if (!text) return;
-      if (wizard.active) { printLine(`> ${text}`); return handleWizardInput(text); }
+      const text = raw.trim();
+      if (!text) return;
+
+      if (wizard.active) return handleWizardInput(text);
       const lower = text.toLowerCase();
 
       if (lower === 'setup') return startSetupWizard(true);
-      if (lower === 'lock') return engageLock(true);
-      if (lower === 'clear') { outputEl.innerHTML = ''; return; }
-      if (lower === 'dues' || lower === 'udhar') { activeTab = 'udhar'; return renderActiveTab(); }
-      if (lower === 'ls' || lower === 'history') { activeTab = 'history'; return renderActiveTab(); }
+      if (lower === 'lock') return engageLock();
+      if (lower === 'clear') return renderFeedView('all');
+
+      if (lower.startsWith('pin ')) {
+        const newPin = text.split(/\s+/)[1] || '';
+        if (!/^\d{4}$/.test(newPin)) return showBlock('Usage: pin 1234 (4 digits only)', 'debit');
+        try { localStorage.setItem(PIN_KEY, newPin); } catch (e) {}
+        return showBlock('Passcode updated successfully.', 'credit');
+      }
 
       if (lower === 'backup') {
         const path = runDailyAutoBackup(true);
         const jsonStr = JSON.stringify(state);
         try { await navigator.clipboard.writeText(jsonStr); } catch (e) {}
-        return printLine(`Backup copied & saved to ${path || 'storage'}.`, 'credit');
+        feedTitleLbl.textContent = 'Backup Status';
+        return showBlock(`Backup copied to clipboard & saved:\n${path || 'LocalStorage'}`, 'credit');
       }
 
       if (lower.startsWith('restore ')) {
         try {
           state = normalizeState(JSON.parse(text.slice(8).trim()));
           await persistState('restore');
-          activeTab = 'recent'; renderActiveTab();
-          return printLine(`Restored ${state.transactions.length} entries.`, 'credit');
-        } catch (e) { return printLine('Invalid backup JSON.', 'debit'); }
+          renderFeedView('all');
+          return;
+        } catch (e) {
+          return showBlock('Invalid backup JSON. Check pasted text.', 'debit');
+        }
       }
 
       if (lower === 'edit' || lower.startsWith('edit ')) {
-        if (!state.transactions.length) return printLine('Edit ke liye koi entry nahi hai.', 'dim');
+        if (!state.transactions.length) return showBlock('Edit karne ke liye koi entry nahi hai.', 'dim');
         const arg = lower.split(/\s+/)[1];
-        const idx = arg ? state.transactions.findIndex(t => t.id === parseInt(arg, 10)) : 0;
-        if (idx === -1) return printLine(`ID #${arg} nahi mila.`, 'debit');
-        const rev = revertTransactionByIndex(idx);
-        await persistState('edit'); activeTab = 'recent'; renderActiveTab();
-        cmdInput.value = rev.note; cmdInput.focus();
-        return printLine(`Editing #${rev.id}: sudhar kar send karein.`, 'warn');
+        const target = arg ? state.transactions.find(t => t.id === parseInt(arg, 10)) : state.transactions[0];
+        if (!target) return showBlock(`ID #${arg} nahi mila.`, 'debit');
+        return openEditModal(target.id);
       }
 
       if (lower === 'undo') {
-        if (!state.transactions.length) return printLine('Undo ke liye koi entry nahi hai.', 'dim');
-        const rev = revertTransactionByIndex(0);
-        await persistState('undo'); activeTab = 'recent'; renderActiveTab();
-        return printLine(`Undid #${rev.id} (${rev.note}).`, 'warn');
+        if (!state.transactions.length) return showBlock('Undo karne ke liye koi entry nahi hai.', 'dim');
+        revertTxEffect(state.transactions[0]);
+        state.transactions.shift();
+        await persistState('undo');
+        return renderFeedView();
+      }
+
+      if (lower.startsWith('find ') || lower.startsWith('search ')) {
+        const q = lower.replace(/^(?:find|search)\s+/, '').trim();
+        if (!q) return showBlock('Usage: find chai | find manish', 'warn');
+        const matches = state.transactions.filter(t =>
+          t.note.toLowerCase().includes(q) ||
+          (t.category && t.category.toLowerCase().includes(q)) ||
+          (t.accountName && t.accountName.toLowerCase().includes(q)) ||
+          (t.payer && t.payer.toLowerCase().includes(q)) ||
+          (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
+        );
+        feedTitleLbl.textContent = `Search: "${q}"`;
+        outputEl.innerHTML = '';
+        const total = matches.reduce((s, t) => s + t.amount, 0);
+        entryCountLbl.textContent = `${matches.length} found • ₹${Math.round(total).toLocaleString('en-IN')}`;
+        if (!matches.length) return showNotice(`"${q}" se milti koi entry nahi mili.`, 'dim');
+        matches.forEach(t => appendTxRow(t));
+        return;
+      }
+
+      if (lower === 'bal' || lower === 'balance' || (/\b(kitna|bacha|balance)\b/.test(lower) && !extractAmount(text))) {
+        feedTitleLbl.textContent = 'Balance Sheet';
+        let rec = 0, pay = 0;
+        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
+        let out = '';
+        state.upiAccounts.forEach(a => out += `${a.name.padEnd(14)} : ${formatMoney(a.balance, true)}\n`);
+        out += `Cash           : ${formatMoney(state.cashBalance, true)}\n`;
+        out += `Lena Hai (+)   : ${formatMoney(rec, true)}\n`;
+        out += `Dena Hai (-)   : ${formatMoney(pay, true)}\n`;
+        out += `--------------------------------\n`;
+        out += `Net Worth      : ${formatMoney(getTotalUpiBalance() + state.cashBalance + rec - pay, true)}`;
+        return showBlock(out);
+      }
+
+      if (lower === 'dues' || lower === 'udhar') {
+        feedTitleLbl.textContent = 'Friend Udhar Ledger';
+        const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
+        if (!list.length) return showBlock('Kisi dost ke saath udhar baaki nahi hai.', 'dim');
+        let out = '';
+        list.forEach(([n, v]) => out += `${n.padEnd(14)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v, true) : 'DENA HAI -' + formatMoney(Math.abs(v), true)}\n`);
+        out += `\nTip: Settle karne ke liye likhein "settle <name>"`;
+        return showBlock(out, 'split');
+      }
+
+      if (lower === 'ls' || lower === 'history') return renderFeedView('all');
+
+      if (lower === 'stats') {
+        feedTitleLbl.textContent = 'Expense Breakdown';
+        const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
+        if (!deb.length) return showBlock('Abhi koi personal kharch nahi hai.', 'dim');
+        const tot = deb.reduce((s, t) => s + t.myShare, 0);
+        const map = {};
+        deb.forEach(t => map[t.category] = (map[t.category] || 0) + t.myShare);
+        let out = `TOTAL PERSONAL SPEND: ${formatMoney(tot)}\n\n`;
+        Object.entries(map).sort((a, b) => b[1] - a[1]).forEach(([c, v]) => {
+          out += `${c.padEnd(13)} : ${formatMoney(v)} (${Math.round((v / tot) * 100)}%)\n`;
+        });
+        return showBlock(out);
+      }
+
+      const entryDate = (backdateBar.classList.contains('show') && customEntryDt.value)
+        ? new Date(customEntryDt.value)
+        : new Date();
+      const tsMs = isNaN(entryDate.getTime()) ? Date.now() : entryDate.getTime();
+      const ts = formatTsFromDate(new Date(tsMs));
+
+      if (lower.startsWith('settle ')) {
+        const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
+        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
+        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return showBlock(`${target} ka koi udhar baaki nahi hai.`, 'dim');
+        const val = state.friends[fKey];
+        const abs = Math.abs(val);
+        const isCash = /\bcash\b/.test(lower);
+        const acc = isCash ? null : resolveUpiAccount(lower);
+        const txObj = {
+          id: state.nextId++, ts, tsMs, type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
+          amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name,
+          settleFriend: fKey, category: 'Settlement',
+          note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
+        };
+        if (val > 0) { if (isCash) state.cashBalance = round2(state.cashBalance + abs); else acc.balance = round2(acc.balance + abs); }
+        else { if (isCash) state.cashBalance = round2(state.cashBalance - abs); else acc.balance = round2(acc.balance - abs); }
+        state.friends[fKey] = 0;
+        state.transactions.unshift(txObj);
+        state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
+        await persistState('settle');
+        toggleBackdateBar(false);
+        return renderFeedView();
       }
 
       if (lower.startsWith('rm ')) {
         const id = parseInt(lower.split(/\s+/)[1], 10);
         const idx = state.transactions.findIndex(t => t.id === id);
-        if (idx === -1) return printLine(`ID #${id} nahi mila.`, 'debit');
-        revertTransactionByIndex(idx); await persistState('rm');
-        activeTab = 'recent'; renderActiveTab();
-        return printLine(`Deleted #${id}.`, 'warn');
-      }
-
-      if (lower.startsWith('find ') || lower.startsWith('search ')) {
-        activeTab = 'history'; histFilter = 'all';
-        searchInput.value = text.replace(/^(?:find|search)\s+/i, '').trim();
-        return renderActiveTab();
-      }
-
-      if (lower === 'bal' || lower === 'balance') {
-        historyTools.style.display = 'none'; outputEl.innerHTML = ''; feedTitleLbl.textContent = 'Balance Sheet';
-        let rec = 0, pay = 0;
-        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
-        let out = '';
-                state.upiAccounts.forEach(a => out += `${a.name.padEnd(12)} : ${formatMoney(a.balance, true)}\n`);
-        out += `Cash         : ${formatMoney(state.cashBalance, true)}\nLena Hai (+) : ${formatMoney(rec, true)}\nDena Hai (-) : ${formatMoney(pay, true)}\nNet Worth    : ${formatMoney(getTotalUpi() + state.cashBalance + rec - pay, true)}`;
-        return printBlock(out);
-      }
-
-      if (lower.startsWith('settle ')) {
-        const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
-        const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
-        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return printLine(`${target} ka udhar nahi hai.`, 'dim');
-        const val = state.friends[fKey], abs = Math.abs(val);
-        const ch = resolvePaymentChannel(lower);
-        const txObj = {
-          id: state.nextId++, ts: getTimestamp(), type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
-          amount: abs, myShare: 0, accountName: ch.name, category: 'Settlement',
-          note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
-        };
-        if (val > 0) { if (ch.isCash) state.cashBalance += abs; else ch.acc.balance += abs; }
-        else { if (ch.isCash) state.cashBalance -= abs; else ch.acc.balance -= abs; }
-        state.friends[fKey] = 0; state.transactions.unshift(txObj);
-        await persistState('settle');
-        return renderActiveTab();
+        if (idx === -1) return showBlock(`ID #${id} nahi mila.`, 'debit');
+        revertTxEffect(state.transactions[idx]);
+        state.transactions.splice(idx, 1);
+        await persistState('rm');
+        return renderFeedView();
       }
 
       const amt = extractAmount(text);
-      if (!amt || amt <= 0) return printLine('Amount nahi mila. Example: "50 chai" ya "353 manish recharge"', 'warn');
+      if (!amt || amt <= 0) return showBlock('Amount samajh nahi aaya. Example: "50 chai upi" ya "353 manish recharge"', 'warn');
 
       const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+(?:\s+ji)?)/) || lower.match(/^([a-zA-Z]+(?:\s+ji)?)\s+(?:ne|paid)\b/);
       if (paidByM && !NON_FRIEND.has(paidByM[1].split(/\s+/)[0].toLowerCase())) {
         const payer = capitalize(paidByM[1]);
-        const myShare = /\b(both|dono|split)\b/.test(lower) ? Math.round((amt / 2) * 100) / 100 : amt;
-        state.friends[payer] = Math.round(((state.friends[payer] || 0) - myShare) * 100) / 100;
-        state.transactions.unshift({ id: state.nextId++, ts: getTimestamp(), type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text });
-        await persistState('friend_paid'); activeTab = 'recent'; return renderActiveTab();
+        const isBoth = /\b(both|dono|split)\b/.test(lower);
+        const myShare = isBoth ? round2(amt / 2) : amt;
+        state.friends[payer] = round2((state.friends[payer] || 0) - myShare);
+        const txObj = { id: state.nextId++, ts, tsMs, type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text };
+        state.transactions.unshift(txObj);
+        state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
+        await persistState('friend_paid');
+        toggleBackdateBar(false);
+        return renderFeedView();
       }
 
       const isCredit = text.startsWith('+') || /\b(credit|credited|received|salary|stipend|income|added|refund|cashback|mila|mile|aaye)\b/.test(lower);
-      const ch = resolvePaymentChannel(lower);
+      const isCash = /\bcash\b/.test(lower);
+      const acc = isCash ? null : resolveUpiAccount(lower);
+      const chan = isCash ? 'CASH' : acc.name;
       const upiNamesSet = new Set(state.upiAccounts.map(a => a.name.toLowerCase()));
 
-      let splitFriends = [], fullLoan = false;
+      let splitFriends = [];
+      let fullLoan = false;
       const withM = lower.match(/\b(?:with|and|ke sath)\s+([a-zA-Z\s,]+)/);
+
       if (!isCredit && withM) {
-        splitFriends = withM[1].split(/[\s,]+/).filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w)).map(capitalize);
+        splitFriends = withM[1]
+          .split(/[\s,]+/)
+          .filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w))
+          .map(capitalize);
       } else if (!isCredit) {
         const words = lower.replace(/[\d.,]+/g, ' ').trim().split(/[\s,]+/);
         const directNames = [];
         for (let i = 0; i < words.length; i++) {
           const w = words[i];
           if (/^[a-zA-Z]{2,}$/.test(w) && !NON_FRIEND.has(w) && !upiNamesSet.has(w) && w !== 'ji') {
-            if (words[i + 1] === 'ji') { directNames.push(capitalize(w + ' ji')); i++; }
-            else directNames.push(capitalize(w));
+            if (words[i + 1] === 'ji') {
+              directNames.push(capitalize(w + ' ji'));
+              i++;
+            } else {
+              directNames.push(capitalize(w));
+            }
           }
         }
-        if (directNames.length > 0) { splitFriends = [directNames[0]]; fullLoan = true; }
+        if (directNames.length > 0) {
+          splitFriends = [directNames[0]];
+          fullLoan = true;
+        }
       }
 
       let myShare = amt, perFriendShare = 0;
       if (!isCredit && splitFriends.length > 0) {
-        if (fullLoan) { perFriendShare = amt; myShare = 0; }
-        else { perFriendShare = Math.round((amt / (splitFriends.length + 1)) * 100) / 100; myShare = Math.round((amt - perFriendShare * splitFriends.length) * 100) / 100; }
-        splitFriends.forEach(f => state.friends[f] = Math.round(((state.friends[f] || 0) + perFriendShare) * 100) / 100);
+        if (fullLoan) {
+          perFriendShare = amt;
+          myShare = 0;
+        } else {
+          perFriendShare = round2(amt / (splitFriends.length + 1));
+          myShare = round2(amt - perFriendShare * splitFriends.length);
+        }
+        splitFriends.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + perFriendShare));
       }
 
-      if (isCredit) { if (ch.isCash) state.cashBalance += amt; else ch.acc.balance += amt; }
-      else { if (ch.isCash) state.cashBalance -= amt; else ch.acc.balance -= amt; }
+      if (isCredit) { if (isCash) state.cashBalance = round2(state.cashBalance + amt); else acc.balance = round2(acc.balance + amt); }
+      else { if (isCash) state.cashBalance = round2(state.cashBalance - amt); else acc.balance = round2(acc.balance - amt); }
 
-      state.transactions.unshift({
-        id: state.nextId++, ts: getTimestamp(), type: isCredit ? 'CREDIT' : 'DEBIT',
+      const txObj = {
+        id: state.nextId++, ts, tsMs, type: isCredit ? 'CREDIT' : 'DEBIT',
         amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends, fullLoan,
-        accountName: ch.name, category: inferCategory(lower, isCredit), note: text
-      });
-      await persistState('tx'); activeTab = 'recent'; renderActiveTab();
+        accountName: chan, category: inferCategory(lower, isCredit), note: text
+      };
+      state.transactions.unshift(txObj);
+      state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
+      await persistState('tx');
+      toggleBackdateBar(false);
+      renderFeedView();
     }
 
-    // --- EVENT WIRING ---
-    maskToggle.textContent = isMasked ? 'Show' : 'Hide';
-    maskToggle.addEventListener('click', () => {
-      isMasked = !isMasked; try { localStorage.setItem(MASK_PREF_KEY, isMasked ? '1' : '0'); } catch (e) {}
-      maskToggle.textContent = isMasked ? 'Show' : 'Hide'; renderCards(); if (activeTab === 'udhar') renderActiveTab();
+    submitBtn.addEventListener('click', () => {
+      const v = cmdInput.value;
+      if (v.trim()) runCommand(v);
+      cmdInput.value = '';
+      cmdInput.focus();
+    });
+    cmdInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); }
     });
 
-    document.getElementById('hero-bal-btn').addEventListener('click', () => runCommand('bal'));
-    document.querySelectorAll('#seg-tabs button').forEach(b => b.addEventListener('click', () => { activeTab = b.getAttribute('data-tab'); renderActiveTab(); }));
-    searchInput.addEventListener('input', () => renderHistoryList());
-    document.querySelectorAll('[data-hfilter]').forEach(b => b.addEventListener('click', () => {
-      document.querySelectorAll('[data-hfilter]').forEach(x => x.classList.remove('active'));
-      b.classList.add('active'); histFilter = b.getAttribute('data-hfilter'); renderHistoryList();
+    document.querySelectorAll('[data-cmd]').forEach(b => b.addEventListener('click', () => runCommand(b.getAttribute('data-cmd'))));
+    document.querySelectorAll('[data-insert]').forEach(b => b.addEventListener('click', () => {
+      cmdInput.value = cmdInput.value.replace(/\s+$/, '') + b.getAttribute('data-insert');
+      cmdInput.focus();
     }));
-    datePickerInput.addEventListener('change', (e) => {
-      if (!e.target.value) return;
-      const d = new Date(e.target.value + 'T00:00:00');
-      document.querySelectorAll('[data-hfilter]').forEach(x => x.classList.remove('active'));
-      histFilter = 'date'; renderHistoryList(d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }));
-    });
-
-    // Menu Sheet Controls
-    document.getElementById('open-menu-btn').addEventListener('click', () => { renderMenuInsights(); menuBackdrop.classList.add('open'); });
-    document.getElementById('close-menu-btn').addEventListener('click', () => menuBackdrop.classList.remove('open'));
-    menuBackdrop.addEventListener('click', (e) => { if (e.target === menuBackdrop) menuBackdrop.classList.remove('open'); });
-
-    document.getElementById('save-budget-btn').addEventListener('click', () => {
-      prefs.monthlyBudget = Math.max(0, Number(document.getElementById('budget-input').value) || 0);
-      savePrefs(); renderCards(); renderMenuInsights();
-    });
-    document.getElementById('toggle-dark').addEventListener('change', (e) => { prefs.darkMode = e.target.checked; prefs.customColors = false; savePrefs(); applyPrefs(); });
-    document.getElementById('toggle-compact').addEventListener('change', (e) => { prefs.compact = e.target.checked; savePrefs(); applyPrefs(); });
-    document.getElementById('toggle-autolock').addEventListener('change', (e) => { prefs.autoLock = e.target.checked; savePrefs(); });
-    document.getElementById('toggle-chips').addEventListener('change', (e) => { prefs.showChips = e.target.checked; savePrefs(); applyPrefs(); });
-    document.getElementById('save-chips-btn').addEventListener('click', () => { prefs.chips = document.getElementById('custom-chips-input').value; savePrefs(); applyPrefs(); });
-    document.getElementById('default-acc-select').addEventListener('change', (e) => { prefs.defaultAccount = e.target.value; savePrefs(); });
-
-    document.querySelectorAll('#theme-seg button').forEach(b => b.addEventListener('click', () => {
-      prefs.theme = b.getAttribute('data-set-theme'); prefs.customColors = false;
-      if (prefs.theme === 'terminal') prefs.darkMode = true;
-      savePrefs(); applyPrefs();
-    }));
-    document.querySelectorAll('#font-options button').forEach(b => b.addEventListener('click', () => {
-      prefs.font = b.getAttribute('data-font'); savePrefs(); applyPrefs();
-    }));
-
-    [['pick-in-bg','inBg'],['pick-in-fg','inFg'],['pick-out-bg','outBg'],['pick-out-fg','outFg'],['pick-credit','credit'],['pick-debit','debit']].forEach(([id, key]) => {
-      document.getElementById(id).addEventListener('input', (e) => { prefs[key] = e.target.value; prefs.customColors = true; savePrefs(); applyPrefs(); });
-    });
-
-    document.getElementById('reset-cust-btn').addEventListener('click', () => {
-      prefs = { ...DEFAULT_PREFS, monthlyBudget: prefs.monthlyBudget, defaultAccount: prefs.defaultAccount };
-      savePrefs(); applyPrefs();
-    });
-
-    document.getElementById('save-pin-btn').addEventListener('click', () => {
-      const p = document.getElementById('new-pin-input').value.trim();
-      if (!/^\d{4}$/.test(p)) return alert('Enter exactly 4 digits');
-      try { localStorage.setItem(PIN_KEY, p); } catch (e) {}
-      document.getElementById('new-pin-input').value = '';
-      menuBackdrop.classList.remove('open');
-      printLine('App PIN updated.', 'credit');
-    });
-
-    document.getElementById('btn-backup-json').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('backup'); });
-    document.getElementById('btn-export-csv').addEventListener('click', async () => {
-      const rows = [['ID','Date','Type','Account','Category','Amount','MyShare','Note']];
-      state.transactions.forEach(t => rows.push([t.id, t.ts, t.type, t.accountName, t.category || 'General', t.amount, t.myShare || 0, `"${String(t.note).replace(/"/g,'""')}"`]));
-      const csv = rows.map(r => r.join(',')).join('\n');
-      try { await navigator.clipboard.writeText(csv); } catch (e) {}
-      menuBackdrop.classList.remove('open');
-      printLine(`CSV copied to clipboard (${state.transactions.length} rows). Paste in Sheets/Excel.`, 'credit');
-    });
-    document.getElementById('btn-restore-json').addEventListener('click', () => {
-      const val = document.getElementById('restore-json-input').value.trim();
-      if (!val) return;
-      document.getElementById('restore-json-input').value = '';
-      menuBackdrop.classList.remove('open');
-      runCommand('restore ' + val);
-    });
-    document.getElementById('btn-menu-edit').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('edit'); });
-    document.getElementById('btn-menu-undo').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('undo'); });
-    document.getElementById('btn-menu-setup').addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand('setup'); });
-
-    submitBtn.addEventListener('click', () => { const v = cmdInput.value; if (v.trim()) runCommand(v); cmdInput.value = ''; cmdInput.focus(); });
-    cmdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); } });
-
-    applyPrefs();
-    engageLock(true);
 
     (async function boot() {
       state = await storageEngine.loadAndHeal();
-      renderCards();
+      renderWalletCards();
       runDailyAutoBackup(false);
-      if (!state.setupComplete) startSetupWizard(false);
-      else renderActiveTab();
+      if (!state.setupComplete) {
+        startSetupWizard(false);
+      } else {
+        renderFeedView('all');
+      }
     })();
   </script>
 </body>
 </html>
-
