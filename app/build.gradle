@@ -3,6 +3,10 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def fixedKeystore = file("cashflow.jks")
+def envRun = System.getenv("GITHUB_RUN_NUMBER")
+def runNum = (envRun != null && envRun.isInteger()) ? envRun.toInteger() : 1
+
 android {
     namespace 'com.cashflow.os'
     compileSdk 34
@@ -11,19 +15,40 @@ android {
         applicationId "com.cashflow.os"
         minSdk 24
         targetSdk 34
-        versionCode 2
-        versionName "2.0"
+        versionCode runNum + 10
+        versionName "1.${runNum}"
+    }
+
+    signingConfigs {
+        if (fixedKeystore.exists()) {
+            fixed {
+                storeFile fixedKeystore
+                storePassword "cashflow123"
+                keyAlias "cashflow"
+                keyPassword "cashflow123"
+            }
+        }
     }
 
     buildTypes {
+        debug {
+            if (fixedKeystore.exists()) {
+                signingConfig signingConfigs.fixed
+            }
+        }
         release {
             minifyEnabled false
+            if (fixedKeystore.exists()) {
+                signingConfig signingConfigs.fixed
+            }
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = '17'
     }
