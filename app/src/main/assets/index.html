@@ -104,7 +104,6 @@
       display: flex; flex-direction: column; height: 100dvh; max-width: 720px; margin: 0 auto;
     }
 
-    /* STICKY FROSTED TOP NAV */
     #top-nav {
       position: sticky; top: 0; z-index: 20;
       background: var(--glass-bg);
@@ -129,6 +128,10 @@
       font-size: 13px; font-weight: 600; font-family: inherit;
       cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
     }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--orange); display: inline-block;
+    }
+    .status-dot.on { background: var(--green); }
 
     /* SCROLLABLE BODY */
     #main-scroll {
@@ -136,7 +139,16 @@
       -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 14px;
     }
 
-    /* HERO BALANCE CARD */
+    /* AUTO-DETECT BANNER */
+    #auto-banner {
+      display: none; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--surface); border-radius: 14px; padding: 11px 14px;
+      box-shadow: var(--card-shadow); flex-shrink: 0;
+    }
+    #auto-banner.show { display: flex; }
+    .ab-text { font-size: 13px; color: var(--fg); font-weight: 500; }
+    .ab-sub { font-size: 11.5px; color: var(--fg-sec); }
+
     .ios-balance-card {
       background: var(--surface); border-radius: 16px; padding: 16px;
       box-shadow: var(--card-shadow); flex-shrink: 0;
@@ -214,7 +226,12 @@
     .tx-icon-wrap.owe { background: rgba(255, 149, 0, 0.15); color: var(--orange); }
 
     .tx-body { flex: 1; min-width: 0; }
+    .tx-title-row { display: flex; align-items: center; gap: 6px; }
     .tx-title { font-size: 16px; font-weight: 500; color: var(--output-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .auto-tag {
+      font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 999px;
+      background: var(--blue-tint); color: var(--blue); flex-shrink: 0;
+    }
     .tx-sub { font-size: 12.5px; color: var(--fg-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
 
     .tx-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
@@ -296,7 +313,7 @@
       display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
 
-    /* iOS 18 BOTTOM SHEETS (EDIT ENTRY & SETTINGS) */
+    /* iOS 18 BOTTOM SHEETS */
     .sheet-backdrop {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.42); z-index: 9500;
       display: none; align-items: flex-end; justify-content: center;
@@ -323,10 +340,7 @@
     .sheet-text-btn.bold { font-weight: 600; }
     .sheet-body { overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
-    /* INSET GROUPED FORM ROWS INSIDE SHEETS */
-    .ios-group {
-      background: var(--surface); border-radius: 14px; overflow: hidden;
-    }
+    .ios-group { background: var(--surface); border-radius: 14px; overflow: hidden; }
     .ios-row {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       min-height: 46px; padding: 8px 16px; position: relative;
@@ -344,8 +358,13 @@
       border: none; outline: none; background: transparent; color: var(--blue);
       font-size: 15px; font-weight: 500; font-family: inherit; text-align: right;
     }
+    .badge-pill {
+      font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+      background: rgba(255, 149, 0, 0.16); color: var(--orange);
+    }
+    .badge-pill.active { background: rgba(52, 199, 89, 0.16); color: var(--green); }
 
-    /* AUTHENTIC iOS 18 TOGGLE SWITCH (51x31) */
+    /* AUTHENTIC iOS 18 TOGGLE SWITCH */
     .ios-switch {
       position: relative; width: 51px; height: 31px; display: inline-block; flex-shrink: 0;
     }
@@ -368,12 +387,6 @@
       background: var(--surface); color: var(--red);
       font-size: 17px; font-weight: 500; font-family: inherit; cursor: pointer;
     }
-    .ios-btn-primary {
-      width: 100%; height: 48px; border-radius: 14px; border: none;
-      background: var(--blue); color: #FFFFFF;
-      font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer;
-    }
-
     .color-dot-input {
       width: 28px; height: 28px; border: 1px solid var(--sep);
       border-radius: 50%; background: transparent; cursor: pointer; overflow: hidden;
@@ -492,7 +505,7 @@
     </div>
   </div>
 
-  <!-- iOS 18 SETTINGS & CUSTOMIZATION SHEET -->
+  <!-- iOS 18 SETTINGS & AUTO-DETECT SHEET -->
   <div class="sheet-backdrop" id="menu-backdrop">
     <div class="ios-sheet">
       <div class="sheet-grabber"></div>
@@ -502,6 +515,32 @@
         <button type="button" class="sheet-text-btn bold" id="close-menu-btn">Done</button>
       </div>
       <div class="sheet-body">
+        <div>
+          <div class="sec-title" style="padding: 0 0 6px 16px;">Auto Transaction Detection</div>
+          <div class="ios-group">
+            <div class="ios-row">
+              <span class="ios-row-lbl">Auto-Detect Credit &amp; Debit</span>
+              <label class="ios-switch">
+                <input type="checkbox" id="auto-detect-toggle" checked />
+                <span class="ios-slider"></span>
+              </label>
+            </div>
+            <div class="ios-row">
+              <span class="ios-row-lbl">Listener Status</span>
+              <span class="badge-pill" id="auto-status-pill">Permission Needed</span>
+            </div>
+            <div class="ios-row tap-item" id="btn-open-notif-access" style="cursor:pointer;">
+              <span class="ios-row-lbl" style="color:var(--blue);">Enable Notification Access</span>
+            </div>
+            <div class="ios-row tap-item" id="btn-open-app-info" style="cursor:pointer;">
+              <span class="ios-row-lbl" style="color:var(--blue);">App Info (Restricted Settings &amp; Battery)</span>
+            </div>
+            <div class="ios-row tap-item" id="btn-test-auto" style="cursor:pointer;">
+              <span class="ios-row-lbl" style="color:var(--green);">Simulate Test Auto-Entry (+₹100)</span>
+            </div>
+          </div>
+        </div>
+
         <div>
           <div class="sec-title" style="padding: 0 0 6px 16px;">Appearance</div>
           <div class="ios-group">
@@ -579,6 +618,9 @@
           <h1 class="nav-title">Cash Flow</h1>
         </div>
         <div class="nav-actions">
+          <button type="button" class="ios-pill-tinted" id="auto-pill-btn">
+            <span class="status-dot" id="nav-auto-dot"></span>Auto
+          </button>
           <button type="button" class="ios-pill-tinted" id="mask-toggle">Hide</button>
           <button type="button" class="ios-circle-btn" id="open-menu-btn" aria-label="Settings">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -591,7 +633,14 @@
     </header>
 
     <main id="main-scroll">
-      <!-- SUMMARY WALLET CARD -->
+      <div id="auto-banner">
+        <div>
+          <div class="ab-text">Auto-Detect Needs Permission</div>
+          <div class="ab-sub">Enable Notification Access to log UPI &amp; Bank SMS automatically</div>
+        </div>
+        <button type="button" class="ios-pill-tinted" id="banner-enable-btn">Setup</button>
+      </div>
+
       <section class="ios-balance-card">
         <div class="bal-top">
           <div>
@@ -611,7 +660,6 @@
         <div class="wallet-grid" id="wallet-grid"></div>
       </section>
 
-      <!-- iOS SEGMENTED HISTORY CONTROLS -->
       <section class="controls-stack">
         <div class="seg-control" id="seg-control">
           <button type="button" class="seg-btn active" data-hfilter="all">All</button>
@@ -625,7 +673,6 @@
         </div>
       </section>
 
-      <!-- INSET GROUPED TRANSACTIONS FEED -->
       <section>
         <div class="sec-head-row">
           <span class="sec-title" id="feed-title-lbl">Recent Activity</span>
@@ -637,7 +684,6 @@
       </section>
     </main>
 
-    <!-- QUICK ACTION PILLS -->
     <div id="chips-row">
       <button type="button" class="ios-chip" data-cmd="bal">Balance</button>
       <button type="button" class="ios-chip" data-cmd="dues">Udhar</button>
@@ -648,14 +694,12 @@
       <button type="button" class="ios-chip" data-cmd="undo">Undo</button>
     </div>
 
-    <!-- BACKDATE ENTRY BAR (FOR MISSED ENTRIES) -->
     <div id="backdate-bar">
       <span class="bd-lbl">Entry Time:</span>
       <input type="datetime-local" id="custom-entry-dt" class="ios-date-input tabular" style="flex:1;" />
       <button type="button" class="ios-chip tinted" id="clear-backdate-btn">Now</button>
     </div>
 
-    <!-- BOTTOM FROSTED COMPOSER -->
     <footer id="bottom-composer">
       <div class="composer-row">
         <div class="ios-input-pill">
@@ -685,8 +729,8 @@
         </button>
       </div>
     </footer>
-            </div>
-              <script>
+  </div>
+    <script>
     const outputEl = document.getElementById('output');
     const cmdInput = document.getElementById('cmd-input');
     const submitBtn = document.getElementById('submit-btn');
@@ -704,6 +748,11 @@
     const customEntryDt = document.getElementById('custom-entry-dt');
     const clearBackdateBtn = document.getElementById('clear-backdate-btn');
 
+    const autoBanner = document.getElementById('auto-banner');
+    const navAutoDot = document.getElementById('nav-auto-dot');
+    const autoStatusPill = document.getElementById('auto-status-pill');
+    const autoDetectToggle = document.getElementById('auto-detect-toggle');
+
     const lockScreen = document.getElementById('lock-screen');
     const lockHeading = document.getElementById('lock-heading');
     const lockSub = document.getElementById('lock-sub');
@@ -719,7 +768,7 @@
     const PIN_KEY        = 'cashflow_os_pin_v1';
     const LAST_BKP_KEY   = 'cashflow_os_last_auto_backup';
 
-    // --- iOS 18 SETTINGS & COLOR CUSTOMIZATION ---
+    // --- SETTINGS & APPEARANCE ---
     const menuBackdrop = document.getElementById('menu-backdrop');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const fontSelect = document.getElementById('font-select');
@@ -734,12 +783,9 @@
       dark: false,
       font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
       customColors: false,
-      inBg: '#E5E5EA',
-      inFg: '#000000',
-      outBg: '#FFFFFF',
-      outFg: '#000000',
-      credit: '#34C759',
-      debit: '#FF3B30'
+      inBg: '#E5E5EA', inFg: '#000000',
+      outBg: '#FFFFFF', outFg: '#000000',
+      credit: '#34C759', debit: '#FF3B30'
     };
 
     let prefs = { ...defaultPrefs };
@@ -764,12 +810,7 @@
         r.setProperty('--green', prefs.credit);
         r.setProperty('--red', prefs.debit);
       } else {
-        r.removeProperty('--input-bg');
-        r.removeProperty('--input-fg');
-        r.removeProperty('--output-bg');
-        r.removeProperty('--output-fg');
-        r.removeProperty('--green');
-        r.removeProperty('--red');
+        ['--input-bg','--input-fg','--output-bg','--output-fg','--green','--red'].forEach(k => r.removeProperty(k));
       }
 
       pickInBg.value = prefs.customColors ? prefs.inBg : (prefs.dark ? '#2C2C2E' : '#E5E5EA');
@@ -779,49 +820,96 @@
       pickCredit.value = prefs.customColors ? prefs.credit : (prefs.dark ? '#30D158' : '#34C759');
       pickDebit.value = prefs.customColors ? prefs.debit : (prefs.dark ? '#FF453A' : '#FF3B30');
 
-      if (save) {
-        try { localStorage.setItem(CUST_PREF_KEY, JSON.stringify(prefs)); } catch (e) {}
-      }
+      if (save) { try { localStorage.setItem(CUST_PREF_KEY, JSON.stringify(prefs)); } catch (e) {} }
     }
 
-    document.getElementById('open-menu-btn').addEventListener('click', () => menuBackdrop.classList.add('open'));
+    document.getElementById('open-menu-btn').addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
+    document.getElementById('auto-pill-btn').addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
+    document.getElementById('banner-enable-btn').addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
     document.getElementById('close-menu-btn').addEventListener('click', () => menuBackdrop.classList.remove('open'));
     menuBackdrop.addEventListener('click', (e) => { if (e.target === menuBackdrop) menuBackdrop.classList.remove('open'); });
 
-    darkModeToggle.addEventListener('change', (e) => {
-      prefs.dark = e.target.checked;
-      prefs.customColors = false;
-      applyPrefs(true);
-    });
+    darkModeToggle.addEventListener('change', (e) => { prefs.dark = e.target.checked; prefs.customColors = false; applyPrefs(true); });
     fontSelect.addEventListener('change', (e) => { prefs.font = e.target.value; applyPrefs(true); });
 
     function onColorChange() {
       prefs.customColors = true;
-      prefs.inBg = pickInBg.value;
-      prefs.inFg = pickInFg.value;
-      prefs.outBg = pickOutBg.value;
-      prefs.outFg = pickOutFg.value;
-      prefs.credit = pickCredit.value;
-      prefs.debit = pickDebit.value;
+      prefs.inBg = pickInBg.value; prefs.inFg = pickInFg.value;
+      prefs.outBg = pickOutBg.value; prefs.outFg = pickOutFg.value;
+      prefs.credit = pickCredit.value; prefs.debit = pickDebit.value;
       applyPrefs(true);
     }
     [pickInBg, pickInFg, pickOutBg, pickOutFg, pickCredit, pickDebit].forEach(el => el.addEventListener('input', onColorChange));
 
-    document.getElementById('reset-cust-btn').addEventListener('click', () => {
-      prefs = { ...defaultPrefs, dark: prefs.dark };
-      applyPrefs(true);
+    document.getElementById('reset-cust-btn').addEventListener('click', () => { prefs = { ...defaultPrefs, dark: prefs.dark }; applyPrefs(true); });
+    document.querySelectorAll('[data-menu-cmd]').forEach(btn => {
+      btn.addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand(btn.getAttribute('data-menu-cmd')); });
     });
 
-    document.querySelectorAll('[data-menu-cmd]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        menuBackdrop.classList.remove('open');
-        runCommand(btn.getAttribute('data-menu-cmd'));
-      });
+    // --- AUTO-DETECT CONTROLS ---
+    function refreshAutoDetectStatus() {
+      const hasBridge = window.AndroidNative && typeof window.AndroidNative.isNotificationAccessEnabled === 'function';
+      if (!hasBridge) {
+        autoStatusPill.textContent = 'APK Only';
+        autoStatusPill.classList.remove('active');
+        navAutoDot.classList.remove('on');
+        autoBanner.classList.remove('show');
+        return;
+      }
+      const permOn = window.AndroidNative.isNotificationAccessEnabled();
+      const userOn = window.AndroidNative.isAutoDetectEnabled();
+      autoDetectToggle.checked = userOn;
+
+      if (permOn && userOn) {
+        autoStatusPill.textContent = 'Active';
+        autoStatusPill.classList.add('active');
+        navAutoDot.classList.add('on');
+        autoBanner.classList.remove('show');
+      } else if (!permOn) {
+        autoStatusPill.textContent = 'Permission Needed';
+        autoStatusPill.classList.remove('active');
+        navAutoDot.classList.remove('on');
+        autoBanner.classList.add('show');
+      } else {
+        autoStatusPill.textContent = 'Paused';
+        autoStatusPill.classList.remove('active');
+        navAutoDot.classList.remove('on');
+        autoBanner.classList.remove('show');
+      }
+    }
+    window.refreshAutoDetectStatus = refreshAutoDetectStatus;
+
+    autoDetectToggle.addEventListener('change', (e) => {
+      if (window.AndroidNative && typeof window.AndroidNative.setAutoDetectEnabled === 'function') {
+        window.AndroidNative.setAutoDetectEnabled(e.target.checked);
+      }
+      refreshAutoDetectStatus();
+    });
+
+    document.getElementById('btn-open-notif-access').addEventListener('click', () => {
+      if (window.AndroidNative && typeof window.AndroidNative.openNotificationSettings === 'function') {
+        window.AndroidNative.openNotificationSettings();
+      }
+    });
+
+    document.getElementById('btn-open-app-info').addEventListener('click', () => {
+      if (window.AndroidNative && typeof window.AndroidNative.openAppDetailsSettings === 'function') {
+        window.AndroidNative.openAppDetailsSettings();
+      }
+    });
+
+    document.getElementById('btn-test-auto').addEventListener('click', () => {
+      menuBackdrop.classList.remove('open');
+      if (window.AndroidNative && typeof window.AndroidNative.simulateTestTransaction === 'function') {
+        window.AndroidNative.simulateTestTransaction('CREDIT', 100, 'Test Transfer');
+      } else {
+        ingestAutoList([{ type: 'CREDIT', amount: 100, accountHint: 'UPI', note: 'Received from Test Transfer', tsMs: Date.now() }]);
+      }
     });
 
     applyPrefs(false);
 
-    // --- BACKDATE BAR HELPERS ---
+    // --- BACKDATE BAR ---
     function toDateTimeLocalValue(dateObj) {
       const d = dateObj instanceof Date && !isNaN(dateObj) ? dateObj : new Date();
       const pad = n => String(n).padStart(2, '0');
@@ -847,16 +935,9 @@
     // --- BIOMETRIC & PIN LOCK ---
     let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
 
-    function getSavedPin() {
-      try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; }
-    }
-    function updatePinDots() {
-      pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length));
-    }
-    function unlockApp() {
-      pinBuffer = ''; tempFirstPin = ''; updatePinDots();
-      lockScreen.classList.add('unlocked');
-    }
+    function getSavedPin() { try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; } }
+    function updatePinDots() { pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length)); }
+    function unlockApp() { pinBuffer = ''; tempFirstPin = ''; updatePinDots(); lockScreen.classList.add('unlocked'); syncAutoTransactions(); }
     window.onNativeUnlock = unlockApp;
 
     function triggerBiometricPrompt() {
@@ -872,13 +953,9 @@
     function engageLock() {
       pinBuffer = ''; tempFirstPin = ''; lockErr.textContent = '';
       if (!getSavedPin()) {
-        isSettingPin = true;
-        lockHeading.textContent = 'Set Passcode';
-        lockSub.textContent = 'Create a 4-digit passcode';
+        isSettingPin = true; lockHeading.textContent = 'Set Passcode'; lockSub.textContent = 'Create a 4-digit passcode';
       } else {
-        isSettingPin = false;
-        lockHeading.textContent = 'Cash Flow OS';
-        lockSub.textContent = 'Enter Passcode or Use Fingerprint';
+        isSettingPin = false; lockHeading.textContent = 'Cash Flow OS'; lockSub.textContent = 'Enter Passcode or Use Fingerprint';
       }
       updatePinDots();
       lockScreen.classList.remove('unlocked');
@@ -888,9 +965,7 @@
 
     document.querySelectorAll('[data-key]').forEach(b => b.addEventListener('click', () => {
       if (pinBuffer.length >= 4) return;
-      pinBuffer += b.getAttribute('data-key');
-      lockErr.textContent = '';
-      updatePinDots();
+      pinBuffer += b.getAttribute('data-key'); lockErr.textContent = ''; updatePinDots();
       if (pinBuffer.length === 4) {
         setTimeout(() => {
           if (isSettingPin) {
@@ -914,39 +989,24 @@
     }));
 
     document.getElementById('btn-biometric').addEventListener('click', triggerBiometricPrompt);
-    document.getElementById('pin-back').addEventListener('click', () => {
-      pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots();
-    });
+    document.getElementById('pin-back').addEventListener('click', () => { pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots(); });
 
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') engageLock();
+      else { refreshAutoDetectStatus(); syncAutoTransactions(); }
+    });
     window.addEventListener('pagehide', engageLock);
     engageLock();
 
     // --- VOICE INPUT ---
-    window.onVoiceResult = function(spokenText) {
-      micBtn.classList.remove('listening');
-      cmdInput.value = spokenText;
-      cmdInput.focus();
-    };
-    window.onVoiceError = function() {
-      micBtn.classList.remove('listening');
-      showNotice('Voice input samajh nahi aaya, dubara try karein.', 'warn');
-    };
-
+    window.onVoiceResult = function(spokenText) { micBtn.classList.remove('listening'); cmdInput.value = spokenText; cmdInput.focus(); };
+    window.onVoiceError = function() { micBtn.classList.remove('listening'); showNotice('Voice input failed, please try again.', 'warn'); };
     micBtn.addEventListener('click', () => {
       micBtn.classList.add('listening');
       if (window.AndroidNative && typeof window.AndroidNative.startVoiceInput === 'function') {
         window.AndroidNative.startVoiceInput();
-      } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const rec = new SR();
-        rec.lang = 'en-IN';
-        rec.onresult = (e) => window.onVoiceResult(e.results[0][0].transcript);
-        rec.onerror = () => window.onVoiceError();
-        rec.start();
       } else {
         micBtn.classList.remove('listening');
-        showNotice('Voice input is device par supported nahi hai.', 'warn');
       }
     });
 
@@ -961,7 +1021,7 @@
       renderWalletCards();
     });
 
-    // --- DUAL-LAYER STORAGE ENGINE ---
+    // --- STORAGE ENGINE ---
     function fnv1aHash(str) {
       let h = 0x811c9dc5;
       for (let i = 0; i < str.length; i++) {
@@ -996,24 +1056,15 @@
     function normalizeState(raw) {
       if (!raw || typeof raw !== 'object') return createDefaultState();
       const upiAccounts = Array.isArray(raw.upiAccounts)
-        ? raw.upiAccounts.map((a, idx) => ({
-            id: a.id || `upi_${idx + 1}`,
-            name: String(a.name || `UPI_${idx + 1}`).trim(),
-            balance: Number(a.balance) || 0
-          }))
+        ? raw.upiAccounts.map((a, idx) => ({ id: a.id || `upi_${idx + 1}`, name: String(a.name || `UPI_${idx + 1}`).trim(), balance: Number(a.balance) || 0 }))
         : [];
       const transactions = Array.isArray(raw.transactions)
-        ? raw.transactions.map(t => ({
-            ...t,
-            tsMs: Number(t.tsMs) || parseLegacyTsToMs(t.ts, t.id)
-          }))
+        ? raw.transactions.map(t => ({ ...t, tsMs: Number(t.tsMs) || parseLegacyTsToMs(t.ts, t.id) }))
         : [];
       transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
       return {
         setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0),
-        upiAccounts,
-        cashBalance: Number(raw.cashBalance) || 0,
-        transactions,
+        upiAccounts, cashBalance: Number(raw.cashBalance) || 0, transactions,
         friends: raw.friends && typeof raw.friends === 'object' ? raw.friends : {},
         nextId: Number(raw.nextId) || 1
       };
@@ -1038,10 +1089,7 @@
     }
 
     class StorageEngine {
-      constructor() {
-        this.db = null; this.currentRev = 0;
-        this.idbReadyPromise = this._openIDB();
-      }
+      constructor() { this.db = null; this.currentRev = 0; this.idbReadyPromise = this._openIDB(); }
       _openIDB() {
         return new Promise((resolve) => {
           if (!('indexedDB' in window)) return resolve(null);
@@ -1059,10 +1107,7 @@
       readL1Envelope() {
         const list = [];
         [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => {
-          try {
-            const raw = localStorage.getItem(k);
-            if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) list.push(p); }
-          } catch (e) {}
+          try { const raw = localStorage.getItem(k); if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) list.push(p); } } catch (e) {}
         });
         return list.sort((a, b) => b.rev - a.rev)[0] || null;
       }
@@ -1107,7 +1152,7 @@
         this.writeL1Envelope(chosen);
         await this.writeL2Envelope(chosen);
         this.currentRev = chosen.rev;
-        return normalizeState(chosen.payload);
+          return normalizeState(chosen.payload);
       }
       async commit(stateObj, source = 'mutator') {
         const env = wrapEnvelope(stateObj, this.currentRev + 1, source);
@@ -1120,11 +1165,63 @@
 
     const storageEngine = new StorageEngine();
     let state = createDefaultState();
-    let activeFilter = 'all';
-    let activeDateQuery = '';
+    let activeFilter = 'all', activeDateQuery = '';
     let wizard = { active: false, step: null, totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
 
     function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
+
+    // --- AUTO-TRANSACTION INGESTION ---
+    async function syncAutoTransactions() {
+      if (!state.setupComplete) return;
+      if (!window.AndroidNative || typeof window.AndroidNative.consumeAutoTransactions !== 'function') return;
+      try {
+        const raw = window.AndroidNative.consumeAutoTransactions();
+        const list = JSON.parse(raw || '[]');
+        if (Array.isArray(list) && list.length > 0) {
+          await ingestAutoList(list);
+        }
+      } catch (e) {}
+    }
+    window.onAutoTransactionsReady = syncAutoTransactions;
+
+    async function ingestAutoList(items) {
+      let added = 0;
+      for (const item of items) {
+        const amt = round2(item.amount);
+        if (!amt || amt <= 0) continue;
+        const isCredit = item.type === 'CREDIT';
+        const hint = String(item.accountHint || 'UPI').toLowerCase();
+        const acc = state.upiAccounts.find(a => a.name.toLowerCase().includes(hint) || hint.includes(a.name.toLowerCase())) || state.upiAccounts[0];
+        if (!acc) continue;
+
+        if (isCredit) acc.balance = round2(acc.balance + amt);
+        else acc.balance = round2(acc.balance - amt);
+
+        const tsMs = Number(item.tsMs) || Date.now();
+        const note = String(item.note || (isCredit ? 'Auto Credit' : 'Auto Debit'));
+        state.transactions.unshift({
+          id: state.nextId++,
+          ts: formatTsFromDate(new Date(tsMs)),
+          tsMs,
+          type: isCredit ? 'CREDIT' : 'DEBIT',
+          amount: amt,
+          myShare: isCredit ? 0 : amt,
+          perFriendShare: 0,
+          splitFriends: [],
+          fullLoan: false,
+          accountName: acc.name,
+          category: inferCategory(note.toLowerCase(), isCredit),
+          note,
+          autoDetected: true
+        });
+        added++;
+      }
+      if (added > 0) {
+        state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
+        await persistState('auto_detect');
+        renderFeedView();
+      }
+    }
 
     function runDailyAutoBackup(force = false) {
       try {
@@ -1141,23 +1238,13 @@
       } catch (e) { return null; }
     }
 
-    function getTotalUpiBalance() {
-      return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0);
-    }
-
-    function displayBal(val) {
-      return isMasked ? '₹••••' : `₹${Number(val).toLocaleString('en-IN')}`;
-    }
+    function getTotalUpiBalance() { return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0); }
+    function displayBal(val) { return isMasked ? '₹••••' : `₹${Number(val).toLocaleString('en-IN')}`; }
 
     function renderWalletCards() {
       const totalUpi = getTotalUpiBalance();
-      const totalNet = totalUpi + state.cashBalance;
-      heroNetVal.textContent = displayBal(totalNet);
-
-      if (!state.setupComplete) {
-        walletGrid.innerHTML = '';
-        return;
-      }
+      heroNetVal.textContent = displayBal(totalUpi + state.cashBalance);
+      if (!state.setupComplete) { walletGrid.innerHTML = ''; return; }
       let rec = 0, pay = 0;
       Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
 
@@ -1165,7 +1252,7 @@
         <div class="wallet-tile tap-item" data-tile-cmd="bal">
           <span class="wt-lbl">UPI (${state.upiAccounts.length})</span>
           <span class="wt-val tabular">${displayBal(totalUpi)}</span>
-                    <span class="wt-sub">${state.upiAccounts.map(a => a.name).join(', ')}</span>
+          <span class="wt-sub">${state.upiAccounts.map(a => a.name).join(', ')}</span>
         </div>
         <div class="wallet-tile tap-item" data-tile-cmd="bal">
           <span class="wt-lbl">Cash</span>
@@ -1183,10 +1270,8 @@
       });
     }
 
-    // --- SEGMENTED HISTORY VIEW ---
     function renderFeedView(filterType = activeFilter, customDateStr = activeDateQuery) {
-      activeFilter = filterType;
-      activeDateQuery = customDateStr;
+      activeFilter = filterType; activeDateQuery = customDateStr;
       outputEl.innerHTML = '';
 
       const now = new Date();
@@ -1196,35 +1281,24 @@
       let list = state.transactions;
       if (filterType === 'today') {
         feedTitleLbl.textContent = "Today's Entries";
-        list = list.filter(t => {
-          const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
-          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === todayKey;
-        });
+        list = list.filter(t => { const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id)); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === todayKey; });
       } else if (filterType === 'month') {
         feedTitleLbl.textContent = now.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
-        list = list.filter(t => {
-          const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
-          return `${d.getFullYear()}-${d.getMonth()}` === monthKey;
-        });
+        list = list.filter(t => { const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id)); return `${d.getFullYear()}-${d.getMonth()}` === monthKey; });
       } else if (filterType === 'date' && customDateStr) {
         const picked = new Date(customDateStr + 'T00:00:00');
         feedTitleLbl.textContent = picked.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
         const targetKey = `${picked.getFullYear()}-${picked.getMonth()}-${picked.getDate()}`;
-        list = list.filter(t => {
-          const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
-          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === targetKey;
-        });
+        list = list.filter(t => { const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id)); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === targetKey; });
       } else {
         feedTitleLbl.textContent = 'Recent Activity';
       }
 
-      const periodSpend = list
-        .filter(t => t.type === 'DEBIT' || t.type === 'FRIEND_PAID')
-        .reduce((s, t) => s + (t.myShare || 0), 0);
+      const periodSpend = list.filter(t => t.type === 'DEBIT' || t.type === 'FRIEND_PAID').reduce((s, t) => s + (t.myShare || 0), 0);
       entryCountLbl.textContent = `${list.length} entries • Spend ₹${Math.round(periodSpend).toLocaleString('en-IN')}`;
 
       if (!list.length) {
-        showNotice('Is filter mein koi transaction nahi mila. Kisi bhi entry ko edit karne ke liye us par tap karein.', 'dim');
+        showNotice('No transactions found. Tap any entry to edit or enable Auto-Detect in Settings.', 'dim');
         return;
       }
       list.forEach(t => appendTxRow(t));
@@ -1248,18 +1322,15 @@
         }
       });
     });
-
-    datePickerInput.addEventListener('change', (e) => {
-      if (e.target.value) renderFeedView('date', e.target.value);
-    });
+    datePickerInput.addEventListener('change', (e) => { if (e.target.value) renderFeedView('date', e.target.value); });
 
     function appendTxRow(t) {
       const isPositive = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
       const isUdhar = t.splitFriends && t.splitFriends.length > 0;
       const isFriendPaid = t.type === 'FRIEND_PAID';
 
-      let iconCls = isPositive ? 'credit' : (isUdhar ? 'udhar' : (isFriendPaid ? 'owe' : 'debit'));
-      let iconSvg = isPositive
+      const iconCls = isPositive ? 'credit' : (isUdhar ? 'udhar' : (isFriendPaid ? 'owe' : 'debit'));
+      const iconSvg = isPositive
         ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>'
         : (isUdhar || isFriendPaid)
         ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>'
@@ -1271,13 +1342,14 @@
 
       const sign = isPositive ? '+' : '-';
       const amtCls = isPositive ? 'credit' : (isUdhar ? 'split' : (isFriendPaid ? 'owe' : 'debit'));
+      const autoBadge = t.autoDetected ? '<span class="auto-tag">Auto</span>' : '';
 
       const row = document.createElement('div');
       row.className = 'tx-row tap-item';
       row.innerHTML = `
         <div class="tx-icon-wrap ${iconCls}">${iconSvg}</div>
         <div class="tx-body">
-          <div class="tx-title">${escapeHtml(titleText)}</div>
+          <div class="tx-title-row"><div class="tx-title">${escapeHtml(titleText)}</div>${autoBadge}</div>
           <div class="tx-sub tabular">${escapeHtml(t.ts)} • ${escapeHtml(t.accountName)} • ${escapeHtml(t.category || 'General')}</div>
         </div>
         <div class="tx-right">
@@ -1291,26 +1363,11 @@
       outputEl.appendChild(row);
     }
 
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-    }
+    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+    function showNotice(text, cls = '') { const d = document.createElement('div'); d.className = `msg-line ${cls}`; d.textContent = text; outputEl.appendChild(d); }
+    function showBlock(text, cls = '') { outputEl.innerHTML = ''; const d = document.createElement('div'); d.className = `box-block ${cls}`; d.textContent = text; outputEl.appendChild(d); }
 
-    function showNotice(text, cls = '') {
-      const div = document.createElement('div');
-      div.className = `msg-line ${cls}`;
-      div.textContent = text;
-      outputEl.appendChild(div);
-    }
-
-    function showBlock(text, cls = '') {
-      outputEl.innerHTML = '';
-      const div = document.createElement('div');
-      div.className = `box-block ${cls}`;
-      div.textContent = text;
-      outputEl.appendChild(div);
-    }
-
-    // --- EDIT ANY ENTRY MODAL ENGINE ---
+    // --- EDIT ANY ENTRY MODAL ---
     const editBackdrop = document.getElementById('edit-backdrop');
     const editTxIdEl = document.getElementById('edit-tx-id');
     const editTypeEl = document.getElementById('edit-type');
@@ -1325,8 +1382,7 @@
 
     function syncEditModalFields() {
       const v = editTypeEl.value;
-      const needsFriend = v === 'UDHAR_FULL' || v === 'UDHAR_SPLIT' || v === 'FRIEND_PAID';
-      editFriendRow.style.display = needsFriend ? 'flex' : 'none';
+      editFriendRow.style.display = (v === 'UDHAR_FULL' || v === 'UDHAR_SPLIT' || v === 'FRIEND_PAID') ? 'flex' : 'none';
       editAccRow.style.display = v === 'FRIEND_PAID' ? 'none' : 'flex';
     }
     editTypeEl.addEventListener('change', syncEditModalFields);
@@ -1336,9 +1392,7 @@
       if (!tx) return;
       editTxIdEl.value = tx.id;
       document.getElementById('edit-sheet-title').textContent = `Edit Entry #${tx.id}`;
-
-      editAccEl.innerHTML = state.upiAccounts.map(a => `<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('') +
-                            `<option value="CASH">CASH</option>`;
+      editAccEl.innerHTML = state.upiAccounts.map(a => `<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('') + `<option value="CASH">CASH</option>`;
 
       if (tx.type === 'CREDIT') editTypeEl.value = 'CREDIT';
       else if (tx.type === 'FRIEND_PAID') editTypeEl.value = 'FRIEND_PAID';
@@ -1364,9 +1418,7 @@
       if (tx.type === 'DEBIT') {
         if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount);
         else if (acc) acc.balance = round2(acc.balance + tx.amount);
-        (tx.splitFriends || []).forEach(f => {
-          state.friends[f] = round2((state.friends[f] || 0) - (tx.perFriendShare || 0));
-        });
+        (tx.splitFriends || []).forEach(f => { state.friends[f] = round2((state.friends[f] || 0) - (tx.perFriendShare || 0)); });
       } else if (tx.type === 'FRIEND_PAID') {
         state.friends[tx.payer] = round2((state.friends[tx.payer] || 0) + (tx.myShare || 0));
       } else if (tx.type === 'CREDIT') {
@@ -1387,9 +1439,8 @@
       const id = parseInt(editTxIdEl.value, 10);
       const idx = state.transactions.findIndex(t => t.id === id);
       if (idx === -1) return;
-
       const amt = parseFloat(editAmtEl.value);
-      if (isNaN(amt) || amt <= 0) return alert('Valid amount likhein.');
+      if (isNaN(amt) || amt <= 0) return alert('Enter a valid amount.');
 
       const oldTx = state.transactions[idx];
       revertTxEffect(oldTx);
@@ -1407,50 +1458,32 @@
       let newTx = {
         id: oldTx.id, ts, tsMs, amount: amt, category, note,
         accountName: isCash ? 'CASH' : (acc ? acc.name : 'UPI'),
-        type: 'DEBIT', myShare: amt, perFriendShare: 0, splitFriends: [], fullLoan: false
+        type: 'DEBIT', myShare: amt, perFriendShare: 0, splitFriends: [], fullLoan: false,
+        autoDetected: Boolean(oldTx.autoDetected)
       };
 
-      const friendList = editFriendEl.value
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean)
-        .map(capitalize);
+      const friendList = editFriendEl.value.split(',').map(s => s.trim()).filter(Boolean).map(capitalize);
 
       if (mode === 'CREDIT') {
-        newTx.type = 'CREDIT';
-        newTx.myShare = 0;
-        if (isCash) state.cashBalance = round2(state.cashBalance + amt);
-        else if (acc) acc.balance = round2(acc.balance + amt);
+        newTx.type = 'CREDIT'; newTx.myShare = 0;
+        if (isCash) state.cashBalance = round2(state.cashBalance + amt); else if (acc) acc.balance = round2(acc.balance + amt);
       } else if (mode === 'FRIEND_PAID') {
         const payer = friendList[0] || 'Friend';
-        newTx.type = 'FRIEND_PAID';
-        newTx.payer = payer;
-        newTx.accountName = payer;
-        newTx.myShare = amt;
+        newTx.type = 'FRIEND_PAID'; newTx.payer = payer; newTx.accountName = payer; newTx.myShare = amt;
         state.friends[payer] = round2((state.friends[payer] || 0) - amt);
       } else if (mode === 'UDHAR_FULL' && friendList.length > 0) {
-        newTx.type = 'DEBIT';
-        newTx.splitFriends = friendList;
-        newTx.fullLoan = true;
-        newTx.perFriendShare = round2(amt / friendList.length);
-        newTx.myShare = 0;
-        if (isCash) state.cashBalance = round2(state.cashBalance - amt);
-        else if (acc) acc.balance = round2(acc.balance - amt);
+        newTx.type = 'DEBIT'; newTx.splitFriends = friendList; newTx.fullLoan = true;
+        newTx.perFriendShare = round2(amt / friendList.length); newTx.myShare = 0;
+        if (isCash) state.cashBalance = round2(state.cashBalance - amt); else if (acc) acc.balance = round2(acc.balance - amt);
         friendList.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + newTx.perFriendShare));
       } else if (mode === 'UDHAR_SPLIT' && friendList.length > 0) {
-        newTx.type = 'DEBIT';
-        newTx.splitFriends = friendList;
-        newTx.fullLoan = false;
-        newTx.perFriendShare = round2(amt / (friendList.length + 1));
-        newTx.myShare = round2(amt - newTx.perFriendShare * friendList.length);
-        if (isCash) state.cashBalance = round2(state.cashBalance - amt);
-        else if (acc) acc.balance = round2(acc.balance - amt);
+        newTx.type = 'DEBIT'; newTx.splitFriends = friendList; newTx.fullLoan = false;
+        newTx.perFriendShare = round2(amt / (friendList.length + 1)); newTx.myShare = round2(amt - newTx.perFriendShare * friendList.length);
+        if (isCash) state.cashBalance = round2(state.cashBalance - amt); else if (acc) acc.balance = round2(acc.balance - amt);
         friendList.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + newTx.perFriendShare));
       } else {
-        newTx.type = 'DEBIT';
-        newTx.myShare = amt;
-        if (isCash) state.cashBalance = round2(state.cashBalance - amt);
-        else if (acc) acc.balance = round2(acc.balance - amt);
+        newTx.type = 'DEBIT'; newTx.myShare = amt;
+        if (isCash) state.cashBalance = round2(state.cashBalance - amt); else if (acc) acc.balance = round2(acc.balance - amt);
       }
 
       state.transactions[idx] = newTx;
@@ -1470,7 +1503,7 @@
       editBackdrop.classList.remove('open');
       renderFeedView();
     });
-                    // --- CORE PERSIST & COMMAND ENGINE ---
+          // --- COMMANDS & PARSER ---
     async function persistState(reason = 'cmd') {
       await storageEngine.commit(state, reason);
       renderWalletCards();
@@ -1481,67 +1514,66 @@
       if (allowMask && isMasked) return '₹••••';
       return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    function capitalize(s) {
-      return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
-    }
+    function capitalize(s) { return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' '); }
 
     function startSetupWizard(isReconfig = false) {
       wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
       outputEl.innerHTML = '';
       feedTitleLbl.textContent = isReconfig ? 'Wallet Re-Setup' : 'Welcome Setup';
-      cmdInput.placeholder = 'Kitne UPI accounts hain? (1, 2, 3)...';
-      showNotice('Apke pass kitne UPI / Bank accounts hain? (1, 2, ya 3 likh kar send karein)', 'info');
+      cmdInput.placeholder = 'How many UPI accounts? (1, 2, 3)...';
+      showNotice('How many UPI / Bank accounts do you have? (Enter 1, 2, or 3)', 'info');
     }
 
     async function handleWizardInput(raw) {
       const text = raw.trim();
       if (wizard.step === 'COUNT') {
         const count = parseInt(text.replace(/[^\d]/g, ''), 10);
-        if (!count || count < 1 || count > 10) return showNotice('1 se 10 ke beech number likhein.', 'debit');
+        if (!count || count < 1 || count > 10) return showNotice('Enter a number between 1 and 10.', 'debit');
         wizard.totalAccounts = count; wizard.currentIdx = 0; wizard.collectedAccounts = [];
         if (count === 1) {
           wizard.step = 'ACC_BAL'; wizard.tempName = 'UPI';
-          showNotice('1 UPI Account selected. Isme abhi kitna balance hai? (e.g. 2135)', 'info');
+          showNotice('1 UPI Account selected. Enter current balance (e.g. 2135):', 'info');
           cmdInput.placeholder = 'Enter UPI balance...';
         } else {
           wizard.step = 'ACC_NAME';
-          showNotice('Account #1 ka naam likhein (e.g. SBI, Union, Paytm):', 'info');
+          showNotice('Enter Account #1 name (e.g. SBI, Union, Slice):', 'info');
           cmdInput.placeholder = 'Account #1 name...';
         }
         return;
       }
       if (wizard.step === 'ACC_NAME') {
         const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
-        if (!name) return showNotice('Sahi naam likhein.', 'debit');
+        if (!name) return showNotice('Enter a valid name.', 'debit');
         wizard.tempName = name; wizard.step = 'ACC_BAL';
-        showNotice(`${name} mein abhi kitna balance hai?`, 'info');
+        showNotice(`Enter current balance in ${name}:`, 'info');
         cmdInput.placeholder = `Balance in ${name}...`;
         return;
       }
       if (wizard.step === 'ACC_BAL') {
         const num = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(num) || num < 0) return showNotice('Sahi amount likhein.', 'debit');
+        if (isNaN(num) || num < 0) return showNotice('Enter a valid amount.', 'debit');
         wizard.collectedAccounts.push({ id: `upi_${wizard.currentIdx + 1}`, name: wizard.tempName, balance: num });
         wizard.currentIdx++;
         if (wizard.currentIdx < wizard.totalAccounts) {
           wizard.step = 'ACC_NAME';
-          showNotice(`Account #${wizard.currentIdx + 1} ka naam likhein:`, 'info');
+          showNotice(`Enter Account #${wizard.currentIdx + 1} name:`, 'info');
           cmdInput.placeholder = `Account #${wizard.currentIdx + 1} name...`;
         } else {
           wizard.step = 'CASH';
-          showNotice('Abhi haath mein kitna CASH pada hai? (e.g. 0 ya 500)', 'info');
+          showNotice('Enter current Cash in hand (e.g. 0 or 500):', 'info');
           cmdInput.placeholder = 'Cash in hand...';
         }
         return;
       }
       if (wizard.step === 'CASH') {
         const cash = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(cash) || cash < 0) return showNotice('Sahi Cash amount likhein.', 'debit');
+        if (isNaN(cash) || cash < 0) return showNotice('Enter a valid cash amount.', 'debit');
         state.upiAccounts = wizard.collectedAccounts;
         state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
         cmdInput.placeholder = '50 chai upi | 353 manish recharge';
         await persistState('setup');
         renderFeedView('all');
+        syncAutoTransactions();
       }
     }
 
@@ -1563,24 +1595,20 @@
       return state.upiAccounts[0];
     }
 
-    function extractAmount(text) {
-      const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
-      return m ? parseFloat(m[1]) : null;
-    }
+    function extractAmount(text) { const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/); return m ? parseFloat(m[1]) : null; }
 
     function inferCategory(lower, isCredit) {
       if (isCredit) return 'Income';
-      if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|paneer|grocery|sabzi)\b/.test(lower)) return 'Food';
-      if (/\b(auto|bus|train|petrol|diesel|cab|ticket|kiraya|bike)\b/.test(lower)) return 'Transport';
+      if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|paneer|grocery|sabzi|zomato|swiggy)\b/.test(lower)) return 'Food';
+      if (/\b(auto|bus|train|petrol|diesel|cab|ticket|kiraya|bike|uber|ola|rapido)\b/.test(lower)) return 'Transport';
       if (/\b(recharge|jio|vi|airtel|bill|bijli|rent|room)\b/.test(lower)) return 'Bills';
-      if (/\b(shirt|pant|shoes|amazon|flipkart|shopping)\b/.test(lower)) return 'Shopping';
+      if (/\b(shirt|pant|shoes|amazon|flipkart|myntra|shopping)\b/.test(lower)) return 'Shopping';
       return 'General';
     }
 
     async function runCommand(raw) {
       const text = raw.trim();
       if (!text) return;
-
       if (wizard.active) return handleWizardInput(text);
       const lower = text.toLowerCase();
 
@@ -1609,21 +1637,19 @@
           await persistState('restore');
           renderFeedView('all');
           return;
-        } catch (e) {
-          return showBlock('Invalid backup JSON. Check pasted text.', 'debit');
-        }
+        } catch (e) { return showBlock('Invalid backup JSON.', 'debit'); }
       }
 
       if (lower === 'edit' || lower.startsWith('edit ')) {
-        if (!state.transactions.length) return showBlock('Edit karne ke liye koi entry nahi hai.', 'dim');
+        if (!state.transactions.length) return showBlock('No entries to edit.', 'dim');
         const arg = lower.split(/\s+/)[1];
         const target = arg ? state.transactions.find(t => t.id === parseInt(arg, 10)) : state.transactions[0];
-        if (!target) return showBlock(`ID #${arg} nahi mila.`, 'debit');
+        if (!target) return showBlock(`Entry #${arg} not found.`, 'debit');
         return openEditModal(target.id);
       }
 
       if (lower === 'undo') {
-        if (!state.transactions.length) return showBlock('Undo karne ke liye koi entry nahi hai.', 'dim');
+        if (!state.transactions.length) return showBlock('No entries to undo.', 'dim');
         revertTxEffect(state.transactions[0]);
         state.transactions.shift();
         await persistState('undo');
@@ -1634,17 +1660,15 @@
         const q = lower.replace(/^(?:find|search)\s+/, '').trim();
         if (!q) return showBlock('Usage: find chai | find manish', 'warn');
         const matches = state.transactions.filter(t =>
-          t.note.toLowerCase().includes(q) ||
-          (t.category && t.category.toLowerCase().includes(q)) ||
-          (t.accountName && t.accountName.toLowerCase().includes(q)) ||
-          (t.payer && t.payer.toLowerCase().includes(q)) ||
+          t.note.toLowerCase().includes(q) || (t.category && t.category.toLowerCase().includes(q)) ||
+          (t.accountName && t.accountName.toLowerCase().includes(q)) || (t.payer && t.payer.toLowerCase().includes(q)) ||
           (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
         );
         feedTitleLbl.textContent = `Search: "${q}"`;
         outputEl.innerHTML = '';
         const total = matches.reduce((s, t) => s + t.amount, 0);
         entryCountLbl.textContent = `${matches.length} found • ₹${Math.round(total).toLocaleString('en-IN')}`;
-        if (!matches.length) return showNotice(`"${q}" se milti koi entry nahi mili.`, 'dim');
+        if (!matches.length) return showNotice(`No entries matching "${q}".`, 'dim');
         matches.forEach(t => appendTxRow(t));
         return;
       }
@@ -1666,10 +1690,10 @@
       if (lower === 'dues' || lower === 'udhar') {
         feedTitleLbl.textContent = 'Friend Udhar Ledger';
         const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
-        if (!list.length) return showBlock('Kisi dost ke saath udhar baaki nahi hai.', 'dim');
+        if (!list.length) return showBlock('No pending friend dues.', 'dim');
         let out = '';
         list.forEach(([n, v]) => out += `${n.padEnd(14)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v, true) : 'DENA HAI -' + formatMoney(Math.abs(v), true)}\n`);
-        out += `\nTip: Settle karne ke liye likhein "settle <name>"`;
+        out += `\nTip: Type "settle <name>" to clear dues.`;
         return showBlock(out, 'split');
       }
 
@@ -1678,7 +1702,7 @@
       if (lower === 'stats') {
         feedTitleLbl.textContent = 'Expense Breakdown';
         const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
-        if (!deb.length) return showBlock('Abhi koi personal kharch nahi hai.', 'dim');
+        if (!deb.length) return showBlock('No personal expenses yet.', 'dim');
         const tot = deb.reduce((s, t) => s + t.myShare, 0);
         const map = {};
         deb.forEach(t => map[t.category] = (map[t.category] || 0) + t.myShare);
@@ -1689,61 +1713,49 @@
         return showBlock(out);
       }
 
-      const entryDate = (backdateBar.classList.contains('show') && customEntryDt.value)
-        ? new Date(customEntryDt.value)
-        : new Date();
+      const entryDate = (backdateBar.classList.contains('show') && customEntryDt.value) ? new Date(customEntryDt.value) : new Date();
       const tsMs = isNaN(entryDate.getTime()) ? Date.now() : entryDate.getTime();
       const ts = formatTsFromDate(new Date(tsMs));
 
       if (lower.startsWith('settle ')) {
         const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
         const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
-        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return showBlock(`${target} ka koi udhar baaki nahi hai.`, 'dim');
-        const val = state.friends[fKey];
-        const abs = Math.abs(val);
-        const isCash = /\bcash\b/.test(lower);
-        const acc = isCash ? null : resolveUpiAccount(lower);
+        if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return showBlock(`No pending dues for ${target}.`, 'dim');
+        const val = state.friends[fKey], abs = Math.abs(val);
+        const isCash = /\bcash\b/.test(lower), acc = isCash ? null : resolveUpiAccount(lower);
         const txObj = {
           id: state.nextId++, ts, tsMs, type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
           amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name,
-          settleFriend: fKey, category: 'Settlement',
-          note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
+          settleFriend: fKey, category: 'Settlement', note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
         };
         if (val > 0) { if (isCash) state.cashBalance = round2(state.cashBalance + abs); else acc.balance = round2(acc.balance + abs); }
         else { if (isCash) state.cashBalance = round2(state.cashBalance - abs); else acc.balance = round2(acc.balance - abs); }
         state.friends[fKey] = 0;
         state.transactions.unshift(txObj);
         state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
-        await persistState('settle');
-        toggleBackdateBar(false);
-        return renderFeedView();
+        await persistState('settle'); toggleBackdateBar(false); return renderFeedView();
       }
 
       if (lower.startsWith('rm ')) {
         const id = parseInt(lower.split(/\s+/)[1], 10);
         const idx = state.transactions.findIndex(t => t.id === id);
-        if (idx === -1) return showBlock(`ID #${id} nahi mila.`, 'debit');
+        if (idx === -1) return showBlock(`Entry #${id} not found.`, 'debit');
         revertTxEffect(state.transactions[idx]);
         state.transactions.splice(idx, 1);
-        await persistState('rm');
-        return renderFeedView();
+        await persistState('rm'); return renderFeedView();
       }
 
       const amt = extractAmount(text);
-      if (!amt || amt <= 0) return showBlock('Amount samajh nahi aaya. Example: "50 chai upi" ya "353 manish recharge"', 'warn');
+      if (!amt || amt <= 0) return showBlock('Could not find an amount. Example: "50 chai upi" or "353 manish recharge"', 'warn');
 
       const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+(?:\s+ji)?)/) || lower.match(/^([a-zA-Z]+(?:\s+ji)?)\s+(?:ne|paid)\b/);
       if (paidByM && !NON_FRIEND.has(paidByM[1].split(/\s+/)[0].toLowerCase())) {
         const payer = capitalize(paidByM[1]);
-        const isBoth = /\b(both|dono|split)\b/.test(lower);
-        const myShare = isBoth ? round2(amt / 2) : amt;
+        const myShare = /\b(both|dono|split)\b/.test(lower) ? round2(amt / 2) : amt;
         state.friends[payer] = round2((state.friends[payer] || 0) - myShare);
-        const txObj = { id: state.nextId++, ts, tsMs, type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text };
-        state.transactions.unshift(txObj);
+        state.transactions.unshift({ id: state.nextId++, ts, tsMs, type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text });
         state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
-        await persistState('friend_paid');
-        toggleBackdateBar(false);
-        return renderFeedView();
+        await persistState('friend_paid'); toggleBackdateBar(false); return renderFeedView();
       }
 
       const isCredit = text.startsWith('+') || /\b(credit|credited|received|salary|stipend|income|added|refund|cashback|mila|mile|aaye)\b/.test(lower);
@@ -1752,86 +1764,60 @@
       const chan = isCash ? 'CASH' : acc.name;
       const upiNamesSet = new Set(state.upiAccounts.map(a => a.name.toLowerCase()));
 
-      let splitFriends = [];
-      let fullLoan = false;
+      let splitFriends = [], fullLoan = false;
       const withM = lower.match(/\b(?:with|and|ke sath)\s+([a-zA-Z\s,]+)/);
 
       if (!isCredit && withM) {
-        splitFriends = withM[1]
-          .split(/[\s,]+/)
-          .filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w))
-          .map(capitalize);
+        splitFriends = withM[1].split(/[\s,]+/).filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w)).map(capitalize);
       } else if (!isCredit) {
         const words = lower.replace(/[\d.,]+/g, ' ').trim().split(/[\s,]+/);
         const directNames = [];
         for (let i = 0; i < words.length; i++) {
           const w = words[i];
           if (/^[a-zA-Z]{2,}$/.test(w) && !NON_FRIEND.has(w) && !upiNamesSet.has(w) && w !== 'ji') {
-            if (words[i + 1] === 'ji') {
-              directNames.push(capitalize(w + ' ji'));
-              i++;
-            } else {
-              directNames.push(capitalize(w));
-            }
+            if (words[i + 1] === 'ji') { directNames.push(capitalize(w + ' ji')); i++; }
+            else { directNames.push(capitalize(w)); }
           }
         }
-        if (directNames.length > 0) {
-          splitFriends = [directNames[0]];
-          fullLoan = true;
-        }
+        if (directNames.length > 0) { splitFriends = [directNames[0]]; fullLoan = true; }
       }
 
       let myShare = amt, perFriendShare = 0;
       if (!isCredit && splitFriends.length > 0) {
-        if (fullLoan) {
-          perFriendShare = amt;
-          myShare = 0;
-        } else {
-          perFriendShare = round2(amt / (splitFriends.length + 1));
-          myShare = round2(amt - perFriendShare * splitFriends.length);
-        }
+        if (fullLoan) { perFriendShare = amt; myShare = 0; }
+        else { perFriendShare = round2(amt / (splitFriends.length + 1)); myShare = round2(amt - perFriendShare * splitFriends.length); }
         splitFriends.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + perFriendShare));
       }
 
       if (isCredit) { if (isCash) state.cashBalance = round2(state.cashBalance + amt); else acc.balance = round2(acc.balance + amt); }
       else { if (isCash) state.cashBalance = round2(state.cashBalance - amt); else acc.balance = round2(acc.balance - amt); }
 
-      const txObj = {
+      state.transactions.unshift({
         id: state.nextId++, ts, tsMs, type: isCredit ? 'CREDIT' : 'DEBIT',
         amount: amt, myShare: isCredit ? 0 : myShare, perFriendShare, splitFriends, fullLoan,
         accountName: chan, category: inferCategory(lower, isCredit), note: text
-      };
-      state.transactions.unshift(txObj);
+      });
       state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
-      await persistState('tx');
-      toggleBackdateBar(false);
-      renderFeedView();
+      await persistState('tx'); toggleBackdateBar(false); renderFeedView();
     }
 
-    submitBtn.addEventListener('click', () => {
-      const v = cmdInput.value;
-      if (v.trim()) runCommand(v);
-      cmdInput.value = '';
-      cmdInput.focus();
-    });
-    cmdInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); }
-    });
-
+    submitBtn.addEventListener('click', () => { const v = cmdInput.value; if (v.trim()) runCommand(v); cmdInput.value = ''; cmdInput.focus(); });
+    cmdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submitBtn.click(); } });
     document.querySelectorAll('[data-cmd]').forEach(b => b.addEventListener('click', () => runCommand(b.getAttribute('data-cmd'))));
     document.querySelectorAll('[data-insert]').forEach(b => b.addEventListener('click', () => {
-      cmdInput.value = cmdInput.value.replace(/\s+$/, '') + b.getAttribute('data-insert');
-      cmdInput.focus();
+      cmdInput.value = cmdInput.value.replace(/\s+$/, '') + b.getAttribute('data-insert'); cmdInput.focus();
     }));
 
     (async function boot() {
       state = await storageEngine.loadAndHeal();
       renderWalletCards();
+      refreshAutoDetectStatus();
       runDailyAutoBackup(false);
       if (!state.setupComplete) {
         startSetupWizard(false);
       } else {
         renderFeedView('all');
+        await syncAutoTransactions();
       }
     })();
   </script>
