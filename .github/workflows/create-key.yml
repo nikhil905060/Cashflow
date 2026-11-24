@@ -1,0 +1,28 @@
+name: Create Fixed Keystore
+on:
+  workflow_dispatch:
+
+jobs:
+  make-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generate Keystore & Base64
+        run: |
+          keytool -genkeypair -v -keystore cashflow.jks -storetype PKCS12 \
+            -keyalg RSA -keysize 2048 -validity 10000 -alias cashflow \
+            -storepass cashflow123 -keypass cashflow123 \
+            -dname "CN=CashFlow, OU=App, O=CashFlow, C=IN"
+          base64 -w 0 cashflow.jks > keystore_base64.txt
+
+      - name: Upload Keystore Base64
+        uses: actions/upload-artifact@v4
+        with:
+          name: cashflow-keystore-base64
+          path: keystore_base64.txt
+          
