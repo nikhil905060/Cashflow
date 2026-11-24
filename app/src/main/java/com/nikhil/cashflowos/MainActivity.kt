@@ -1,13 +1,16 @@
 package com.cashflow.os
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -19,6 +22,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import org.json.JSONObject
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -46,9 +50,91 @@ class MainActivity : FragmentActivity() {
         webView.webChromeClient = WebChromeClient()
         webView.addJavascriptInterface(CashFlowBridge(), "AndroidNative")
         webView.loadUrl("file:///android_asset/index.html")
+
+        TransactionNotificationService.onNewTransactionCallback = {
+            runOnUiThread {
+                webView.evaluateJavascript("if(window.onAutoTransactionsReady) window.onAutoTransactionsReady();", null)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::webView.isInitialized) {
+            webView.evaluateJavascript("if(window.onAutoTransactionsReady) window.onAutoTransactionsReady();", null)
+            webView.evaluateJavascript("if(window.refreshAutoDetectStatus) window.refreshAutoDetectStatus();", null)
+        }
+    }
+
+    override fun onDestroy() {
+        TransactionNotificationService.onNewTransactionCallback = null
+        speechRecognizer?.destroy()
+        super.onDestroy()
+    }
+
+    private fun hasNotificationListenerPermission(): Boolean {
+        val enabled = Settings.Secure.getString(contentResolver, "enabled_notification_listeners") ?: return false
+        val expected = ComponentName(this, TransactionNotificationService::class.java).flattenToString()
+        return enabled.split(":").any { it.equals(expected, ignoreCase = true) || it.contains(packageName) }
     }
 
     inner class CashFlowBridge {
+
+        @JavascriptInterface
+        fun isNotificationAccessEnabled(): Boolean {
+            return hasNotificationListenerPermission()
+        }
+
+        @JavascriptInterface
+        fun isAutoDetectEnabled(): Boolean {
+            return TransactionNotificationService.isEnabled(applicationContext)
+        }
+
+        @JavascriptInterface
+        fun setAutoDetectEnabled(enabled: Boolean) {
+            TransactionNotificationService.setEnabled(applicationContext, enabled)
+        }
+
+        @JavascriptInterface
+        fun openNotificationSettings() {
+            runOnUiThread {
+                try {
+                    startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                } catch (e: Exception) {
+                    openAppDetailsSettings()
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun openAppDetailsSettings() {
+            runOnUiThread {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                }
+                startActivity(intent)
+            }
+        }
+
+        @JavascriptInterface
+        fun consumeAutoTransactions(): String {
+            return TransactionNotificationService.consumeQueueJson(applicationContext)
+        }
+
+        @JavascriptInterface
+        fun simulateTestTransaction(type: String, amount: Double, party: String) {
+            val item = JSONObject().apply {
+                put("type", type)
+                put("amount", amount)
+                put("accountHint", "UPI")
+                put("note", if (type == "CREDIT") "Received from $party" else "Paid to $party")
+                put("tsMs", System.currentTimeMillis())
+            }
+            TransactionNotificationService.enqueueParsedTx(applicationContext, item)
+            runOnUiThread {
+                webView.evaluateJavascript("if(window.onAutoTransactionsReady) window.onAutoTransactionsReady();", null)
+            }
+        }
 
         @JavascriptInterface
         fun triggerBiometric() {
