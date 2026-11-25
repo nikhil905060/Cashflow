@@ -59,22 +59,16 @@
       font-family: var(--font-main); font-size: 15px; line-height: 1.4; overflow: hidden;
       -webkit-font-smoothing: antialiased;
     }
-
     .tabular { font-variant-numeric: tabular-nums; }
-
-    button, .tap-item {
-      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.15s ease;
-    }
+    button, .tap-item { transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.15s ease; }
     button:active, .tap-item:active { transform: scale(0.97); opacity: 0.78; }
 
     /* iOS 18 LOCK SCREEN */
     #lock-screen {
       position: fixed; inset: 0; z-index: 9999; background: var(--bg); color: var(--fg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 24px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px;
     }
     #lock-screen.unlocked { display: none; }
-
     .lock-wrap { width: 100%; max-width: 300px; text-align: center; }
     .lock-icon-badge {
       width: 56px; height: 56px; border-radius: 16px; background: var(--blue-tint); color: var(--blue);
@@ -83,92 +77,111 @@
     .lock-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
     .lock-sub { font-size: 14px; color: var(--fg-sec); margin-bottom: 22px; }
     .pin-dots { display: flex; justify-content: center; gap: 16px; margin-bottom: 12px; }
-    .pin-dot {
-      width: 13px; height: 13px; border-radius: 50%;
-      border: 1.5px solid var(--fg-sec); transition: background 0.15s ease, border-color 0.15s ease;
-    }
+    .pin-dot { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--fg-sec); transition: background 0.15s ease; }
     .pin-dot.filled { background: var(--fg); border-color: var(--fg); }
     .lock-err { font-size: 13px; color: var(--red); font-weight: 500; min-height: 20px; margin-bottom: 12px; }
     .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; justify-items: center; }
     .k-btn {
-      width: 72px; height: 72px; border-radius: 50%; border: none;
-      background: var(--fill-tertiary); color: var(--fg);
-      font-size: 28px; font-weight: 400; font-family: inherit;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      width: 72px; height: 72px; border-radius: 50%; border: none; background: var(--fill-tertiary); color: var(--fg);
+      font-size: 28px; font-weight: 400; font-family: inherit; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
     .k-btn.tinted { background: var(--blue-tint); color: var(--blue); }
     .k-btn.plain { background: transparent; color: var(--fg); }
 
-    /* MAIN SHELL */
-    #app {
-      display: flex; flex-direction: column; height: 100dvh; max-width: 720px; margin: 0 auto;
-    }
-
+    /* MAIN SHELL & TOP NAV */
+    #app { display: flex; flex-direction: column; height: 100dvh; max-width: 720px; margin: 0 auto; }
     #top-nav {
-      position: sticky; top: 0; z-index: 20;
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-bottom: 0.5px solid var(--sep);
-      padding: 10px 16px 10px; flex-shrink: 0;
+      position: sticky; top: 0; z-index: 20; background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 0.5px solid var(--sep); padding: 10px 16px; flex-shrink: 0;
     }
     .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .nav-left { display: flex; align-items: center; gap: 10px; }
-    .nav-title { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+    .nav-title { font-size: 26px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
     .nav-actions { display: flex; align-items: center; gap: 8px; }
-
     .ios-circle-btn {
-      width: 36px; height: 36px; border-radius: 50%; border: none;
-      background: var(--fill-tertiary); color: var(--blue);
+      width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--fill-tertiary); color: var(--blue);
       display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
     .ios-pill-tinted {
-      height: 32px; padding: 0 12px; border-radius: 999px; border: none;
-      background: var(--blue-tint); color: var(--blue);
-      font-size: 13px; font-weight: 600; font-family: inherit;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+      height: 32px; padding: 0 11px; border-radius: 999px; border: none; background: var(--blue-tint); color: var(--blue);
+      font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px;
     }
-    .status-dot {
-      width: 7px; height: 7px; border-radius: 50%; background: var(--orange); display: inline-block;
-    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); display: inline-block; }
     .status-dot.on { background: var(--green); }
 
-    /* SCROLLABLE BODY */
     #main-scroll {
-      flex: 1; overflow-y: auto; padding: 14px 16px 12px;
-      -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 14px;
+      flex: 1; overflow-y: auto; padding: 12px 16px; -webkit-overflow-scrolling: touch;
+      display: flex; flex-direction: column; gap: 12px;
     }
 
-    /* AUTO-DETECT BANNER */
     #auto-banner {
       display: none; align-items: center; justify-content: space-between; gap: 10px;
-      background: var(--surface); border-radius: 14px; padding: 11px 14px;
-      box-shadow: var(--card-shadow); flex-shrink: 0;
+      background: var(--surface); border-radius: 14px; padding: 10px 14px; box-shadow: var(--card-shadow); flex-shrink: 0;
     }
     #auto-banner.show { display: flex; }
     .ab-text { font-size: 13px; color: var(--fg); font-weight: 500; }
     .ab-sub { font-size: 11.5px; color: var(--fg-sec); }
 
-    .ios-balance-card {
-      background: var(--surface); border-radius: 16px; padding: 16px;
-      box-shadow: var(--card-shadow); flex-shrink: 0;
+    /* STACKED WALLET CARD DECK (~148px COMPACT) */
+    .deck-wrap { position: relative; flex-shrink: 0; user-select: none; touch-action: pan-y; }
+    .deck-stage { position: relative; height: 148px; width: 100%; }
+    .w-card {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 126px; border-radius: 20px;
+      padding: 14px 16px; color: #FFFFFF; display: flex; flex-direction: column; justify-content: space-between;
+      border: 0.5px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+      transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s ease;
+      overflow: hidden;
     }
-    .bal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .bal-label { font-size: 13px; font-weight: 500; color: var(--fg-sec); text-transform: uppercase; letter-spacing: 0.02em; }
-    .bal-hero-num { font-size: 34px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-top: 2px; }
+    .w-card[data-pos="0"] { z-index: 3; transform: translateY(0) scale(1); opacity: 1; }
+    .w-card[data-pos="1"] { z-index: 2; transform: translateY(-12px) scale(0.955); opacity: 0.88; cursor: pointer; }
+    .w-card[data-pos="2"] { z-index: 1; transform: translateY(-22px) scale(0.91); opacity: 0.65; cursor: pointer; }
 
-    .wallet-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-      padding-top: 12px; border-top: 0.5px solid var(--sep);
+    .card-obsidian { background: linear-gradient(135deg, #25262B 0%, #111215 100%); }
+    .card-blue     { background: linear-gradient(135deg, #1B4B8A 0%, #0E2749 100%); }
+    .card-indigo   { background: linear-gradient(135deg, #43388A 0%, #201A4A 100%); }
+    .card-teal     { background: linear-gradient(135deg, #14636B 0%, #0A343A 100%); }
+    .card-slate    { background: linear-gradient(135deg, #3A3D45 0%, #1D1F24 100%); }
+    .card-emerald  { background: linear-gradient(135deg, #166547 0%, #0B3525 100%); }
+
+    .wc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .wc-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: #FFFFFF; }
+    .wc-sub { font-size: 11.5px; color: rgba(255, 255, 255, 0.68); font-weight: 500; }
+    .wc-actions { display: flex; align-items: center; gap: 6px; }
+    .wc-icon-btn {
+      width: 28px; height: 28px; border-radius: 50%; border: none;
+      background: rgba(255, 255, 255, 0.16); color: #FFFFFF;
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
     }
-    .wallet-tile {
-      background: var(--fill-quaternary); border-radius: 12px; padding: 10px;
-      cursor: pointer; display: flex; flex-direction: column; gap: 2px;
+    .wc-bal { font-size: 30px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; }
+    .wc-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .wc-meta { font-size: 11.5px; color: rgba(255, 255, 255, 0.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wc-dots { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .wc-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); transition: width 0.2s ease, background 0.2s ease; }
+    .wc-dot.active { width: 14px; border-radius: 999px; background: #FFFFFF; }
+        /* SLIM MONTHLY SPENDING BAR */
+    #spending-strip {
+      background: var(--surface); border-radius: 14px; padding: 10px 14px;
+      box-shadow: var(--card-shadow); flex-shrink: 0; cursor: pointer;
     }
-    .wt-lbl { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
-    .wt-val { font-size: 16px; font-weight: 600; color: var(--fg); }
-    .wt-sub { font-size: 11px; color: var(--fg-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        /* SEGMENTED CONTROL & DATE BAR */
+    .sp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .sp-lbl { font-size: 13px; font-weight: 600; color: var(--fg); }
+    .sp-sub { font-size: 12px; color: var(--fg-sec); font-weight: 500; }
+    .sp-bar {
+      display: flex; gap: 4px; height: 8px; width: 100%;
+      border-radius: 999px; overflow: hidden; background: var(--fill-tertiary);
+    }
+    .sp-seg { height: 100%; border-radius: 999px; min-width: 6px; }
+    .sp-legend {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 7px;
+      font-size: 11px; color: var(--fg-sec); font-weight: 500;
+    }
+    .sp-leg-item { display: inline-flex; align-items: center; gap: 4px; }
+    .sp-leg-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+    /* SEGMENTED CONTROL & DATE BAR */
     .controls-stack { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
     .seg-control {
       display: grid; grid-template-columns: repeat(4, 1fr);
@@ -178,15 +191,11 @@
       height: 30px; border: none; background: transparent; color: var(--fg);
       border-radius: 7px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer;
     }
-    .seg-btn.active {
-      background: var(--seg-active); font-weight: 600;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    }
+    .seg-btn.active { background: var(--seg-active); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
 
     .date-filter-row {
       display: none; align-items: center; justify-content: space-between; gap: 8px;
-      background: var(--surface); border-radius: 12px; padding: 8px 12px;
-      box-shadow: var(--card-shadow);
+      background: var(--surface); border-radius: 12px; padding: 8px 12px; box-shadow: var(--card-shadow);
     }
     .date-filter-row.show { display: flex; }
     .ios-date-input {
@@ -195,10 +204,7 @@
     }
 
     /* SECTION HEADER & INSET GROUPED FEED */
-    .sec-head-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0 4px 6px 16px;
-    }
+    .sec-head-row { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 6px 16px; }
     .sec-title { font-size: 13px; font-weight: 500; color: var(--fg-sec); text-transform: uppercase; letter-spacing: 0.02em; }
     .sec-meta { font-size: 12px; font-weight: 500; color: var(--fg-sec); }
 
@@ -207,15 +213,8 @@
       border-radius: 16px; box-shadow: var(--card-shadow); overflow: hidden;
     }
     #output { width: 100%; }
-
-    .tx-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 16px; cursor: pointer; position: relative;
-    }
-    .tx-row + .tx-row::before {
-      content: ""; position: absolute; top: 0; left: 60px; right: 0;
-      height: 0.5px; background: var(--sep);
-    }
+    .tx-row { display: flex; align-items: center; gap: 12px; padding: 11px 16px; cursor: pointer; position: relative; }
+    .tx-row + .tx-row::before { content: ""; position: absolute; top: 0; left: 60px; right: 0; height: 0.5px; background: var(--sep); }
     .tx-icon-wrap {
       width: 34px; height: 34px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -228,88 +227,62 @@
     .tx-body { flex: 1; min-width: 0; }
     .tx-title-row { display: flex; align-items: center; gap: 6px; }
     .tx-title { font-size: 16px; font-weight: 500; color: var(--output-fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .auto-tag {
-      font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 999px;
-      background: var(--blue-tint); color: var(--blue); flex-shrink: 0;
-    }
+    .auto-tag { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 999px; background: var(--blue-tint); color: var(--blue); flex-shrink: 0; }
     .tx-sub { font-size: 12.5px; color: var(--fg-sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-
     .tx-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .tx-amt { font-size: 16px; font-weight: 600; text-align: right; }
     .tx-chev { color: var(--fg-sec); opacity: 0.55; display: flex; align-items: center; }
 
-    .credit { color: var(--green); }
-    .debit { color: var(--red); }
-    .split { color: var(--purple); }
-    .owe { color: var(--orange); }
-    .warn { color: var(--orange); }
-    .info { color: var(--blue); }
-    .dim { color: var(--fg-sec); }
+    .credit { color: var(--green); } .debit { color: var(--red); }
+    .split { color: var(--purple); } .owe, .warn { color: var(--orange); }
+    .info { color: var(--blue); } .dim { color: var(--fg-sec); }
 
-    .msg-line {
-      padding: 12px 16px; font-size: 14px; font-weight: 500;
-      border-bottom: 0.5px solid var(--sep); white-space: pre-wrap; word-break: break-word;
-    }
+    .msg-line { padding: 12px 16px; font-size: 14px; font-weight: 500; border-bottom: 0.5px solid var(--sep); white-space: pre-wrap; word-break: break-word; }
     .msg-line:last-child { border-bottom: none; }
     .box-block {
       padding: 14px 16px; white-space: pre; overflow-x: auto;
-      font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5;
-      color: var(--output-fg); border-bottom: 0.5px solid var(--sep);
+      font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: var(--output-fg);
     }
 
-    /* QUICK ACTION PILLS */
+    /* QUICK ACTION PILLS & COMPOSER */
     #chips-row {
       display: flex; gap: 8px; overflow-x: auto; padding: 6px 16px 4px;
-      scrollbar-width: none; flex-shrink: 0; background: var(--glass-bg);
-      border-top: 0.5px solid var(--sep);
+      scrollbar-width: none; flex-shrink: 0; background: var(--glass-bg); border-top: 0.5px solid var(--sep);
     }
     #chips-row::-webkit-scrollbar { display: none; }
     .ios-chip {
       height: 30px; padding: 0 12px; border-radius: 999px; border: none;
-      background: var(--fill-tertiary); color: var(--fg);
-      font-size: 12.5px; font-weight: 500; font-family: inherit;
-      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      background: var(--fill-tertiary); color: var(--fg); font-size: 12.5px; font-weight: 500;
+      font-family: inherit; cursor: pointer; white-space: nowrap; flex-shrink: 0;
     }
     .ios-chip.tinted { background: var(--blue-tint); color: var(--blue); font-weight: 600; }
 
-    /* BACKDATE COMPOSER BAR */
     #backdate-bar {
       display: none; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 8px 16px; background: var(--glass-bg); border-top: 0.5px solid var(--sep);
-      flex-shrink: 0;
+      padding: 8px 16px; background: var(--glass-bg); border-top: 0.5px solid var(--sep); flex-shrink: 0;
     }
     #backdate-bar.show { display: flex; }
     .bd-lbl { font-size: 12.5px; font-weight: 600; color: var(--blue); white-space: nowrap; }
 
-    /* BOTTOM FROSTED COMPOSER */
     #bottom-composer {
-      background: var(--glass-bg);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      padding: 8px 14px 12px; flex-shrink: 0;
+      background: var(--glass-bg); backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%); padding: 8px 14px 12px; flex-shrink: 0;
     }
     .composer-row { display: flex; align-items: center; gap: 8px; }
     .ios-input-pill {
       flex: 1; height: 42px; background: var(--input-bg); border-radius: 999px;
       display: flex; align-items: center; padding: 0 6px 0 14px; gap: 6px;
     }
-    #cmd-input {
-      flex: 1; border: none; outline: none; background: transparent;
-      font-family: inherit; font-size: 16px; color: var(--input-fg); min-width: 40px;
-    }
+    #cmd-input { flex: 1; border: none; outline: none; background: transparent; font-family: inherit; font-size: 16px; color: var(--input-fg); min-width: 40px; }
     #cmd-input::placeholder { color: var(--fg-sec); }
-
     .comp-icon-btn {
-      width: 34px; height: 34px; border-radius: 50%; border: none;
-      background: transparent; color: var(--fg-sec);
+      width: 34px; height: 34px; border-radius: 50%; border: none; background: transparent; color: var(--fg-sec);
       display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
     .comp-icon-btn.active { background: var(--blue-tint); color: var(--blue); }
     .comp-icon-btn.listening { background: var(--red); color: #FFFFFF; }
-
     #submit-btn {
-      width: 42px; height: 42px; border-radius: 50%; border: none;
-      background: var(--blue); color: #FFFFFF;
+      width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--blue); color: #FFFFFF;
       display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
 
@@ -321,61 +294,32 @@
     .sheet-backdrop.open { display: flex; }
     .ios-sheet {
       width: 100%; max-width: 540px; background: var(--bg); color: var(--fg);
-      border-radius: 28px 28px 0 0; max-height: 88dvh; display: flex; flex-direction: column;
-      overflow: hidden;
+      border-radius: 28px 28px 0 0; max-height: 88dvh; display: flex; flex-direction: column; overflow: hidden;
     }
-    .sheet-grabber {
-      width: 36px; height: 5px; border-radius: 999px; background: rgba(128, 128, 128, 0.35);
-      margin: 8px auto 4px; flex-shrink: 0;
-    }
+    .sheet-grabber { width: 36px; height: 5px; border-radius: 999px; background: rgba(128, 128, 128, 0.35); margin: 8px auto 4px; flex-shrink: 0; }
     .sheet-nav {
       display: flex; justify-content: space-between; align-items: center;
       padding: 8px 16px 12px; border-bottom: 0.5px solid var(--sep); flex-shrink: 0;
     }
     .sheet-nav-title { font-size: 17px; font-weight: 600; }
-    .sheet-text-btn {
-      border: none; background: transparent; color: var(--blue);
-      font-size: 17px; font-weight: 400; font-family: inherit; cursor: pointer; padding: 4px;
-    }
+    .sheet-text-btn { border: none; background: transparent; color: var(--blue); font-size: 17px; font-weight: 400; font-family: inherit; cursor: pointer; padding: 4px; }
     .sheet-text-btn.bold { font-weight: 600; }
     .sheet-body { overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
     .ios-group { background: var(--surface); border-radius: 14px; overflow: hidden; }
-    .ios-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      min-height: 46px; padding: 8px 16px; position: relative;
-    }
-    .ios-row + .ios-row::before {
-      content: ""; position: absolute; top: 0; left: 16px; right: 0;
-      height: 0.5px; background: var(--sep);
-    }
+    .ios-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; padding: 8px 16px; position: relative; }
+    .ios-row + .ios-row::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 0.5px; background: var(--sep); }
     .ios-row-lbl { font-size: 15px; font-weight: 400; color: var(--fg); white-space: nowrap; }
-    .ios-field {
-      flex: 1; border: none; outline: none; background: transparent;
-      color: var(--fg); font-size: 15px; font-family: inherit; text-align: right; min-width: 80px;
-    }
-    .ios-select {
-      border: none; outline: none; background: transparent; color: var(--blue);
-      font-size: 15px; font-weight: 500; font-family: inherit; text-align: right;
-    }
-    .badge-pill {
-      font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
-      background: rgba(255, 149, 0, 0.16); color: var(--orange);
-    }
+    .ios-field { flex: 1; border: none; outline: none; background: transparent; color: var(--fg); font-size: 15px; font-family: inherit; text-align: right; min-width: 80px; }
+    .ios-select { border: none; outline: none; background: transparent; color: var(--blue); font-size: 15px; font-weight: 500; font-family: inherit; text-align: right; }
+    .badge-pill { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: rgba(255, 149, 0, 0.16); color: var(--orange); }
     .badge-pill.active { background: rgba(52, 199, 89, 0.16); color: var(--green); }
 
-    /* AUTHENTIC iOS 18 TOGGLE SWITCH */
-    .ios-switch {
-      position: relative; width: 51px; height: 31px; display: inline-block; flex-shrink: 0;
-    }
+    .ios-switch { position: relative; width: 51px; height: 31px; display: inline-block; flex-shrink: 0; }
     .ios-switch input { opacity: 0; width: 0; height: 0; }
-    .ios-slider {
-      position: absolute; inset: 0; border-radius: 999px; cursor: pointer;
-      background: rgba(120, 120, 128, 0.24); transition: background 0.25s ease;
-    }
+    .ios-slider { position: absolute; inset: 0; border-radius: 999px; cursor: pointer; background: rgba(120, 120, 128, 0.24); transition: background 0.25s ease; }
     .ios-slider::before {
-      content: ""; position: absolute; width: 27px; height: 27px; left: 2px; top: 2px;
-      border-radius: 50%; background: #FFFFFF;
+      content: ""; position: absolute; width: 27px; height: 27px; left: 2px; top: 2px; border-radius: 50%; background: #FFFFFF;
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 1px rgba(0, 0, 0, 0.16);
       transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -383,18 +327,14 @@
     .ios-switch input:checked + .ios-slider::before { transform: translateX(20px); }
 
     .ios-btn-destructive {
-      width: 100%; height: 48px; border-radius: 14px; border: none;
-      background: var(--surface); color: var(--red);
+      width: 100%; height: 48px; border-radius: 14px; border: none; background: var(--surface); color: var(--red);
       font-size: 17px; font-weight: 500; font-family: inherit; cursor: pointer;
     }
-    .color-dot-input {
-      width: 28px; height: 28px; border: 1px solid var(--sep);
-      border-radius: 50%; background: transparent; cursor: pointer; overflow: hidden;
-    }
+    .color-dot-input { width: 28px; height: 28px; border: 1px solid var(--sep); border-radius: 50%; background: transparent; cursor: pointer; overflow: hidden; }
   </style>
 </head>
 <body data-theme="light">
-  <!-- iOS 18 LOCK SCREEN -->
+  <!-- LOCK SCREEN -->
   <div id="lock-screen">
     <div class="lock-wrap">
       <div class="lock-icon-badge">
@@ -422,10 +362,8 @@
         <button type="button" class="k-btn tabular" data-key="9">9</button>
         <button type="button" class="k-btn tinted" id="btn-biometric" aria-label="Fingerprint">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 11c0 3.5-1.5 6.5-4 8"></path>
-            <path d="M15.5 11c0 4-1.5 7.5-4.5 9.5"></path>
-            <path d="M8.5 11a3.5 3.5 0 0 1 7 0"></path>
-            <path d="M5.5 11a6.5 6.5 0 0 1 13 0c0 2.5-.5 5-1.5 7"></path>
+            <path d="M12 11c0 3.5-1.5 6.5-4 8"></path><path d="M15.5 11c0 4-1.5 7.5-4.5 9.5"></path>
+            <path d="M8.5 11a3.5 3.5 0 0 1 7 0"></path><path d="M5.5 11a6.5 6.5 0 0 1 13 0c0 2.5-.5 5-1.5 7"></path>
             <path d="M2.5 11a9.5 9.5 0 0 1 19 0"></path>
           </svg>
         </button>
@@ -433,15 +371,38 @@
         <button type="button" class="k-btn plain" id="pin-back" aria-label="Delete">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
-            <line x1="18" y1="9" x2="12" y2="15"></line>
-            <line x1="12" y1="9" x2="18" y2="15"></line>
+            <line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line>
           </svg>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- EDIT ANY TRANSACTION SHEET -->
+  <!-- ADD NEW ACCOUNT SHEET -->
+  <div class="sheet-backdrop" id="add-acc-backdrop">
+    <div class="ios-sheet">
+      <div class="sheet-grabber"></div>
+      <div class="sheet-nav">
+        <button type="button" class="sheet-text-btn" id="add-acc-cancel">Cancel</button>
+        <span class="sheet-nav-title">Add Account Card</span>
+        <button type="button" class="sheet-text-btn bold" id="add-acc-save">Add</button>
+      </div>
+      <div class="sheet-body">
+        <div class="ios-group">
+          <div class="ios-row">
+            <span class="ios-row-lbl">Account Name</span>
+            <input type="text" id="new-acc-name" class="ios-field" placeholder="e.g. SBI, Slice, HDFC" />
+          </div>
+          <div class="ios-row">
+            <span class="ios-row-lbl">Current Balance (₹)</span>
+            <input type="number" step="0.01" id="new-acc-bal" class="ios-field tabular" placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT ENTRY SHEET -->
   <div class="sheet-backdrop" id="edit-backdrop">
     <div class="ios-sheet">
       <div class="sheet-grabber"></div>
@@ -478,17 +439,13 @@
           <div class="ios-row">
             <span class="ios-row-lbl">Category</span>
             <select id="edit-category" class="ios-select">
-              <option value="Food">Food</option>
-              <option value="Transport">Transport</option>
-              <option value="Bills">Bills</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Income">Income</option>
-              <option value="Settlement">Settlement</option>
+              <option value="Food">Food</option><option value="Transport">Transport</option>
+              <option value="Bills">Bills</option><option value="Shopping">Shopping</option>
+              <option value="Income">Income</option><option value="Settlement">Settlement</option>
               <option value="General">General</option>
             </select>
           </div>
         </div>
-
         <div class="ios-group">
           <div class="ios-row">
             <span class="ios-row-lbl">Date &amp; Time</span>
@@ -499,13 +456,12 @@
             <input type="text" id="edit-note" class="ios-field" placeholder="Description" />
           </div>
         </div>
-
         <button type="button" class="ios-btn-destructive" id="edit-delete-btn">Delete Entry</button>
       </div>
     </div>
   </div>
 
-  <!-- iOS 18 SETTINGS & AUTO-DETECT SHEET -->
+  <!-- SETTINGS SHEET -->
   <div class="sheet-backdrop" id="menu-backdrop">
     <div class="ios-sheet">
       <div class="sheet-grabber"></div>
@@ -520,10 +476,7 @@
           <div class="ios-group">
             <div class="ios-row">
               <span class="ios-row-lbl">Auto-Detect Credit &amp; Debit</span>
-              <label class="ios-switch">
-                <input type="checkbox" id="auto-detect-toggle" checked />
-                <span class="ios-slider"></span>
-              </label>
+              <label class="ios-switch"><input type="checkbox" id="auto-detect-toggle" checked /><span class="ios-slider"></span></label>
             </div>
             <div class="ios-row">
               <span class="ios-row-lbl">Listener Status</span>
@@ -540,16 +493,12 @@
             </div>
           </div>
         </div>
-
         <div>
           <div class="sec-title" style="padding: 0 0 6px 16px;">Appearance</div>
           <div class="ios-group">
             <div class="ios-row">
               <span class="ios-row-lbl">OLED Dark Mode</span>
-              <label class="ios-switch">
-                <input type="checkbox" id="dark-mode-toggle" />
-                <span class="ios-slider"></span>
-              </label>
+              <label class="ios-switch"><input type="checkbox" id="dark-mode-toggle" /><span class="ios-slider"></span></label>
             </div>
             <div class="ios-row">
               <span class="ios-row-lbl">Font Style</span>
@@ -562,49 +511,37 @@
             </div>
           </div>
         </div>
-
         <div>
           <div class="sec-title" style="padding: 0 0 6px 16px;">Input &amp; Output Colors</div>
           <div class="ios-group">
             <div class="ios-row">
               <span class="ios-row-lbl">Input Bar Fill &amp; Text</span>
               <div style="display:flex; gap:10px; align-items:center;">
-                <input type="color" id="pick-in-bg" class="color-dot-input" title="Input Fill" />
-                <input type="color" id="pick-in-fg" class="color-dot-input" title="Input Text" />
+                <input type="color" id="pick-in-bg" class="color-dot-input" /><input type="color" id="pick-in-fg" class="color-dot-input" />
               </div>
             </div>
             <div class="ios-row">
               <span class="ios-row-lbl">Feed Card &amp; Text</span>
               <div style="display:flex; gap:10px; align-items:center;">
-                <input type="color" id="pick-out-bg" class="color-dot-input" title="Feed Card" />
-                <input type="color" id="pick-out-fg" class="color-dot-input" title="Feed Text" />
+                <input type="color" id="pick-out-bg" class="color-dot-input" /><input type="color" id="pick-out-fg" class="color-dot-input" />
               </div>
             </div>
             <div class="ios-row">
               <span class="ios-row-lbl">Credit (+) &amp; Debit (-)</span>
               <div style="display:flex; gap:10px; align-items:center;">
-                <input type="color" id="pick-credit" class="color-dot-input" title="Credit Color" />
-                <input type="color" id="pick-debit" class="color-dot-input" title="Debit Color" />
+                <input type="color" id="pick-credit" class="color-dot-input" /><input type="color" id="pick-debit" class="color-dot-input" />
               </div>
             </div>
           </div>
         </div>
-
         <div>
           <div class="sec-title" style="padding: 0 0 6px 16px;">Data &amp; Wallet</div>
           <div class="ios-group">
-            <div class="ios-row tap-item" data-menu-cmd="backup" style="cursor:pointer;">
-              <span class="ios-row-lbl" style="color:var(--blue);">Save &amp; Copy JSON Backup</span>
-            </div>
-            <div class="ios-row tap-item" data-menu-cmd="stats" style="cursor:pointer;">
-              <span class="ios-row-lbl" style="color:var(--blue);">Expense Breakdown (Stats)</span>
-            </div>
-            <div class="ios-row tap-item" data-menu-cmd="setup" style="cursor:pointer;">
-              <span class="ios-row-lbl" style="color:var(--blue);">Re-Setup UPI &amp; Cash Accounts</span>
-            </div>
+            <div class="ios-row tap-item" data-menu-cmd="backup" style="cursor:pointer;"><span class="ios-row-lbl" style="color:var(--blue);">Save &amp; Copy JSON Backup</span></div>
+            <div class="ios-row tap-item" data-menu-cmd="stats" style="cursor:pointer;"><span class="ios-row-lbl" style="color:var(--blue);">Expense Breakdown (Stats)</span></div>
+            <div class="ios-row tap-item" data-menu-cmd="setup" style="cursor:pointer;"><span class="ios-row-lbl" style="color:var(--blue);">Re-Setup All Accounts</span></div>
           </div>
         </div>
-
         <button type="button" class="ios-btn-destructive" id="reset-cust-btn">Reset Default iOS Colors</button>
       </div>
     </div>
@@ -614,13 +551,9 @@
   <div id="app">
     <header id="top-nav">
       <div class="nav-row">
-        <div class="nav-left">
-          <h1 class="nav-title">Cash Flow</h1>
-        </div>
+        <h1 class="nav-title">Cash Flow</h1>
         <div class="nav-actions">
-          <button type="button" class="ios-pill-tinted" id="auto-pill-btn">
-            <span class="status-dot" id="nav-auto-dot"></span>Auto
-          </button>
+          <button type="button" class="ios-pill-tinted" id="auto-pill-btn"><span class="status-dot" id="nav-auto-dot"></span>Auto</button>
           <button type="button" class="ios-pill-tinted" id="mask-toggle">Hide</button>
           <button type="button" class="ios-circle-btn" id="open-menu-btn" aria-label="Settings">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -641,25 +574,22 @@
         <button type="button" class="ios-pill-tinted" id="banner-enable-btn">Setup</button>
       </div>
 
-      <section class="ios-balance-card">
-        <div class="bal-top">
-          <div>
-            <div class="bal-label">Total Net Balance</div>
-            <div class="bal-hero-num tabular" id="hero-net-val">₹0</div>
-          </div>
-          <button type="button" class="ios-pill-tinted" id="open-past-entry-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-            Past Entry
-          </button>
-        </div>
-        <div class="wallet-grid" id="wallet-grid"></div>
+      <!-- STACKED WALLET CARDS -->
+      <section class="deck-wrap" id="wallet-deck">
+        <div class="deck-stage" id="deck-stage"></div>
       </section>
 
+      <!-- SLIM MONTHLY SPENDING BAR -->
+      <section id="spending-strip" class="tap-item">
+        <div class="sp-head">
+          <span class="sp-lbl" id="sp-month-lbl">Monthly Spending</span>
+          <span class="sp-sub tabular" id="sp-total-lbl">₹0</span>
+        </div>
+        <div class="sp-bar" id="sp-bar"></div>
+        <div class="sp-legend" id="sp-legend"></div>
+      </section>
+
+      <!-- SEGMENTED FILTERS -->
       <section class="controls-stack">
         <div class="seg-control" id="seg-control">
           <button type="button" class="seg-btn active" data-hfilter="all">All</button>
@@ -673,21 +603,20 @@
         </div>
       </section>
 
+      <!-- FEED -->
       <section>
         <div class="sec-head-row">
           <span class="sec-title" id="feed-title-lbl">Recent Activity</span>
           <span class="sec-meta tabular" id="entry-count-lbl">0 entries</span>
         </div>
-        <div id="feed-card">
-          <div id="output" aria-live="polite"></div>
-        </div>
+        <div id="feed-card"><div id="output" aria-live="polite"></div></div>
       </section>
     </main>
 
     <div id="chips-row">
       <button type="button" class="ios-chip" data-cmd="bal">Balance</button>
       <button type="button" class="ios-chip" data-cmd="dues">Udhar</button>
-      <button type="button" class="ios-chip" data-cmd="stats">Stats</button>
+      <button type="button" class="ios-chip" id="open-past-entry-btn">Past Entry</button>
       <button type="button" class="ios-chip" data-insert="find ">Search</button>
       <button type="button" class="ios-chip" data-insert=" with ">+with</button>
       <button type="button" class="ios-chip" data-insert=" paid by ">+paid by</button>
@@ -708,23 +637,19 @@
           <button type="button" class="comp-icon-btn" id="backdate-toggle-btn" title="Set Past Date & Time">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
           </button>
           <button type="button" class="comp-icon-btn" id="mic-btn" title="Voice Input">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="2" width="6" height="12" rx="3"></rect>
-              <path d="M5 10a7 7 0 0 0 14 0"></path>
-              <line x1="12" y1="17" x2="12" y2="21"></line>
+              <path d="M5 10a7 7 0 0 0 14 0"></path><line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
           </button>
         </div>
         <button type="button" id="submit-btn" aria-label="Add Entry">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="19" x2="12" y2="5"></line>
-            <polyline points="5 12 12 5 19 12"></polyline>
+            <line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>
           </svg>
         </button>
       </div>
@@ -736,10 +661,10 @@
     const submitBtn = document.getElementById('submit-btn');
     const micBtn = document.getElementById('mic-btn');
     const maskToggle = document.getElementById('mask-toggle');
-    const heroNetVal = document.getElementById('hero-net-val');
     const feedTitleLbl = document.getElementById('feed-title-lbl');
     const entryCountLbl = document.getElementById('entry-count-lbl');
-    const walletGrid = document.getElementById('wallet-grid');
+    const deckStage = document.getElementById('deck-stage');
+    const walletDeckEl = document.getElementById('wallet-deck');
     const dateFilterRow = document.getElementById('date-filter-row');
     const datePickerInput = document.getElementById('date-picker-input');
 
@@ -783,121 +708,89 @@
       dark: false,
       font: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif',
       customColors: false,
-      inBg: '#E5E5EA', inFg: '#000000',
-      outBg: '#FFFFFF', outFg: '#000000',
+      inBg: '#E5E5EA', inFg: '#000000', outBg: '#FFFFFF', outFg: '#000000',
       credit: '#34C759', debit: '#FF3B30'
     };
 
     let prefs = { ...defaultPrefs };
-    try {
-      const s = JSON.parse(localStorage.getItem(CUST_PREF_KEY) || 'null');
-      if (s) prefs = { ...defaultPrefs, ...s };
-    } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(CUST_PREF_KEY) || 'null'); if (s) prefs = { ...defaultPrefs, ...s }; } catch (e) {}
 
     function applyPrefs(save = true) {
       document.body.setAttribute('data-theme', prefs.dark ? 'dark' : 'light');
       darkModeToggle.checked = prefs.dark;
       fontSelect.value = prefs.font;
-
       const r = document.documentElement.style;
       r.setProperty('--font-main', prefs.font);
 
       if (prefs.customColors) {
-        r.setProperty('--input-bg', prefs.inBg);
-        r.setProperty('--input-fg', prefs.inFg);
-        r.setProperty('--output-bg', prefs.outBg);
-        r.setProperty('--output-fg', prefs.outFg);
-        r.setProperty('--green', prefs.credit);
-        r.setProperty('--red', prefs.debit);
+        r.setProperty('--input-bg', prefs.inBg); r.setProperty('--input-fg', prefs.inFg);
+        r.setProperty('--output-bg', prefs.outBg); r.setProperty('--output-fg', prefs.outFg);
+        r.setProperty('--green', prefs.credit); r.setProperty('--red', prefs.debit);
       } else {
         ['--input-bg','--input-fg','--output-bg','--output-fg','--green','--red'].forEach(k => r.removeProperty(k));
       }
-
       pickInBg.value = prefs.customColors ? prefs.inBg : (prefs.dark ? '#2C2C2E' : '#E5E5EA');
       pickInFg.value = prefs.customColors ? prefs.inFg : (prefs.dark ? '#FFFFFF' : '#000000');
       pickOutBg.value = prefs.customColors ? prefs.outBg : (prefs.dark ? '#1C1C1E' : '#FFFFFF');
       pickOutFg.value = prefs.customColors ? prefs.outFg : (prefs.dark ? '#FFFFFF' : '#000000');
       pickCredit.value = prefs.customColors ? prefs.credit : (prefs.dark ? '#30D158' : '#34C759');
       pickDebit.value = prefs.customColors ? prefs.debit : (prefs.dark ? '#FF453A' : '#FF3B30');
-
       if (save) { try { localStorage.setItem(CUST_PREF_KEY, JSON.stringify(prefs)); } catch (e) {} }
     }
 
-    document.getElementById('open-menu-btn').addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
-    document.getElementById('auto-pill-btn').addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
-    document.getElementById('banner-enable-btn').addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
+    ['open-menu-btn','auto-pill-btn','banner-enable-btn'].forEach(id => {
+      document.getElementById(id).addEventListener('click', () => { refreshAutoDetectStatus(); menuBackdrop.classList.add('open'); });
+    });
     document.getElementById('close-menu-btn').addEventListener('click', () => menuBackdrop.classList.remove('open'));
     menuBackdrop.addEventListener('click', (e) => { if (e.target === menuBackdrop) menuBackdrop.classList.remove('open'); });
 
     darkModeToggle.addEventListener('change', (e) => { prefs.dark = e.target.checked; prefs.customColors = false; applyPrefs(true); });
     fontSelect.addEventListener('change', (e) => { prefs.font = e.target.value; applyPrefs(true); });
-
-    function onColorChange() {
+    [pickInBg, pickInFg, pickOutBg, pickOutFg, pickCredit, pickDebit].forEach(el => el.addEventListener('input', () => {
       prefs.customColors = true;
       prefs.inBg = pickInBg.value; prefs.inFg = pickInFg.value;
       prefs.outBg = pickOutBg.value; prefs.outFg = pickOutFg.value;
       prefs.credit = pickCredit.value; prefs.debit = pickDebit.value;
       applyPrefs(true);
-    }
-    [pickInBg, pickInFg, pickOutBg, pickOutFg, pickCredit, pickDebit].forEach(el => el.addEventListener('input', onColorChange));
-
+    }));
     document.getElementById('reset-cust-btn').addEventListener('click', () => { prefs = { ...defaultPrefs, dark: prefs.dark }; applyPrefs(true); });
     document.querySelectorAll('[data-menu-cmd]').forEach(btn => {
       btn.addEventListener('click', () => { menuBackdrop.classList.remove('open'); runCommand(btn.getAttribute('data-menu-cmd')); });
     });
 
-    // --- AUTO-DETECT CONTROLS ---
+    // --- AUTO-DETECT STATUS ---
     function refreshAutoDetectStatus() {
       const hasBridge = window.AndroidNative && typeof window.AndroidNative.isNotificationAccessEnabled === 'function';
       if (!hasBridge) {
-        autoStatusPill.textContent = 'APK Only';
-        autoStatusPill.classList.remove('active');
-        navAutoDot.classList.remove('on');
-        autoBanner.classList.remove('show');
-        return;
+        autoStatusPill.textContent = 'APK Only'; autoStatusPill.classList.remove('active');
+        navAutoDot.classList.remove('on'); autoBanner.classList.remove('show'); return;
       }
       const permOn = window.AndroidNative.isNotificationAccessEnabled();
       const userOn = window.AndroidNative.isAutoDetectEnabled();
       autoDetectToggle.checked = userOn;
-
       if (permOn && userOn) {
-        autoStatusPill.textContent = 'Active';
-        autoStatusPill.classList.add('active');
-        navAutoDot.classList.add('on');
-        autoBanner.classList.remove('show');
+        autoStatusPill.textContent = 'Active'; autoStatusPill.classList.add('active');
+        navAutoDot.classList.add('on'); autoBanner.classList.remove('show');
       } else if (!permOn) {
-        autoStatusPill.textContent = 'Permission Needed';
-        autoStatusPill.classList.remove('active');
-        navAutoDot.classList.remove('on');
-        autoBanner.classList.add('show');
+        autoStatusPill.textContent = 'Permission Needed'; autoStatusPill.classList.remove('active');
+        navAutoDot.classList.remove('on'); autoBanner.classList.add('show');
       } else {
-        autoStatusPill.textContent = 'Paused';
-        autoStatusPill.classList.remove('active');
-        navAutoDot.classList.remove('on');
-        autoBanner.classList.remove('show');
+        autoStatusPill.textContent = 'Paused'; autoStatusPill.classList.remove('active');
+        navAutoDot.classList.remove('on'); autoBanner.classList.remove('show');
       }
     }
     window.refreshAutoDetectStatus = refreshAutoDetectStatus;
 
     autoDetectToggle.addEventListener('change', (e) => {
-      if (window.AndroidNative && typeof window.AndroidNative.setAutoDetectEnabled === 'function') {
-        window.AndroidNative.setAutoDetectEnabled(e.target.checked);
-      }
+      if (window.AndroidNative && typeof window.AndroidNative.setAutoDetectEnabled === 'function') window.AndroidNative.setAutoDetectEnabled(e.target.checked);
       refreshAutoDetectStatus();
     });
-
     document.getElementById('btn-open-notif-access').addEventListener('click', () => {
-      if (window.AndroidNative && typeof window.AndroidNative.openNotificationSettings === 'function') {
-        window.AndroidNative.openNotificationSettings();
-      }
+      if (window.AndroidNative && typeof window.AndroidNative.openNotificationSettings === 'function') window.AndroidNative.openNotificationSettings();
     });
-
     document.getElementById('btn-open-app-info').addEventListener('click', () => {
-      if (window.AndroidNative && typeof window.AndroidNative.openAppDetailsSettings === 'function') {
-        window.AndroidNative.openAppDetailsSettings();
-      }
+      if (window.AndroidNative && typeof window.AndroidNative.openAppDetailsSettings === 'function') window.AndroidNative.openAppDetailsSettings();
     });
-
     document.getElementById('btn-test-auto').addEventListener('click', () => {
       menuBackdrop.classList.remove('open');
       if (window.AndroidNative && typeof window.AndroidNative.simulateTestTransaction === 'function') {
@@ -906,7 +799,6 @@
         ingestAutoList([{ type: 'CREDIT', amount: 100, accountHint: 'UPI', note: 'Received from Test Transfer', tsMs: Date.now() }]);
       }
     });
-
     applyPrefs(false);
 
     // --- BACKDATE BAR ---
@@ -915,102 +807,65 @@
       const pad = n => String(n).padStart(2, '0');
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
-
     function toggleBackdateBar(forceOpen = null) {
       const willOpen = forceOpen !== null ? forceOpen : !backdateBar.classList.contains('show');
       backdateBar.classList.toggle('show', willOpen);
       backdateToggleBtn.classList.toggle('active', willOpen);
-      if (willOpen) {
-        if (!customEntryDt.value) customEntryDt.value = toDateTimeLocalValue(new Date());
-        cmdInput.focus();
-      } else {
-        customEntryDt.value = '';
-      }
+      if (willOpen) { if (!customEntryDt.value) customEntryDt.value = toDateTimeLocalValue(new Date()); cmdInput.focus(); }
+      else { customEntryDt.value = ''; }
     }
-
     backdateToggleBtn.addEventListener('click', () => toggleBackdateBar());
     document.getElementById('open-past-entry-btn').addEventListener('click', () => toggleBackdateBar(true));
     clearBackdateBtn.addEventListener('click', () => toggleBackdateBar(false));
 
-    // --- BIOMETRIC & PIN LOCK ---
+    // --- LOCK SCREEN ---
     let pinBuffer = '', isSettingPin = false, tempFirstPin = '';
-
     function getSavedPin() { try { return localStorage.getItem(PIN_KEY) || ''; } catch (e) { return ''; } }
     function updatePinDots() { pinDots.forEach((d, i) => d.classList.toggle('filled', i < pinBuffer.length)); }
     function unlockApp() { pinBuffer = ''; tempFirstPin = ''; updatePinDots(); lockScreen.classList.add('unlocked'); syncAutoTransactions(); }
     window.onNativeUnlock = unlockApp;
-
     function triggerBiometricPrompt() {
       try {
-        if (window.AndroidNative && typeof window.AndroidNative.triggerBiometric === 'function') {
-          window.AndroidNative.triggerBiometric();
-        } else {
-          lockErr.textContent = 'Fingerprint available in Android APK';
-        }
+        if (window.AndroidNative && typeof window.AndroidNative.triggerBiometric === 'function') window.AndroidNative.triggerBiometric();
+        else lockErr.textContent = 'Fingerprint available in Android APK';
       } catch (e) {}
     }
-
     function engageLock() {
       pinBuffer = ''; tempFirstPin = ''; lockErr.textContent = '';
-      if (!getSavedPin()) {
-        isSettingPin = true; lockHeading.textContent = 'Set Passcode'; lockSub.textContent = 'Create a 4-digit passcode';
-      } else {
-        isSettingPin = false; lockHeading.textContent = 'Cash Flow OS'; lockSub.textContent = 'Enter Passcode or Use Fingerprint';
-      }
-      updatePinDots();
-      lockScreen.classList.remove('unlocked');
-      cmdInput.blur();
+      if (!getSavedPin()) { isSettingPin = true; lockHeading.textContent = 'Set Passcode'; lockSub.textContent = 'Create a 4-digit passcode'; }
+      else { isSettingPin = false; lockHeading.textContent = 'Cash Flow OS'; lockSub.textContent = 'Enter Passcode or Use Fingerprint'; }
+      updatePinDots(); lockScreen.classList.remove('unlocked'); cmdInput.blur();
       if (!isSettingPin) setTimeout(triggerBiometricPrompt, 200);
     }
-
     document.querySelectorAll('[data-key]').forEach(b => b.addEventListener('click', () => {
       if (pinBuffer.length >= 4) return;
       pinBuffer += b.getAttribute('data-key'); lockErr.textContent = ''; updatePinDots();
       if (pinBuffer.length === 4) {
         setTimeout(() => {
           if (isSettingPin) {
-            if (!tempFirstPin) {
-              tempFirstPin = pinBuffer; pinBuffer = ''; updatePinDots();
-              lockHeading.textContent = 'Confirm Passcode'; lockSub.textContent = 'Re-enter your 4-digit passcode';
-            } else if (pinBuffer === tempFirstPin) {
-              try { localStorage.setItem(PIN_KEY, pinBuffer); } catch (e) {}
-              unlockApp();
-            } else {
-              lockErr.textContent = 'Passcodes did not match'; tempFirstPin = ''; pinBuffer = ''; updatePinDots();
-              lockHeading.textContent = 'Set Passcode';
-            }
-          } else if (pinBuffer === getSavedPin()) {
-            unlockApp();
-          } else {
-            lockErr.textContent = 'Incorrect Passcode'; pinBuffer = ''; updatePinDots();
-          }
+            if (!tempFirstPin) { tempFirstPin = pinBuffer; pinBuffer = ''; updatePinDots(); lockHeading.textContent = 'Confirm Passcode'; lockSub.textContent = 'Re-enter your 4-digit passcode'; }
+            else if (pinBuffer === tempFirstPin) { try { localStorage.setItem(PIN_KEY, pinBuffer); } catch (e) {} unlockApp(); }
+            else { lockErr.textContent = 'Passcodes did not match'; tempFirstPin = ''; pinBuffer = ''; updatePinDots(); lockHeading.textContent = 'Set Passcode'; }
+          } else if (pinBuffer === getSavedPin()) unlockApp();
+          else { lockErr.textContent = 'Incorrect Passcode'; pinBuffer = ''; updatePinDots(); }
         }, 80);
       }
     }));
-
     document.getElementById('btn-biometric').addEventListener('click', triggerBiometricPrompt);
     document.getElementById('pin-back').addEventListener('click', () => { pinBuffer = pinBuffer.slice(0, -1); lockErr.textContent = ''; updatePinDots(); });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') engageLock();
-      else { refreshAutoDetectStatus(); syncAutoTransactions(); }
-    });
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') engageLock(); else { refreshAutoDetectStatus(); syncAutoTransactions(); } });
     window.addEventListener('pagehide', engageLock);
     engageLock();
 
-    // --- VOICE INPUT ---
-    window.onVoiceResult = function(spokenText) { micBtn.classList.remove('listening'); cmdInput.value = spokenText; cmdInput.focus(); };
+    // --- VOICE & MASK ---
+    window.onVoiceResult = function(t) { micBtn.classList.remove('listening'); cmdInput.value = t; cmdInput.focus(); };
     window.onVoiceError = function() { micBtn.classList.remove('listening'); showNotice('Voice input failed, please try again.', 'warn'); };
     micBtn.addEventListener('click', () => {
       micBtn.classList.add('listening');
-      if (window.AndroidNative && typeof window.AndroidNative.startVoiceInput === 'function') {
-        window.AndroidNative.startVoiceInput();
-      } else {
-        micBtn.classList.remove('listening');
-      }
+      if (window.AndroidNative && typeof window.AndroidNative.startVoiceInput === 'function') window.AndroidNative.startVoiceInput();
+      else micBtn.classList.remove('listening');
     });
 
-    // --- MASK TOGGLE ---
     let isMasked = false;
     try { isMasked = localStorage.getItem(MASK_PREF_KEY) === '1'; } catch (e) {}
     maskToggle.textContent = isMasked ? 'Show' : 'Hide';
@@ -1018,41 +873,30 @@
       isMasked = !isMasked;
       try { localStorage.setItem(MASK_PREF_KEY, isMasked ? '1' : '0'); } catch (e) {}
       maskToggle.textContent = isMasked ? 'Show' : 'Hide';
-      renderWalletCards();
+      renderWalletDeck();
     });
 
     // --- STORAGE ENGINE ---
     function fnv1aHash(str) {
       let h = 0x811c9dc5;
-      for (let i = 0; i < str.length; i++) {
-        h ^= str.charCodeAt(i);
-        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-      }
+      for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; }
       return ('00000000' + h.toString(16)).slice(-8);
     }
-
-    function createDefaultState() {
-      return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 };
-    }
-
+    function createDefaultState() { return { setupComplete: false, upiAccounts: [], cashBalance: 0, transactions: [], friends: {}, nextId: 1 }; }
     function parseLegacyTsToMs(tsStr, fallbackId = 1) {
       if (!tsStr) return Date.now() - fallbackId * 1000;
       const m = String(tsStr).match(/(\d{1,2})\s+([A-Za-z]{3})(?:\s+(\d{2,4}))?\s+(\d{1,2}):(\d{2})/);
       if (!m) return Date.now();
       const months = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
-      const mon = months[m[2].toLowerCase()];
-      if (mon === undefined) return Date.now();
-      let yr = new Date().getFullYear();
-      if (m[3]) yr = m[3].length === 2 ? 2000 + parseInt(m[3], 10) : parseInt(m[3], 10);
+      const mon = months[m[2].toLowerCase()]; if (mon === undefined) return Date.now();
+      let yr = new Date().getFullYear(); if (m[3]) yr = m[3].length === 2 ? 2000 + parseInt(m[3], 10) : parseInt(m[3], 10);
       return new Date(yr, mon, parseInt(m[1], 10), parseInt(m[4], 10), parseInt(m[5], 10)).getTime();
     }
-
     function formatTsFromDate(d) {
       const dt = d instanceof Date && !isNaN(d) ? d : new Date();
       return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) + ' ' +
              dt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
     }
-
     function normalizeState(raw) {
       if (!raw || typeof raw !== 'object') return createDefaultState();
       const upiAccounts = Array.isArray(raw.upiAccounts)
@@ -1063,13 +907,12 @@
         : [];
       transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
       return {
-        setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0),
-        upiAccounts, cashBalance: Number(raw.cashBalance) || 0, transactions,
+        setupComplete: Boolean(raw.setupComplete && upiAccounts.length > 0), upiAccounts,
+        cashBalance: Number(raw.cashBalance) || 0, transactions,
         friends: raw.friends && typeof raw.friends === 'object' ? raw.friends : {},
         nextId: Number(raw.nextId) || 1
       };
     }
-
     function computeStateChecksum(st) {
       return fnv1aHash(JSON.stringify({
         setupComplete: st.setupComplete, upiAccounts: st.upiAccounts,
@@ -1077,16 +920,11 @@
         friends: st.friends, nextId: st.nextId
       }));
     }
-
     function wrapEnvelope(stateObj, rev, source = 'local') {
       const normalized = normalizeState(stateObj);
       return { schema: 5, rev, updatedAt: Date.now(), source, checksum: computeStateChecksum(normalized), payload: normalized };
     }
-
-    function verifyEnvelope(env) {
-      if (!env || typeof env !== 'object' || !env.payload) return false;
-      return computeStateChecksum(normalizeState(env.payload)) === env.checksum;
-    }
+    function verifyEnvelope(env) { return Boolean(env && typeof env === 'object' && env.payload && computeStateChecksum(normalizeState(env.payload)) === env.checksum); }
 
     class StorageEngine {
       constructor() { this.db = null; this.currentRev = 0; this.idbReadyPromise = this._openIDB(); }
@@ -1095,10 +933,7 @@
           if (!('indexedDB' in window)) return resolve(null);
           try {
             const req = indexedDB.open(IDB_DB_NAME, 1);
-            req.onupgradeneeded = (e) => {
-              if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME))
-                e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' });
-            };
+            req.onupgradeneeded = (e) => { if (!e.target.result.objectStoreNames.contains(IDB_STORE_NAME)) e.target.result.createObjectStore(IDB_STORE_NAME, { keyPath: 'slot' }); };
             req.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
             req.onerror = () => resolve(null);
           } catch (e) { resolve(null); }
@@ -1106,80 +941,225 @@
       }
       readL1Envelope() {
         const list = [];
-        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => {
-          try { const raw = localStorage.getItem(k); if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) list.push(p); } } catch (e) {}
-        });
+        [L1_PRIMARY_KEY, L1_BACKUP_KEY].forEach(k => { try { const raw = localStorage.getItem(k); if (raw) { const p = JSON.parse(raw); if (verifyEnvelope(p)) list.push(p); } } catch (e) {} });
         return list.sort((a, b) => b.rev - a.rev)[0] || null;
       }
       writeL1Envelope(env) {
-        try {
-          const prev = localStorage.getItem(L1_PRIMARY_KEY);
-          if (prev) localStorage.setItem(L1_BACKUP_KEY, prev);
-          localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env));
-        } catch (e) {}
+        try { const prev = localStorage.getItem(L1_PRIMARY_KEY); if (prev) localStorage.setItem(L1_BACKUP_KEY, prev); localStorage.setItem(L1_PRIMARY_KEY, JSON.stringify(env)); } catch (e) {}
       }
       async readL2Envelope() {
-        await this.idbReadyPromise;
-        if (!this.db) return null;
+        await this.idbReadyPromise; if (!this.db) return null;
         return new Promise((resolve) => {
           try {
             const req = this.db.transaction(IDB_STORE_NAME, 'readonly').objectStore(IDB_STORE_NAME).getAll();
-            req.onsuccess = () => {
-              const valid = (req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev);
-              resolve(valid[0] || null);
-            };
+            req.onsuccess = () => { resolve((req.result || []).map(r => r.envelope).filter(verifyEnvelope).sort((a, b) => b.rev - a.rev)[0] || null); };
             req.onerror = () => resolve(null);
           } catch (e) { resolve(null); }
         });
       }
       async writeL2Envelope(env) {
-        await this.idbReadyPromise;
-        if (!this.db) return;
+        await this.idbReadyPromise; if (!this.db) return;
         return new Promise((resolve) => {
-          try {
-            const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite');
-            tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env });
-            tx.oncomplete = () => resolve();
-            tx.onerror = () => resolve();
-          } catch (e) { resolve(); }
+          try { const tx = this.db.transaction(IDB_STORE_NAME, 'readwrite'); tx.objectStore(IDB_STORE_NAME).put({ slot: 'mirror_latest', envelope: env }); tx.oncomplete = () => resolve(); tx.onerror = () => resolve(); } catch (e) { resolve(); }
         });
       }
       async loadAndHeal() {
-        const l1 = this.readL1Envelope();
-        const l2 = await this.readL2Envelope();
+        const l1 = this.readL1Envelope(), l2 = await this.readL2Envelope();
         let chosen = (l1 && l2) ? (l1.rev >= l2.rev ? l1 : l2) : (l1 || l2);
         if (!chosen) chosen = wrapEnvelope(createDefaultState(), 1, 'genesis');
-        this.writeL1Envelope(chosen);
-        await this.writeL2Envelope(chosen);
-        this.currentRev = chosen.rev;
-          return normalizeState(chosen.payload);
+        this.writeL1Envelope(chosen); await this.writeL2Envelope(chosen);
+        this.currentRev = chosen.rev; return normalizeState(chosen.payload);
       }
       async commit(stateObj, source = 'mutator') {
         const env = wrapEnvelope(stateObj, this.currentRev + 1, source);
-        this.currentRev = env.rev;
-        this.writeL1Envelope(env);
-        await this.writeL2Envelope(env);
-        return env;
+        this.currentRev = env.rev; this.writeL1Envelope(env); await this.writeL2Envelope(env); return env;
       }
     }
-
-    const storageEngine = new StorageEngine();
+          const storageEngine = new StorageEngine();
     let state = createDefaultState();
+    let activeCardIdx = 0;
     let activeFilter = 'all', activeDateQuery = '';
     let wizard = { active: false, step: null, totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
 
     function round2(n) { return Math.round((Number(n) || 0) * 100) / 100; }
+    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+    function getTotalUpiBalance() { return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0); }
+    function displayBal(val) { return isMasked ? '₹••••' : `₹${Number(val).toLocaleString('en-IN')}`; }
+
+    // --- STACKED WALLET CARDS + SPENDING BAR ---
+    const UPI_CARD_THEMES = ['card-blue', 'card-indigo', 'card-teal', 'card-slate'];
+    const CAT_COLORS = { Food: '#AF52DE', Transport: '#007AFF', Bills: '#FF9500', Shopping: '#FF3B30', General: '#34C759' };
+
+    function buildDeckItems() {
+      const totalUpi = getTotalUpiBalance();
+      let rec = 0, pay = 0;
+      Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
+      const udharTxt = isMasked ? 'Udhar ••••' : `Udhar: +₹${Math.round(rec)} / -₹${Math.round(pay)}`;
+      const items = [{
+        label: 'Total Net Balance',
+        sub: `${state.upiAccounts.length} UPI + Cash`,
+        bal: totalUpi + state.cashBalance,
+        meta: udharTxt,
+        theme: 'card-obsidian'
+      }];
+      state.upiAccounts.forEach((acc, i) => {
+        const count = state.transactions.filter(t => String(t.accountName || '').toLowerCase() === acc.name.toLowerCase()).length;
+        items.push({
+          label: acc.name,
+          sub: 'Bank / UPI',
+          bal: acc.balance,
+          meta: `${count} entries • Swipe to switch`,
+          theme: UPI_CARD_THEMES[i % UPI_CARD_THEMES.length]
+        });
+      });
+      const cashCount = state.transactions.filter(t => t.accountName === 'CASH').length;
+      items.push({
+        label: 'Cash Wallet',
+        sub: 'In Hand',
+        bal: state.cashBalance,
+        meta: `${cashCount} entries • Physical Cash`,
+        theme: 'card-emerald'
+      });
+      return items;
+    }
+
+    function shiftCard(dir) {
+      const items = buildDeckItems();
+      if (items.length <= 1) return;
+      activeCardIdx = (activeCardIdx + dir + items.length) % items.length;
+      renderWalletDeck();
+    }
+
+    function renderWalletDeck() {
+      const items = buildDeckItems();
+      if (activeCardIdx >= items.length) activeCardIdx = 0;
+
+      const visibleCount = Math.min(3, items.length);
+      let html = '';
+      for (let pos = visibleCount - 1; pos >= 0; pos--) {
+        const idx = (activeCardIdx + pos) % items.length;
+        const c = items[idx];
+        const dotsHtml = pos === 0
+          ? `<div class="wc-dots">${items.map((_, di) => `<span class="wc-dot ${di === activeCardIdx ? 'active' : ''}"></span>`).join('')}</div>`
+          : '';
+        const actionHtml = pos === 0
+          ? `<div class="wc-actions">
+               <button type="button" class="wc-icon-btn" id="deck-next-btn" aria-label="Next Card">
+                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+               </button>
+               <button type="button" class="wc-icon-btn" id="deck-add-acc-btn" aria-label="Add Account">
+                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+               </button>
+             </div>`
+          : `<span class="wc-sub">${escapeHtml(c.sub)}</span>`;
+
+        html += `
+          <div class="w-card ${c.theme}" data-pos="${pos}" data-card-idx="${idx}">
+            <div class="wc-top">
+              <div>
+                <div class="wc-name">${escapeHtml(c.label)}</div>
+                ${pos === 0 ? `<div class="wc-sub">${escapeHtml(c.sub)}</div>` : ''}
+              </div>
+              ${actionHtml}
+            </div>
+            <div class="wc-bal tabular">${displayBal(c.bal)}</div>
+            <div class="wc-foot">
+              <span class="wc-meta tabular">${escapeHtml(c.meta)}</span>
+              ${dotsHtml}
+            </div>
+          </div>
+        `;
+      }
+      deckStage.innerHTML = html;
+
+      deckStage.querySelectorAll('.w-card[data-pos="1"], .w-card[data-pos="2"]').forEach(el => {
+        el.addEventListener('click', () => {
+          activeCardIdx = parseInt(el.getAttribute('data-card-idx'), 10) || 0;
+          renderWalletDeck();
+        });
+      });
+
+      const nextBtn = document.getElementById('deck-next-btn');
+      if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); shiftCard(1); });
+
+      const addBtn = document.getElementById('deck-add-acc-btn');
+      if (addBtn) addBtn.addEventListener('click', (e) => { e.stopPropagation(); openAddAccountModal(); });
+
+      renderSpendingStrip();
+    }
+
+    // Touch swipe left/right on deck
+    let touchStartX = 0, touchStartY = 0;
+    walletDeckEl.addEventListener('touchstart', (e) => {
+      if (!e.touches.length) return;
+      touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    walletDeckEl.addEventListener('touchend', (e) => {
+      if (!e.changedTouches.length) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)) shiftCard(dx < 0 ? 1 : -1);
+    }, { passive: true });
+
+    function renderSpendingStrip() {
+      const now = new Date();
+      const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
+      document.getElementById('sp-month-lbl').textContent = `Spent in ${now.toLocaleDateString('en-IN', { month: 'long' })}`;
+      const deb = state.transactions.filter(t => {
+        if ((t.type !== 'DEBIT' && t.type !== 'FRIEND_PAID') || !(t.myShare > 0)) return false;
+        const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id));
+        return `${d.getFullYear()}-${d.getMonth()}` === monthKey;
+      });
+      const total = deb.reduce((s, t) => s + t.myShare, 0);
+      document.getElementById('sp-total-lbl').textContent = isMasked ? '₹••••' : `₹${Math.round(total).toLocaleString('en-IN')}`;
+      const barEl = document.getElementById('sp-bar');
+      const legEl = document.getElementById('sp-legend');
+      if (!total) {
+        barEl.innerHTML = '';
+        legEl.innerHTML = '<span>No expenses logged this month</span>';
+        return;
+      }
+      const map = {};
+      deb.forEach(t => { const c = CAT_COLORS[t.category] ? t.category : 'General'; map[c] = (map[c] || 0) + t.myShare; });
+      const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
+      barEl.innerHTML = sorted.map(([c, v]) => `<div class="sp-seg" style="flex:${v}; background:${CAT_COLORS[c] || '#34C759'};"></div>`).join('');
+      legEl.innerHTML = sorted.slice(0, 4).map(([c, v]) =>
+        `<span class="sp-leg-item"><span class="sp-leg-dot" style="background:${CAT_COLORS[c] || '#34C759'};"></span>${c} ${Math.round((v / total) * 100)}%</span>`
+      ).join('');
+    }
+    document.getElementById('spending-strip').addEventListener('click', () => runCommand('stats'));
+
+    // --- ADD ACCOUNT MODAL ---
+    const addAccBackdrop = document.getElementById('add-acc-backdrop');
+    const newAccNameEl = document.getElementById('new-acc-name');
+    const newAccBalEl = document.getElementById('new-acc-bal');
+    function openAddAccountModal() {
+      newAccNameEl.value = ''; newAccBalEl.value = '';
+      addAccBackdrop.classList.add('open');
+      setTimeout(() => newAccNameEl.focus(), 100);
+    }
+    document.getElementById('add-acc-cancel').addEventListener('click', () => addAccBackdrop.classList.remove('open'));
+    addAccBackdrop.addEventListener('click', (e) => { if (e.target === addAccBackdrop) addAccBackdrop.classList.remove('open'); });
+    document.getElementById('add-acc-save').addEventListener('click', async () => {
+      const name = newAccNameEl.value.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
+      const bal = parseFloat(newAccBalEl.value || '0');
+      if (!name) return alert('Enter account name.');
+      if (isNaN(bal) || bal < 0) return alert('Enter valid balance.');
+      state.upiAccounts.push({ id: `upi_${Date.now()}`, name, balance: round2(bal) });
+      state.setupComplete = true;
+      activeCardIdx = state.upiAccounts.length; // focus new card
+      await persistState('add_account');
+      addAccBackdrop.classList.remove('open');
+      renderFeedView();
+    });
 
     // --- AUTO-TRANSACTION INGESTION ---
     async function syncAutoTransactions() {
       if (!state.setupComplete) return;
       if (!window.AndroidNative || typeof window.AndroidNative.consumeAutoTransactions !== 'function') return;
       try {
-        const raw = window.AndroidNative.consumeAutoTransactions();
-        const list = JSON.parse(raw || '[]');
-        if (Array.isArray(list) && list.length > 0) {
-          await ingestAutoList(list);
-        }
+        const list = JSON.parse(window.AndroidNative.consumeAutoTransactions() || '[]');
+        if (Array.isArray(list) && list.length > 0) await ingestAutoList(list);
       } catch (e) {}
     }
     window.onAutoTransactionsReady = syncAutoTransactions;
@@ -1187,32 +1167,19 @@
     async function ingestAutoList(items) {
       let added = 0;
       for (const item of items) {
-        const amt = round2(item.amount);
-        if (!amt || amt <= 0) continue;
+        const amt = round2(item.amount); if (!amt || amt <= 0) continue;
         const isCredit = item.type === 'CREDIT';
         const hint = String(item.accountHint || 'UPI').toLowerCase();
         const acc = state.upiAccounts.find(a => a.name.toLowerCase().includes(hint) || hint.includes(a.name.toLowerCase())) || state.upiAccounts[0];
         if (!acc) continue;
-
-        if (isCredit) acc.balance = round2(acc.balance + amt);
-        else acc.balance = round2(acc.balance - amt);
-
+        if (isCredit) acc.balance = round2(acc.balance + amt); else acc.balance = round2(acc.balance - amt);
         const tsMs = Number(item.tsMs) || Date.now();
         const note = String(item.note || (isCredit ? 'Auto Credit' : 'Auto Debit'));
         state.transactions.unshift({
-          id: state.nextId++,
-          ts: formatTsFromDate(new Date(tsMs)),
-          tsMs,
-          type: isCredit ? 'CREDIT' : 'DEBIT',
-          amount: amt,
-          myShare: isCredit ? 0 : amt,
-          perFriendShare: 0,
-          splitFriends: [],
-          fullLoan: false,
-          accountName: acc.name,
-          category: inferCategory(note.toLowerCase(), isCredit),
-          note,
-          autoDetected: true
+          id: state.nextId++, ts: formatTsFromDate(new Date(tsMs)), tsMs,
+          type: isCredit ? 'CREDIT' : 'DEBIT', amount: amt, myShare: isCredit ? 0 : amt,
+          perFriendShare: 0, splitFriends: [], fullLoan: false,
+          accountName: acc.name, category: inferCategory(note.toLowerCase(), isCredit), note, autoDetected: true
         });
         added++;
       }
@@ -1226,59 +1193,23 @@
     function runDailyAutoBackup(force = false) {
       try {
         const today = new Date().toISOString().slice(0, 10);
-        const last = localStorage.getItem(LAST_BKP_KEY);
-        if (!force && last === today) return null;
+        if (!force && localStorage.getItem(LAST_BKP_KEY) === today) return null;
         const jsonStr = JSON.stringify(state);
         localStorage.setItem('cashflow_os_daily_snapshot_' + today, jsonStr);
         localStorage.setItem(LAST_BKP_KEY, today);
-        if (window.AndroidNative && typeof window.AndroidNative.saveDailyBackup === 'function') {
-          return window.AndroidNative.saveDailyBackup(jsonStr);
-        }
+        if (window.AndroidNative && typeof window.AndroidNative.saveDailyBackup === 'function') return window.AndroidNative.saveDailyBackup(jsonStr);
         return 'LocalStorage (' + today + ')';
       } catch (e) { return null; }
     }
 
-    function getTotalUpiBalance() { return state.upiAccounts.reduce((s, a) => s + (Number(a.balance) || 0), 0); }
-    function displayBal(val) { return isMasked ? '₹••••' : `₹${Number(val).toLocaleString('en-IN')}`; }
-
-    function renderWalletCards() {
-      const totalUpi = getTotalUpiBalance();
-      heroNetVal.textContent = displayBal(totalUpi + state.cashBalance);
-      if (!state.setupComplete) { walletGrid.innerHTML = ''; return; }
-      let rec = 0, pay = 0;
-      Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
-
-      walletGrid.innerHTML = `
-        <div class="wallet-tile tap-item" data-tile-cmd="bal">
-          <span class="wt-lbl">UPI (${state.upiAccounts.length})</span>
-          <span class="wt-val tabular">${displayBal(totalUpi)}</span>
-          <span class="wt-sub">${state.upiAccounts.map(a => a.name).join(', ')}</span>
-        </div>
-        <div class="wallet-tile tap-item" data-tile-cmd="bal">
-          <span class="wt-lbl">Cash</span>
-          <span class="wt-val tabular">${displayBal(state.cashBalance)}</span>
-          <span class="wt-sub">In Wallet</span>
-        </div>
-        <div class="wallet-tile tap-item" data-tile-cmd="dues">
-          <span class="wt-lbl">Udhar</span>
-          <span class="wt-val tabular" style="color:${rec >= pay ? 'var(--green)' : 'var(--orange)'};">${displayBal(rec - pay)}</span>
-          <span class="wt-sub">${isMasked ? '••••' : `+${rec} / -${pay}`}</span>
-        </div>
-      `;
-      walletGrid.querySelectorAll('[data-tile-cmd]').forEach(el => {
-        el.addEventListener('click', () => runCommand(el.getAttribute('data-tile-cmd')));
-      });
-    }
-
+    // --- FEED & EDIT MODAL ---
     function renderFeedView(filterType = activeFilter, customDateStr = activeDateQuery) {
-      activeFilter = filterType; activeDateQuery = customDateStr;
-      outputEl.innerHTML = '';
-
+      activeFilter = filterType; activeDateQuery = customDateStr; outputEl.innerHTML = '';
       const now = new Date();
       const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
       const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
-
       let list = state.transactions;
+
       if (filterType === 'today') {
         feedTitleLbl.textContent = "Today's Entries";
         list = list.filter(t => { const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id)); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === todayKey; });
@@ -1290,17 +1221,11 @@
         feedTitleLbl.textContent = picked.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
         const targetKey = `${picked.getFullYear()}-${picked.getMonth()}-${picked.getDate()}`;
         list = list.filter(t => { const d = new Date(t.tsMs || parseLegacyTsToMs(t.ts, t.id)); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}` === targetKey; });
-      } else {
-        feedTitleLbl.textContent = 'Recent Activity';
-      }
+      } else { feedTitleLbl.textContent = 'Recent Activity'; }
 
       const periodSpend = list.filter(t => t.type === 'DEBIT' || t.type === 'FRIEND_PAID').reduce((s, t) => s + (t.myShare || 0), 0);
       entryCountLbl.textContent = `${list.length} entries • Spend ₹${Math.round(periodSpend).toLocaleString('en-IN')}`;
-
-      if (!list.length) {
-        showNotice('No transactions found. Tap any entry to edit or enable Auto-Detect in Settings.', 'dim');
-        return;
-      }
+      if (!list.length) { showNotice('No transactions found. Tap any entry to edit.', 'dim'); return; }
       list.forEach(t => appendTxRow(t));
     }
 
@@ -1311,15 +1236,9 @@
         const mode = btn.getAttribute('data-hfilter');
         if (mode === 'date') {
           dateFilterRow.classList.add('show');
-          if (!datePickerInput.value) {
-            const d = new Date();
-            datePickerInput.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-          }
+          if (!datePickerInput.value) { const d = new Date(); datePickerInput.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
           renderFeedView('date', datePickerInput.value);
-        } else {
-          dateFilterRow.classList.remove('show');
-          renderFeedView(mode, '');
-        }
+        } else { dateFilterRow.classList.remove('show'); renderFeedView(mode, ''); }
       });
     });
     datePickerInput.addEventListener('change', (e) => { if (e.target.value) renderFeedView('date', e.target.value); });
@@ -1328,7 +1247,6 @@
       const isPositive = t.type === 'CREDIT' || t.type === 'SETTLE_IN';
       const isUdhar = t.splitFriends && t.splitFriends.length > 0;
       const isFriendPaid = t.type === 'FRIEND_PAID';
-
       const iconCls = isPositive ? 'credit' : (isUdhar ? 'udhar' : (isFriendPaid ? 'owe' : 'debit'));
       const iconSvg = isPositive
         ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>'
@@ -1339,7 +1257,6 @@
       let titleText = t.note;
       if (isUdhar) titleText = `${t.fullLoan ? 'Udhar' : 'Split'} • ${t.splitFriends.join(', ')} — ${t.note}`;
       else if (isFriendPaid) titleText = `${t.payer} Paid — ${t.note}`;
-
       const sign = isPositive ? '+' : '-';
       const amtCls = isPositive ? 'credit' : (isUdhar ? 'split' : (isFriendPaid ? 'owe' : 'debit'));
       const autoBadge = t.autoDetected ? '<span class="auto-tag">Auto</span>' : '';
@@ -1354,20 +1271,16 @@
         </div>
         <div class="tx-right">
           <span class="tx-amt tabular ${amtCls}">${sign}₹${Number(t.amount).toLocaleString('en-IN')}</span>
-          <span class="tx-chev">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </span>
+          <span class="tx-chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></span>
         </div>
       `;
       row.addEventListener('click', () => openEditModal(t.id));
       outputEl.appendChild(row);
     }
 
-    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
     function showNotice(text, cls = '') { const d = document.createElement('div'); d.className = `msg-line ${cls}`; d.textContent = text; outputEl.appendChild(d); }
     function showBlock(text, cls = '') { outputEl.innerHTML = ''; const d = document.createElement('div'); d.className = `box-block ${cls}`; d.textContent = text; outputEl.appendChild(d); }
 
-    // --- EDIT ANY ENTRY MODAL ---
     const editBackdrop = document.getElementById('edit-backdrop');
     const editTxIdEl = document.getElementById('edit-tx-id');
     const editTypeEl = document.getElementById('edit-type');
@@ -1388,12 +1301,10 @@
     editTypeEl.addEventListener('change', syncEditModalFields);
 
     function openEditModal(txId) {
-      const tx = state.transactions.find(t => t.id === txId);
-      if (!tx) return;
+      const tx = state.transactions.find(t => t.id === txId); if (!tx) return;
       editTxIdEl.value = tx.id;
       document.getElementById('edit-sheet-title').textContent = `Edit Entry #${tx.id}`;
       editAccEl.innerHTML = state.upiAccounts.map(a => `<option value="${escapeHtml(a.name)}">${escapeHtml(a.name)}</option>`).join('') + `<option value="CASH">CASH</option>`;
-
       if (tx.type === 'CREDIT') editTypeEl.value = 'CREDIT';
       else if (tx.type === 'FRIEND_PAID') editTypeEl.value = 'FRIEND_PAID';
       else if (tx.splitFriends && tx.splitFriends.length > 0) editTypeEl.value = tx.fullLoan ? 'UDHAR_FULL' : 'UDHAR_SPLIT';
@@ -1405,64 +1316,45 @@
       editCatEl.value = tx.category || 'General';
       editDtEl.value = toDateTimeLocalValue(new Date(tx.tsMs || parseLegacyTsToMs(tx.ts, tx.id)));
       editNoteEl.value = tx.note || '';
-
-      syncEditModalFields();
-      editBackdrop.classList.add('open');
+      syncEditModalFields(); editBackdrop.classList.add('open');
     }
-
     document.getElementById('edit-cancel-btn').addEventListener('click', () => editBackdrop.classList.remove('open'));
     editBackdrop.addEventListener('click', (e) => { if (e.target === editBackdrop) editBackdrop.classList.remove('open'); });
 
     function revertTxEffect(tx) {
       const acc = state.upiAccounts.find(a => a.name.toLowerCase() === String(tx.accountName || '').toLowerCase()) || state.upiAccounts[0];
-      if (tx.type === 'DEBIT') {
-        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount);
-        else if (acc) acc.balance = round2(acc.balance + tx.amount);
+            if (tx.type === 'DEBIT') {
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount); else if (acc) acc.balance = round2(acc.balance + tx.amount);
         (tx.splitFriends || []).forEach(f => { state.friends[f] = round2((state.friends[f] || 0) - (tx.perFriendShare || 0)); });
-      } else if (tx.type === 'FRIEND_PAID') {
-        state.friends[tx.payer] = round2((state.friends[tx.payer] || 0) + (tx.myShare || 0));
-      } else if (tx.type === 'CREDIT') {
-        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance - tx.amount);
-        else if (acc) acc.balance = round2(acc.balance - tx.amount);
-      } else if (tx.type === 'SETTLE_IN') {
-        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance - tx.amount);
-        else if (acc) acc.balance = round2(acc.balance - tx.amount);
+      } else if (tx.type === 'FRIEND_PAID') { state.friends[tx.payer] = round2((state.friends[tx.payer] || 0) + (tx.myShare || 0)); }
+      else if (tx.type === 'CREDIT') { if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance - tx.amount); else if (acc) acc.balance = round2(acc.balance - tx.amount); }
+      else if (tx.type === 'SETTLE_IN') {
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance - tx.amount); else if (acc) acc.balance = round2(acc.balance - tx.amount);
         if (tx.settleFriend) state.friends[tx.settleFriend] = round2((state.friends[tx.settleFriend] || 0) + tx.amount);
       } else if (tx.type === 'SETTLE_OUT') {
-        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount);
-        else if (acc) acc.balance = round2(acc.balance + tx.amount);
+        if (tx.accountName === 'CASH') state.cashBalance = round2(state.cashBalance + tx.amount); else if (acc) acc.balance = round2(acc.balance + tx.amount);
         if (tx.settleFriend) state.friends[tx.settleFriend] = round2((state.friends[tx.settleFriend] || 0) - tx.amount);
       }
     }
 
     document.getElementById('edit-save-btn').addEventListener('click', async () => {
-      const id = parseInt(editTxIdEl.value, 10);
-      const idx = state.transactions.findIndex(t => t.id === id);
+      const id = parseInt(editTxIdEl.value, 10), idx = state.transactions.findIndex(t => t.id === id);
       if (idx === -1) return;
-      const amt = parseFloat(editAmtEl.value);
-      if (isNaN(amt) || amt <= 0) return alert('Enter a valid amount.');
-
-      const oldTx = state.transactions[idx];
-      revertTxEffect(oldTx);
-
+      const amt = parseFloat(editAmtEl.value); if (isNaN(amt) || amt <= 0) return alert('Enter a valid amount.');
+      const oldTx = state.transactions[idx]; revertTxEffect(oldTx);
       const mode = editTypeEl.value;
       const dtObj = editDtEl.value ? new Date(editDtEl.value) : new Date(oldTx.tsMs || Date.now());
       const tsMs = isNaN(dtObj.getTime()) ? Date.now() : dtObj.getTime();
-      const ts = formatTsFromDate(new Date(tsMs));
-      const note = editNoteEl.value.trim() || oldTx.note;
-      const category = editCatEl.value || 'General';
-      const chosenAccName = editAccEl.value || 'CASH';
-      const isCash = chosenAccName === 'CASH';
+      const chosenAccName = editAccEl.value || 'CASH', isCash = chosenAccName === 'CASH';
       const acc = isCash ? null : (state.upiAccounts.find(a => a.name === chosenAccName) || state.upiAccounts[0]);
+      const friendList = editFriendEl.value.split(',').map(s => s.trim()).filter(Boolean).map(capitalize);
 
       let newTx = {
-        id: oldTx.id, ts, tsMs, amount: amt, category, note,
+        id: oldTx.id, ts: formatTsFromDate(new Date(tsMs)), tsMs, amount: amt,
+        category: editCatEl.value || 'General', note: editNoteEl.value.trim() || oldTx.note,
         accountName: isCash ? 'CASH' : (acc ? acc.name : 'UPI'),
-        type: 'DEBIT', myShare: amt, perFriendShare: 0, splitFriends: [], fullLoan: false,
-        autoDetected: Boolean(oldTx.autoDetected)
+        type: 'DEBIT', myShare: amt, perFriendShare: 0, splitFriends: [], fullLoan: false, autoDetected: Boolean(oldTx.autoDetected)
       };
-
-      const friendList = editFriendEl.value.split(',').map(s => s.trim()).filter(Boolean).map(capitalize);
 
       if (mode === 'CREDIT') {
         newTx.type = 'CREDIT'; newTx.myShare = 0;
@@ -1472,54 +1364,37 @@
         newTx.type = 'FRIEND_PAID'; newTx.payer = payer; newTx.accountName = payer; newTx.myShare = amt;
         state.friends[payer] = round2((state.friends[payer] || 0) - amt);
       } else if (mode === 'UDHAR_FULL' && friendList.length > 0) {
-        newTx.type = 'DEBIT'; newTx.splitFriends = friendList; newTx.fullLoan = true;
-        newTx.perFriendShare = round2(amt / friendList.length); newTx.myShare = 0;
+        newTx.splitFriends = friendList; newTx.fullLoan = true; newTx.perFriendShare = round2(amt / friendList.length); newTx.myShare = 0;
         if (isCash) state.cashBalance = round2(state.cashBalance - amt); else if (acc) acc.balance = round2(acc.balance - amt);
         friendList.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + newTx.perFriendShare));
       } else if (mode === 'UDHAR_SPLIT' && friendList.length > 0) {
-        newTx.type = 'DEBIT'; newTx.splitFriends = friendList; newTx.fullLoan = false;
-        newTx.perFriendShare = round2(amt / (friendList.length + 1)); newTx.myShare = round2(amt - newTx.perFriendShare * friendList.length);
+        newTx.splitFriends = friendList; newTx.fullLoan = false; newTx.perFriendShare = round2(amt / (friendList.length + 1)); newTx.myShare = round2(amt - newTx.perFriendShare * friendList.length);
         if (isCash) state.cashBalance = round2(state.cashBalance - amt); else if (acc) acc.balance = round2(acc.balance - amt);
         friendList.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + newTx.perFriendShare));
       } else {
-        newTx.type = 'DEBIT'; newTx.myShare = amt;
         if (isCash) state.cashBalance = round2(state.cashBalance - amt); else if (acc) acc.balance = round2(acc.balance - amt);
       }
 
       state.transactions[idx] = newTx;
       state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
-      await persistState('edit_save');
-      editBackdrop.classList.remove('open');
-      renderFeedView();
+      await persistState('edit_save'); editBackdrop.classList.remove('open'); renderFeedView();
     });
 
     document.getElementById('edit-delete-btn').addEventListener('click', async () => {
-      const id = parseInt(editTxIdEl.value, 10);
-      const idx = state.transactions.findIndex(t => t.id === id);
+      const id = parseInt(editTxIdEl.value, 10), idx = state.transactions.findIndex(t => t.id === id);
       if (idx === -1) return;
-      revertTxEffect(state.transactions[idx]);
-      state.transactions.splice(idx, 1);
-      await persistState('delete_tx');
-      editBackdrop.classList.remove('open');
-      renderFeedView();
+      revertTxEffect(state.transactions[idx]); state.transactions.splice(idx, 1);
+      await persistState('delete_tx'); editBackdrop.classList.remove('open'); renderFeedView();
     });
-          // --- COMMANDS & PARSER ---
-    async function persistState(reason = 'cmd') {
-      await storageEngine.commit(state, reason);
-      renderWalletCards();
-      runDailyAutoBackup(true);
-    }
 
-    function formatMoney(n, allowMask = false) {
-      if (allowMask && isMasked) return '₹••••';
-      return '₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+    // --- COMMANDS & PARSER ---
+    async function persistState(reason = 'cmd') { await storageEngine.commit(state, reason); renderWalletDeck(); runDailyAutoBackup(true); }
+    function formatMoney(n, allowMask = false) { return (allowMask && isMasked) ? '₹••••' : ('₹' + Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })); }
     function capitalize(s) { return s.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' '); }
 
     function startSetupWizard(isReconfig = false) {
       wizard = { active: true, step: 'COUNT', totalAccounts: 1, currentIdx: 0, tempName: '', collectedAccounts: [] };
-      outputEl.innerHTML = '';
-      feedTitleLbl.textContent = isReconfig ? 'Wallet Re-Setup' : 'Welcome Setup';
+      outputEl.innerHTML = ''; feedTitleLbl.textContent = isReconfig ? 'Wallet Re-Setup' : 'Welcome Setup';
       cmdInput.placeholder = 'How many UPI accounts? (1, 2, 3)...';
       showNotice('How many UPI / Bank accounts do you have? (Enter 1, 2, or 3)', 'info');
     }
@@ -1530,91 +1405,26 @@
         const count = parseInt(text.replace(/[^\d]/g, ''), 10);
         if (!count || count < 1 || count > 10) return showNotice('Enter a number between 1 and 10.', 'debit');
         wizard.totalAccounts = count; wizard.currentIdx = 0; wizard.collectedAccounts = [];
-        if (count === 1) {
-          wizard.step = 'ACC_BAL'; wizard.tempName = 'UPI';
-          showNotice('1 UPI Account selected. Enter current balance (e.g. 2135):', 'info');
-          cmdInput.placeholder = 'Enter UPI balance...';
-        } else {
-          wizard.step = 'ACC_NAME';
-          showNotice('Enter Account #1 name (e.g. SBI, Union, Slice):', 'info');
-          cmdInput.placeholder = 'Account #1 name...';
-        }
+        if (count === 1) { wizard.step = 'ACC_BAL'; wizard.tempName = 'UPI'; showNotice('1 UPI Account selected. Enter current balance (e.g. 2135):', 'info'); cmdInput.placeholder = 'Enter UPI balance...'; }
+        else { wizard.step = 'ACC_NAME'; showNotice('Enter Account #1 name (e.g. SBI, Union, Slice):', 'info'); cmdInput.placeholder = 'Account #1 name...'; }
         return;
       }
       if (wizard.step === 'ACC_NAME') {
-        const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim();
-        if (!name) return showNotice('Enter a valid name.', 'debit');
-        wizard.tempName = name; wizard.step = 'ACC_BAL';
-        showNotice(`Enter current balance in ${name}:`, 'info');
-        cmdInput.placeholder = `Balance in ${name}...`;
-        return;
+        const name = text.replace(/[^a-zA-Z0-9 _-]/g, '').trim(); if (!name) return showNotice('Enter a valid name.', 'debit');
+        wizard.tempName = name; wizard.step = 'ACC_BAL'; showNotice(`Enter current balance in ${name}:`, 'info'); cmdInput.placeholder = `Balance in ${name}...`; return;
       }
       if (wizard.step === 'ACC_BAL') {
-        const num = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(num) || num < 0) return showNotice('Enter a valid amount.', 'debit');
-        wizard.collectedAccounts.push({ id: `upi_${wizard.currentIdx + 1}`, name: wizard.tempName, balance: num });
-        wizard.currentIdx++;
-        if (wizard.currentIdx < wizard.totalAccounts) {
-          wizard.step = 'ACC_NAME';
-          showNotice(`Enter Account #${wizard.currentIdx + 1} name:`, 'info');
-          cmdInput.placeholder = `Account #${wizard.currentIdx + 1} name...`;
-        } else {
-          wizard.step = 'CASH';
-          showNotice('Enter current Cash in hand (e.g. 0 or 500):', 'info');
-          cmdInput.placeholder = 'Cash in hand...';
-        }
-        return;
-      }
-      if (wizard.step === 'CASH') {
-        const cash = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, ''));
-        if (isNaN(cash) || cash < 0) return showNotice('Enter a valid cash amount.', 'debit');
-        state.upiAccounts = wizard.collectedAccounts;
-        state.cashBalance = cash; state.setupComplete = true; wizard.active = false;
-        cmdInput.placeholder = '50 chai upi | 353 manish recharge';
-        await persistState('setup');
-        renderFeedView('all');
-        syncAutoTransactions();
-      }
-    }
-
-    const NON_FRIEND = new Set([
-      'me','my','mere','mera','both','dono','hum','upi','cash','chai','tea','coffee','food','khana',
-      'pizza','burger','lunch','dinner','nashta','milk','paneer','dahi','lassi','grocery','sabzi',
-      'auto','bus','train','petrol','diesel','cab','ticket','kiraya','bike','bill','bijli','rent',
-      'room','recharge','jio','vi','airtel','shirt','pant','shoes','amazon','flipkart','shopping',
-      'friend','dost','paid','for','by','with','and','ke','sath','ko','diye','diya','udhar','loan',
-      'credit','credited','received','salary','stipend','income','added','refund','cashback','mila','mile','aaye'
-    ]);
-
-    function resolveUpiAccount(lower) {
-      if (!state.upiAccounts.length) return { id: 'upi_1', name: 'UPI', balance: 0 };
-      if (state.upiAccounts.length === 1) return state.upiAccounts[0];
-      for (const acc of state.upiAccounts) {
-        if (new RegExp(`\\b${acc.name.toLowerCase()}\\b`, 'i').test(lower)) return acc;
-      }
-      return state.upiAccounts[0];
-    }
-
-    function extractAmount(text) { const m = text.replace(/,/g, '').match(/(\d+(?:\.\d+)?)/); return m ? parseFloat(m[1]) : null; }
-
-    function inferCategory(lower, isCredit) {
-      if (isCredit) return 'Income';
-      if (/\b(chai|tea|coffee|pizza|burger|food|khana|lunch|dinner|nashta|milk|paneer|grocery|sabzi|zomato|swiggy)\b/.test(lower)) return 'Food';
-      if (/\b(auto|bus|train|petrol|diesel|cab|ticket|kiraya|bike|uber|ola|rapido)\b/.test(lower)) return 'Transport';
-      if (/\b(recharge|jio|vi|airtel|bill|bijli|rent|room)\b/.test(lower)) return 'Bills';
-      if (/\b(shirt|pant|shoes|amazon|flipkart|myntra|shopping)\b/.test(lower)) return 'Shopping';
-      return 'General';
-    }
-
-    async function runCommand(raw) {
-      const text = raw.trim();
-      if (!text) return;
+        const num = parseFloat(text.replace(/,/g, '').replace(/[^\d.]/g, '')); if (isNaN(num) || num < 0) return showNotice('Enter a valid amount.', 'debit');
+        wizard.collectedAccounts.push({ id: `upi_${wizard.currentIdx + 1}`, name: wizard.tempName, balance: num }); wizard.currentIdx++;
+        if (wizard.currentIdx < wizard.totalAccounts) { wizard.step = 'ACC_NAME'; showNotice(`Enter Account #${wizard.currentIdx + 1} name:`,
+                                                                                              async function runCommand(raw) {
+      const text = raw.trim(); if (!text) return;
       if (wizard.active) return handleWizardInput(text);
       const lower = text.toLowerCase();
 
       if (lower === 'setup') return startSetupWizard(true);
       if (lower === 'lock') return engageLock();
-      if (lower === 'clear') return renderFeedView('all');
+      if (lower === 'clear' || lower === 'ls' || lower === 'history') return renderFeedView('all');
 
       if (lower.startsWith('pin ')) {
         const newPin = text.split(/\s+/)[1] || '';
@@ -1622,40 +1432,27 @@
         try { localStorage.setItem(PIN_KEY, newPin); } catch (e) {}
         return showBlock('Passcode updated successfully.', 'credit');
       }
-
       if (lower === 'backup') {
-        const path = runDailyAutoBackup(true);
-        const jsonStr = JSON.stringify(state);
+        const path = runDailyAutoBackup(true), jsonStr = JSON.stringify(state);
         try { await navigator.clipboard.writeText(jsonStr); } catch (e) {}
         feedTitleLbl.textContent = 'Backup Status';
         return showBlock(`Backup copied to clipboard & saved:\n${path || 'LocalStorage'}`, 'credit');
       }
-
       if (lower.startsWith('restore ')) {
-        try {
-          state = normalizeState(JSON.parse(text.slice(8).trim()));
-          await persistState('restore');
-          renderFeedView('all');
-          return;
-        } catch (e) { return showBlock('Invalid backup JSON.', 'debit'); }
+        try { state = normalizeState(JSON.parse(text.slice(8).trim())); await persistState('restore'); renderFeedView('all'); return; }
+        catch (e) { return showBlock('Invalid backup JSON.', 'debit'); }
       }
-
       if (lower === 'edit' || lower.startsWith('edit ')) {
         if (!state.transactions.length) return showBlock('No entries to edit.', 'dim');
         const arg = lower.split(/\s+/)[1];
         const target = arg ? state.transactions.find(t => t.id === parseInt(arg, 10)) : state.transactions[0];
-        if (!target) return showBlock(`Entry #${arg} not found.`, 'debit');
-        return openEditModal(target.id);
+        return target ? openEditModal(target.id) : showBlock(`Entry #${arg} not found.`, 'debit');
       }
-
       if (lower === 'undo') {
         if (!state.transactions.length) return showBlock('No entries to undo.', 'dim');
-        revertTxEffect(state.transactions[0]);
-        state.transactions.shift();
-        await persistState('undo');
-        return renderFeedView();
+        revertTxEffect(state.transactions[0]); state.transactions.shift();
+        await persistState('undo'); return renderFeedView();
       }
-
       if (lower.startsWith('find ') || lower.startsWith('search ')) {
         const q = lower.replace(/^(?:find|search)\s+/, '').trim();
         if (!q) return showBlock('Usage: find chai | find manish', 'warn');
@@ -1664,84 +1461,55 @@
           (t.accountName && t.accountName.toLowerCase().includes(q)) || (t.payer && t.payer.toLowerCase().includes(q)) ||
           (t.splitFriends && t.splitFriends.some(f => f.toLowerCase().includes(q)))
         );
-        feedTitleLbl.textContent = `Search: "${q}"`;
-        outputEl.innerHTML = '';
+        feedTitleLbl.textContent = `Search: "${q}"`; outputEl.innerHTML = '';
         const total = matches.reduce((s, t) => s + t.amount, 0);
         entryCountLbl.textContent = `${matches.length} found • ₹${Math.round(total).toLocaleString('en-IN')}`;
         if (!matches.length) return showNotice(`No entries matching "${q}".`, 'dim');
-        matches.forEach(t => appendTxRow(t));
-        return;
+        matches.forEach(t => appendTxRow(t)); return;
       }
-
       if (lower === 'bal' || lower === 'balance' || (/\b(kitna|bacha|balance)\b/.test(lower) && !extractAmount(text))) {
         feedTitleLbl.textContent = 'Balance Sheet';
-        let rec = 0, pay = 0;
-        Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
-        let out = '';
-        state.upiAccounts.forEach(a => out += `${a.name.padEnd(14)} : ${formatMoney(a.balance, true)}\n`);
-        out += `Cash           : ${formatMoney(state.cashBalance, true)}\n`;
-        out += `Lena Hai (+)   : ${formatMoney(rec, true)}\n`;
-        out += `Dena Hai (-)   : ${formatMoney(pay, true)}\n`;
-        out += `--------------------------------\n`;
-        out += `Net Worth      : ${formatMoney(getTotalUpiBalance() + state.cashBalance + rec - pay, true)}`;
+        let rec = 0, pay = 0; Object.values(state.friends).forEach(v => { if (v > 0) rec += v; if (v < 0) pay += Math.abs(v); });
+        let out = ''; state.upiAccounts.forEach(a => out += `${a.name.padEnd(14)} : ${formatMoney(a.balance, true)}\n`);
+        out += `Cash           : ${formatMoney(state.cashBalance, true)}\nLena Hai (+)   : ${formatMoney(rec, true)}\nDena Hai (-)   : ${formatMoney(pay, true)}\n--------------------------------\nNet Worth      : ${formatMoney(getTotalUpiBalance() + state.cashBalance + rec - pay, true)}`;
         return showBlock(out);
       }
-
       if (lower === 'dues' || lower === 'udhar') {
         feedTitleLbl.textContent = 'Friend Udhar Ledger';
         const list = Object.entries(state.friends).filter(([_, v]) => Math.abs(v) >= 0.01);
         if (!list.length) return showBlock('No pending friend dues.', 'dim');
-        let out = '';
-        list.forEach(([n, v]) => out += `${n.padEnd(14)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v, true) : 'DENA HAI -' + formatMoney(Math.abs(v), true)}\n`);
-        out += `\nTip: Type "settle <name>" to clear dues.`;
-        return showBlock(out, 'split');
+        let out = ''; list.forEach(([n, v]) => out += `${n.padEnd(14)} : ${v > 0 ? 'LENA HAI +' + formatMoney(v, true) : 'DENA HAI -' + formatMoney(Math.abs(v), true)}\n`);
+        out += `\nTip: Type "settle <name>" to clear dues.`; return showBlock(out, 'split');
       }
-
-      if (lower === 'ls' || lower === 'history') return renderFeedView('all');
-
       if (lower === 'stats') {
         feedTitleLbl.textContent = 'Expense Breakdown';
         const deb = state.transactions.filter(t => (t.type === 'DEBIT' || t.type === 'FRIEND_PAID') && t.myShare > 0);
         if (!deb.length) return showBlock('No personal expenses yet.', 'dim');
-        const tot = deb.reduce((s, t) => s + t.myShare, 0);
-        const map = {};
+        const tot = deb.reduce((s, t) => s + t.myShare, 0), map = {};
         deb.forEach(t => map[t.category] = (map[t.category] || 0) + t.myShare);
         let out = `TOTAL PERSONAL SPEND: ${formatMoney(tot)}\n\n`;
-        Object.entries(map).sort((a, b) => b[1] - a[1]).forEach(([c, v]) => {
-          out += `${c.padEnd(13)} : ${formatMoney(v)} (${Math.round((v / tot) * 100)}%)\n`;
-        });
+        Object.entries(map).sort((a, b) => b[1] - a[1]).forEach(([c, v]) => { out += `${c.padEnd(13)} : ${formatMoney(v)} (${Math.round((v / tot) * 100)}%)\n`; });
         return showBlock(out);
       }
 
       const entryDate = (backdateBar.classList.contains('show') && customEntryDt.value) ? new Date(customEntryDt.value) : new Date();
-      const tsMs = isNaN(entryDate.getTime()) ? Date.now() : entryDate.getTime();
-      const ts = formatTsFromDate(new Date(tsMs));
+      const tsMs = isNaN(entryDate.getTime()) ? Date.now() : entryDate.getTime(), ts = formatTsFromDate(new Date(tsMs));
 
       if (lower.startsWith('settle ')) {
         const target = text.slice(7).replace(/\b(upi|cash)\b/gi, '').trim();
         const fKey = Object.keys(state.friends).find(k => k.toLowerCase() === target.toLowerCase());
         if (!fKey || Math.abs(state.friends[fKey]) < 0.01) return showBlock(`No pending dues for ${target}.`, 'dim');
-        const val = state.friends[fKey], abs = Math.abs(val);
-        const isCash = /\bcash\b/.test(lower), acc = isCash ? null : resolveUpiAccount(lower);
-        const txObj = {
-          id: state.nextId++, ts, tsMs, type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT',
-          amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name,
-          settleFriend: fKey, category: 'Settlement', note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}`
-        };
+        const val = state.friends[fKey], abs = Math.abs(val), isCash = /\bcash\b/.test(lower), acc = isCash ? null : resolveUpiAccount(lower);
+        const txObj = { id: state.nextId++, ts, tsMs, type: val > 0 ? 'SETTLE_IN' : 'SETTLE_OUT', amount: abs, myShare: 0, accountName: isCash ? 'CASH' : acc.name, settleFriend: fKey, category: 'Settlement', note: val > 0 ? `Settled from ${fKey}` : `Paid to ${fKey}` };
         if (val > 0) { if (isCash) state.cashBalance = round2(state.cashBalance + abs); else acc.balance = round2(acc.balance + abs); }
         else { if (isCash) state.cashBalance = round2(state.cashBalance - abs); else acc.balance = round2(acc.balance - abs); }
-        state.friends[fKey] = 0;
-        state.transactions.unshift(txObj);
-        state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
+        state.friends[fKey] = 0; state.transactions.unshift(txObj); state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
         await persistState('settle'); toggleBackdateBar(false); return renderFeedView();
       }
-
       if (lower.startsWith('rm ')) {
-        const id = parseInt(lower.split(/\s+/)[1], 10);
-        const idx = state.transactions.findIndex(t => t.id === id);
+        const id = parseInt(lower.split(/\s+/)[1], 10), idx = state.transactions.findIndex(t => t.id === id);
         if (idx === -1) return showBlock(`Entry #${id} not found.`, 'debit');
-        revertTxEffect(state.transactions[idx]);
-        state.transactions.splice(idx, 1);
+        revertTxEffect(state.transactions[idx]); state.transactions.splice(idx, 1);
         await persistState('rm'); return renderFeedView();
       }
 
@@ -1750,8 +1518,7 @@
 
       const paidByM = lower.match(/\b(?:paid by|by)\s+([a-zA-Z]+(?:\s+ji)?)/) || lower.match(/^([a-zA-Z]+(?:\s+ji)?)\s+(?:ne|paid)\b/);
       if (paidByM && !NON_FRIEND.has(paidByM[1].split(/\s+/)[0].toLowerCase())) {
-        const payer = capitalize(paidByM[1]);
-        const myShare = /\b(both|dono|split)\b/.test(lower) ? round2(amt / 2) : amt;
+        const payer = capitalize(paidByM[1]), myShare = /\b(both|dono|split)\b/.test(lower) ? round2(amt / 2) : amt;
         state.friends[payer] = round2((state.friends[payer] || 0) - myShare);
         state.transactions.unshift({ id: state.nextId++, ts, tsMs, type: 'FRIEND_PAID', amount: amt, myShare, payer, accountName: payer, category: inferCategory(lower, false), note: text });
         state.transactions.sort((a, b) => (b.tsMs || 0) - (a.tsMs || 0));
@@ -1759,24 +1526,19 @@
       }
 
       const isCredit = text.startsWith('+') || /\b(credit|credited|received|salary|stipend|income|added|refund|cashback|mila|mile|aaye)\b/.test(lower);
-      const isCash = /\bcash\b/.test(lower);
-      const acc = isCash ? null : resolveUpiAccount(lower);
-      const chan = isCash ? 'CASH' : acc.name;
+      const isCash = /\bcash\b/.test(lower), acc = isCash ? null : resolveUpiAccount(lower), chan = isCash ? 'CASH' : acc.name;
       const upiNamesSet = new Set(state.upiAccounts.map(a => a.name.toLowerCase()));
-
       let splitFriends = [], fullLoan = false;
       const withM = lower.match(/\b(?:with|and|ke sath)\s+([a-zA-Z\s,]+)/);
 
       if (!isCredit && withM) {
         splitFriends = withM[1].split(/[\s,]+/).filter(w => w.length >= 2 && !NON_FRIEND.has(w) && !upiNamesSet.has(w)).map(capitalize);
       } else if (!isCredit) {
-        const words = lower.replace(/[\d.,]+/g, ' ').trim().split(/[\s,]+/);
-        const directNames = [];
+        const words = lower.replace(/[\d.,]+/g, ' ').trim().split(/[\s,]+/), directNames = [];
         for (let i = 0; i < words.length; i++) {
           const w = words[i];
           if (/^[a-zA-Z]{2,}$/.test(w) && !NON_FRIEND.has(w) && !upiNamesSet.has(w) && w !== 'ji') {
-            if (words[i + 1] === 'ji') { directNames.push(capitalize(w + ' ji')); i++; }
-            else { directNames.push(capitalize(w)); }
+            if (words[i + 1] === 'ji') { directNames.push(capitalize(w + ' ji')); i++; } else directNames.push(capitalize(w));
           }
         }
         if (directNames.length > 0) { splitFriends = [directNames[0]]; fullLoan = true; }
@@ -1788,7 +1550,6 @@
         else { perFriendShare = round2(amt / (splitFriends.length + 1)); myShare = round2(amt - perFriendShare * splitFriends.length); }
         splitFriends.forEach(f => state.friends[f] = round2((state.friends[f] || 0) + perFriendShare));
       }
-
       if (isCredit) { if (isCash) state.cashBalance = round2(state.cashBalance + amt); else acc.balance = round2(acc.balance + amt); }
       else { if (isCash) state.cashBalance = round2(state.cashBalance - amt); else acc.balance = round2(acc.balance - amt); }
 
@@ -1810,15 +1571,11 @@
 
     (async function boot() {
       state = await storageEngine.loadAndHeal();
-      renderWalletCards();
+      renderWalletDeck();
       refreshAutoDetectStatus();
       runDailyAutoBackup(false);
-      if (!state.setupComplete) {
-        startSetupWizard(false);
-      } else {
-        renderFeedView('all');
-        await syncAutoTransactions();
-      }
+      if (!state.setupComplete) startSetupWizard(false);
+      else { renderFeedView('all'); await syncAutoTransactions(); }
     })();
   </script>
 </body>
